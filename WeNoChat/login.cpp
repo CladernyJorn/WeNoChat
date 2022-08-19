@@ -74,10 +74,10 @@ login::~login()
 
 void login::on_closeButton_clicked()
 {
-    close();
+    this->close();
 }
 
-void login::on_pushButton_2_clicked()
+void login::on_hideButton_clicked()
 {
     showMinimized();
 }
