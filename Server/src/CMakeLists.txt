@@ -12,6 +12,8 @@ set(PRJ_LIBS ${SQLITE3_LIB})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # 源代码路径
+aux_source_directory(${PROJECT_SOURCE_DIR}/Database DB_CPP_FILES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/TOols TOOLS_CPP_FILES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/json JSON_CPP_FILES)
 aux_source_directory(${PROJECT_SOURCE_DIR}/Server SERVER_CPP_FILES)
 

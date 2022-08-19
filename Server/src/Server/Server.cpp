@@ -22,38 +22,10 @@ Server &Server::singleton(uint32_t addr, uint16_t port)
     return singleton;
 }
 
-Server &Server::singleton(const char *addr, uint16_t port)
-{
-    static bool inited = false;
-    if (addr == NULL && port == 0)
-    {
-        if (!inited)
-        {
-            cout << "error: please provide the address and port when first get this singleton!" << endl;
-            exit(-1);
-        }
-    }
-    static Server singleton(inited, addr, port);
-    inited = true;
-    return singleton;
-}
-
 Server::Server(bool inited, uint32_t addr, uint16_t port) : handler(CmdHandler::singleton())
 {
     if (!inited)
-        this->addr = htonl(addr), this->port = htons(port);
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1)
-    {
-        cout << "socket error" << endl;
-        exit(-1);
-    }
-}
-
-Server::Server(bool inited, const char *addr, uint16_t port) : handler(CmdHandler::singleton())
-{
-    if (!inited)
-        this->addr = inet_addr(addr), this->port = htons(port);
+        this->addr = addr, this->port = htons(port);
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
     {
@@ -139,6 +111,13 @@ void Server::run()
                         {
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
                             client_fds.erase(client);
+                            auto info = __clients.find(client);
+                            if (info != __clients.end())
+                            {
+                                string username = info->second;
+                                clients.erase(username);
+                                __clients.erase(info);
+                            }
                             continue;
                         }
                         cout << "recv = " << buf << endl;
@@ -148,4 +127,15 @@ void Server::run()
             }
         }
     }
+}
+
+fd_t Server::getFdByName(std::string username)
+{
+    return clients[username];
+}
+
+void Server::addClient(std::string username, fd_t __fd)
+{
+    clients[username] = __fd;
+    __clients[__fd] = username;
 }

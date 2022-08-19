@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <string>
 #include <functional>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 #include "Constants.h"
 

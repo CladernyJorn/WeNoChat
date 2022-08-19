@@ -20,17 +20,17 @@ public:
      * 获取Server实例
      * Server &server = Server::singleton();
      */
-    static Server &singleton(const char *addr = NULL, uint16_t port = 0);
     static Server &singleton(uint32_t addr = 0, uint16_t port = 0);
 
     //连接服务端
     void connect();
 
     void run();
+    fd_t getFdByName(std::string username);
+    void addClient(std::string username, fd_t __fd);
 
 private:
     Server(bool inited, uint32_t addr = 0, uint16_t port = 0);
-    Server(bool inited, const char *addr = NULL, uint16_t port = 0);
     Server(const Server &) = delete;
     Server &operator=(const Server &) = delete;
 
@@ -39,6 +39,8 @@ private:
     fd_t sock;
     fd_t epoll_fd;
     std::unordered_set<fd_t> client_fds;
+    std::unordered_map<std::string, fd_t> clients;
+    std::unordered_map<fd_t, std::string> __clients;
     CmdHandler &handler;
 };
 

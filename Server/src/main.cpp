@@ -2,7 +2,7 @@
 
 int main()
 {
-    Server &server = Server::singleton(INADDR_ANY, 8888);
+    Server &server = Server::singleton(htonl(INADDR_ANY), 8888);
     server.connect();
     server.run();
     return 0;

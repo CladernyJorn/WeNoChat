@@ -10,8 +10,11 @@
 
 struct UserRecord
 {
-    std::string userName;
+    std::string username;
     std::string password;
+    std::string phonenum;
+    int secureQue;
+    std::string secureAns;
 };
 /**
  * TODO: 定义每个数据表对应的结构体
