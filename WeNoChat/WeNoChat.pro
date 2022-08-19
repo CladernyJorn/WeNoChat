@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,12 +27,15 @@ SOURCES += main.cpp\
         login.cpp \
     mainwindow.cpp \
     regist.cpp \
-    forgotpwd.cpp
+    forgotpwd.cpp \
+    jsoncpp.cpp
 
 HEADERS  += login.h \
     mainwindow.h \
     regist.h \
-    forgotpwd.h
+    forgotpwd.h \
+    json/json.h \
+    json/json-forwards.h
 
 FORMS    += login.ui \
     mainwindow.ui \
@@ -41,9 +44,3 @@ FORMS    += login.ui \
 
 RESOURCES += \
     uires.qrc
-
-INCLUDEPATH += jsoncpp/include/json
-
-LIBS += -Ljsoncpp/bin -ljsoncpp
-
-DEPENDPATH += jsoncpp/bin
