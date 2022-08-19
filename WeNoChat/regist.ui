@@ -21,7 +21,7 @@ font-style:MingLiU-ExtB;
 }
 QFrame{
 border:sold 10px rgba(0,0,0);
-background-image: url(:/loginbackground.png);
+background-image: url(:/assets/loginbackground.png);
 }
 QLineEdit{
 color:#8d98a1;

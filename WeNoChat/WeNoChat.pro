@@ -41,3 +41,9 @@ FORMS    += login.ui \
 
 RESOURCES += \
     uires.qrc
+
+INCLUDEPATH += jsoncpp/include/json
+
+LIBS += -Ljsoncpp/bin -ljsoncpp
+
+DEPENDPATH += jsoncpp/bin

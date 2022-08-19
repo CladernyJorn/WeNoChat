@@ -2,6 +2,7 @@
 #define LOGIN_H
 
 #include <QWidget>
+#include <QTcpSocket>
 #include "mainwindow.h"
 #include "forgotpwd.h"
 #include "regist.h"
@@ -24,7 +25,7 @@ protected:
 private slots:
     void on_closeButton_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_hideButton_clicked();
 
     void on_loginButton_clicked();
 
