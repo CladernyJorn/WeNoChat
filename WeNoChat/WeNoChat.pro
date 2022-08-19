@@ -28,14 +28,16 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     regist.cpp \
     forgotpwd.cpp \
-    jsoncpp.cpp
+    jsoncpp.cpp \
+    chatmessagewidget.cpp
 
 HEADERS  += login.h \
     mainwindow.h \
     regist.h \
     forgotpwd.h \
     json/json.h \
-    json/json-forwards.h
+    json/json-forwards.h \
+    chatmessagewidget.h
 
 FORMS    += login.ui \
     mainwindow.ui \
