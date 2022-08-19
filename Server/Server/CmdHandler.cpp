@@ -12,24 +12,25 @@ CmdHandler &CmdHandler::singleton()
 
 CmdHandler::CmdHandler()
 {
-    __callbacks["login"] = __Callbacks::login;
-    __callbacks["register"] = __Callbacks::regist;
-    __callbacks["message"] = __Callbacks::sendMsg;
-    __callbacks["getFriends"] = __Callbacks::getFriends;
+    __callbacks["login"] = __Callbacks::_login;
+    __callbacks["register"] = __Callbacks::_register;
+    __callbacks["chat"] = __Callbacks::_chat;
+    __callbacks["getFriends"] = __Callbacks::_getFriends;
+    __callbacks["addfriends"] = __Callbacks::_addFriends;
 }
 
 void CmdHandler::handle(fd_t client, Json::Value cmd)
 {
-    string name = cmd["data_type"].asString();
+    string name = cmd["type"].asString();
     auto callback = __callbacks.find(name);
     if (callback != __callbacks.end())
-        callback->second(client, cmd);
+        callback->second(client, cmd["info"]);
 }
 
-void __Callbacks::login(fd_t confd, Json::Value cmd)
+void __Callbacks::_login(fd_t confd, Json::Value cmd)
 {
-    string uName = cmd["uName"].asString();
-    string pWord = cmd["pWord"].asString();
+    string uName = cmd["username"].asString();
+    string pWord = cmd["password"].asString();
 
     cout << "login: " << uName << ' ' << pWord << endl;
 
@@ -67,10 +68,13 @@ void __Callbacks::login(fd_t confd, Json::Value cmd)
     // send(confd, response.c_str(), response.length(), 0);
 }
 
-void __Callbacks::regist(fd_t client, Json::Value cmd)
+void __Callbacks::_register(fd_t client, Json::Value cmd)
 {
-    string uName = cmd["uName"].asString();
-    string pWord = cmd["pWord"].asString();
+    string uName = cmd["username"].asString();
+    string pWord = cmd["password"].asString();
+    string phone = cmd["phonenum"].asString();
+    string secureQ = cmd["secureQue"].asString();
+    string sequreA = cmd["sequreAnd"].asString();
 
     cout << "register: " << uName << ' ' << pWord << endl;
 
@@ -97,18 +101,26 @@ void __Callbacks::regist(fd_t client, Json::Value cmd)
     // }
 }
 
-void __Callbacks::sendMsg(fd_t client, Json::Value cmd)
+void __Callbacks::_chat(fd_t client, Json::Value cmd)
 {
-    string _from = cmd["from"].asString();
-    string _to = cmd["to"].asString();
+    string _from = cmd["username"].asString();
+    Json::Value _to = cmd["userList"];
     string _msg = cmd["msg"].asString();
 
-    cout << "msg from " << _from << " to " << _to << ": " << _msg << endl;
+    cout << "msg from " << _from << " to " << encodeJson(_to) << ": " << _msg << endl;
 
     // TODO: 找到接收方，发送该信息。
 }
 
-void __Callbacks::getFriends(fd_t client, Json::Value cmd)
+void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
 {
     cout << "getfriends" << endl;
+}
+
+void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
+{
+    string username = cmd["username"].asString();
+    string friendUser = cmd["friend_username"].asString();
+
+    cout << username << "wants to make friends with " << friendUser << endl;
 }
