@@ -26,5 +26,7 @@ namespace __Callbacks
 {
     void login(fd_t confd, Json::Value cmd);
     void regist(fd_t client, Json::Value cmd);
+    void sendMsg(fd_t client, Json::Value cmd);
+    void getFriends(fd_t client, Json::Value cmd);
 }
 #endif // CmdHandler.h
