@@ -29,11 +29,6 @@ void __Callbacks::login(fd_t confd, Json::Value cmd)
     string uName = cmd["uName"].asString();
     string pWord = cmd["pWord"].asString();
 
-    // int type = 0;
-    // char uName[512] = {0};
-    // char pWord[1024] = {0};
-    // sscanf(buf, "#|%d|%[^|]|%[^|]", &type, uName, pWord);
-
     cout << "login: " << uName << ' ' << pWord << endl;
 
     // string sql = "select * from User where uName = " + string(uName);
@@ -68,6 +63,10 @@ void __Callbacks::login(fd_t confd, Json::Value cmd)
 
 void __Callbacks::regist(fd_t client, Json::Value cmd)
 {
+    string uName = cmd["uName"].asString();
+    string pWord = cmd["pWord"].asString();
+
+    cout << "register: " << uName << ' ' << pWord << endl;
     // int type = 0;
     // char uName[32] = {0};
     // char pWord[32] = {0};
