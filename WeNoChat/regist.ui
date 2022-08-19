@@ -236,6 +236,17 @@ font-size:14px;
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>userEdit</tabstop>
+  <tabstop>passwordEdit</tabstop>
+  <tabstop>passwordEdit_2</tabstop>
+  <tabstop>phoneNumberEdit</tabstop>
+  <tabstop>questionEdit</tabstop>
+  <tabstop>answerEdit</tabstop>
+  <tabstop>loginButton</tabstop>
+  <tabstop>hideButton</tabstop>
+  <tabstop>closeButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

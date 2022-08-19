@@ -211,6 +211,15 @@ font-style:MingLiU-ExtB;
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>userEdit</tabstop>
+  <tabstop>passwordEdit</tabstop>
+  <tabstop>loginButton</tabstop>
+  <tabstop>registButton</tabstop>
+  <tabstop>registButton_2</tabstop>
+  <tabstop>hideButton</tabstop>
+  <tabstop>closeButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

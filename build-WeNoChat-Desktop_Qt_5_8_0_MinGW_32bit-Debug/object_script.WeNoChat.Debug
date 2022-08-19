@@ -1,0 +1,12 @@
+INPUT(
+./debug\main.o
+./debug\login.o
+./debug\mainwindow.o
+./debug\regist.o
+./debug\forgotpwd.o
+./debug\qrc_uires.o
+./debug\moc_login.o
+./debug\moc_mainwindow.o
+./debug\moc_regist.o
+./debug\moc_forgotpwd.o
+);
