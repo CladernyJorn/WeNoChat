@@ -2,6 +2,9 @@
 #define REGIST_H
 
 #include <QWidget>
+#include <QTcpSocket>
+#include <QMessageBox>
+#include <QDebug>
 
 namespace Ui {
 class Regist;
@@ -13,6 +16,7 @@ class Regist : public QWidget
 
 public:
     explicit Regist(QWidget *parent = 0);
+    explicit Regist(QTcpSocket *sock,QWidget *parent = 0);
     ~Regist();
 
 protected:
@@ -28,6 +32,7 @@ private slots:
 
 private:
     Ui::Regist *ui;
+    QTcpSocket *client;
     QPoint p;
 };
 

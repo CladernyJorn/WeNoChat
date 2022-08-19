@@ -2,6 +2,7 @@
 #define FORGOTPWD_H
 
 #include <QWidget>
+#include <QMessageBox>
 
 namespace Ui {
 class ForgotPwd;

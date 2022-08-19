@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QTcpSocket>
+#include <QMessageBox>
+#include <QDebug>
 #include "mainwindow.h"
 #include "forgotpwd.h"
 #include "regist.h"
@@ -22,7 +24,13 @@ public:
 protected:
     void mouseMoveEvent(QMouseEvent *e);//鼠标移动
     void mousePressEvent(QMouseEvent *e);//鼠标按下移动
+
+public slots:
+    void hadconnected();
+
 private slots:
+    void hadreadyread();
+
     void on_closeButton_clicked();
 
     void on_hideButton_clicked();
@@ -31,11 +39,13 @@ private slots:
 
     void on_registButton_clicked();
 
-    void on_registButton_2_clicked();
+    void on_forgetButton_clicked();
 
 private:
     Ui::login *ui;
     QPoint p;
+    QTcpSocket *client;
+    QString udata;
     void showMainWindow();
     void showRegistWindow();
     void showForgotPwdWindow();

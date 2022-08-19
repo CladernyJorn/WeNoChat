@@ -48,6 +48,14 @@
     <number>2</number>
    </property>
    <widget class="QWidget" name="page_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>211</width>
+      <height>513</height>
+     </rect>
+    </property>
     <attribute name="label">
      <string>这里显示好友分组</string>
     </attribute>
@@ -58,7 +66,7 @@
       <x>0</x>
       <y>0</y>
       <width>211</width>
-      <height>501</height>
+      <height>513</height>
      </rect>
     </property>
     <attribute name="label">
@@ -71,7 +79,7 @@
       <x>0</x>
       <y>0</y>
       <width>211</width>
-      <height>501</height>
+      <height>513</height>
      </rect>
     </property>
     <attribute name="label">
@@ -94,7 +102,7 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="hideButton">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -107,7 +115,7 @@
      <string>—</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="closeButton">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -226,7 +234,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="send">
      <property name="geometry">
       <rect>
        <x>710</x>
