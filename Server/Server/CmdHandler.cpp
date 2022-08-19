@@ -1,5 +1,7 @@
 #include "CmdHandler.h"
 
+#include <iostream>
+
 using namespace std;
 
 CmdHandler &CmdHandler::singleton()
@@ -14,24 +16,25 @@ CmdHandler::CmdHandler()
     __callbacks["register"] = __Callbacks::regist;
 }
 
-void CmdHandler::handle(fd_t client, Json cmd)
+void CmdHandler::handle(fd_t client, Json::Value cmd)
 {
-    string name = cmd["data_type"];
+    string name = cmd["data_type"].asString();
     auto callback = __callbacks.find(name);
     if (callback != __callbacks.end())
         callback->second(client, cmd);
 }
 
-void __Callbacks::login(fd_t confd, Json cmd)
+void __Callbacks::login(fd_t confd, Json::Value cmd)
 {
+    string uName = cmd["uName"].asString();
+    string pWord = cmd["pWord"].asString();
+
     // int type = 0;
     // char uName[512] = {0};
     // char pWord[1024] = {0};
     // sscanf(buf, "#|%d|%[^|]|%[^|]", &type, uName, pWord);
 
-    // cout << type << '\n'
-    //      << uName << '\n'
-    //      << pWord << endl;
+    cout << "login: " << uName << ' ' << pWord << endl;
 
     // string sql = "select * from User where uName = " + string(uName);
 
@@ -63,7 +66,7 @@ void __Callbacks::login(fd_t confd, Json cmd)
     // send(confd, response.c_str(), response.length(), 0);
 }
 
-void __Callbacks::regist(fd_t client, Json cmd)
+void __Callbacks::regist(fd_t client, Json::Value cmd)
 {
     // int type = 0;
     // char uName[32] = {0};
