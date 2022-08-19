@@ -1,4 +1,6 @@
 #include "Server.h"
+#include "Json.h"
+
 #include <cstring>
 #include <iostream>
 #include <cstdlib>
@@ -95,6 +97,7 @@ void Server::run()
                             continue;
                         }
                         cout << "recv = " << buf << endl;
+                        handler.handle(client, decodeJson(buf));
                     }
                 }
             }
