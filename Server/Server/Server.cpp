@@ -6,16 +6,54 @@
 #include <cstdlib>
 using namespace std;
 
-Server &Server::singleton(uint32_t addr, uint32_t port)
+Server &Server::singleton(uint32_t addr, uint16_t port)
 {
     static bool inited = false;
-    static Server singleton(addr, port);
+    if (addr == 0 && port == 0)
+    {
+        if (!inited)
+        {
+            cout << "error: please provide the address and port when first get this singleton!" << endl;
+            exit(-1);
+        }
+    }
+    static Server singleton(inited, addr, port);
     inited = true;
     return singleton;
 }
 
-Server::Server(uint32_t addr, uint32_t port) : addr(addr), port(port), handler(CmdHandler::singleton())
+Server &Server::singleton(const char *addr, uint16_t port)
 {
+    static bool inited = false;
+    if (addr == NULL && port == 0)
+    {
+        if (!inited)
+        {
+            cout << "error: please provide the address and port when first get this singleton!" << endl;
+            exit(-1);
+        }
+    }
+    static Server singleton(inited, addr, port);
+    inited = true;
+    return singleton;
+}
+
+Server::Server(bool inited, uint32_t addr, uint16_t port) : handler(CmdHandler::singleton())
+{
+    if (!inited)
+        this->addr = htonl(addr), this->port = htons(port);
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock == -1)
+    {
+        cout << "socket error" << endl;
+        exit(-1);
+    }
+}
+
+Server::Server(bool inited, const char *addr, uint16_t port) : handler(CmdHandler::singleton())
+{
+    if (!inited)
+        this->addr = inet_addr(addr), this->port = htons(port);
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
     {
@@ -29,8 +67,8 @@ void Server::connect()
     sockaddr_in myaddr;
     memset(&myaddr, 0, sizeof(myaddr));
     myaddr.sin_family = AF_INET;
-    myaddr.sin_port = htons(port);
-    myaddr.sin_addr.s_addr = htonl(addr);
+    myaddr.sin_port = port;
+    myaddr.sin_addr.s_addr = addr;
     if (bind(sock, (sockaddr *)&myaddr, sizeof(myaddr)) == -1)
     {
         cout << "bind error" << endl;
@@ -38,6 +76,13 @@ void Server::connect()
     }
 
     listen(sock, 10);
+
+    epoll_fd = epoll_create(256);
+    if (epoll_fd == -1)
+    {
+        cout << "epoll create error" << endl;
+        exit(-1);
+    }
 
     epoll_event ev;
     ev.events = EPOLLIN;
@@ -60,7 +105,7 @@ void Server::run()
         if (nready == -1)
         {
             cout << "epoll wait error" << endl;
-            exit(-1);
+            continue;
         }
         for (int i = 0; i < nready; i++)
         {
