@@ -12,8 +12,6 @@
 #include "Record.h"
 #include "Tools.h"
 
-typedef UserRecord UserAccountRecord;
-
 class Sql
 {
 public:
@@ -21,8 +19,10 @@ public:
 
     void open();
     std::vector<UserRecord> findUserByName(std::string userName);
-    void insertUser(UserAccountRecord rec);
+    void insertUser(UserRecord rec);
+    void updateUser(std::string username, std::string column, std::string value);
     std::vector<std::string> findFriends(std::string userName);
+    void insertFriends(std::string user, std::string friend_user);
 
 private:
     Sql() {}

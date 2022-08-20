@@ -11,7 +11,7 @@ Sql &Sql::singleton()
 }
 void Sql::open()
 {
-    int status = sqlite3_open("res/database/info.db", &mySqlite);
+    int status = sqlite3_open("../res/database/info.db", &mySqlite);
     if (status != SQLITE_OK)
     {
         cout << "database open error" << endl;
@@ -20,7 +20,9 @@ void Sql::open()
 
 vector<UserRecord> Sql::findUserByName(string userName)
 {
-    string sql = "select * from User where username = " + userName;
+    string sql = "select * from User where uName = '" + userName + "';";
+
+    cout << sql << endl;
 
     char **result = NULL;
     int nR = 0, nC = 0;
@@ -45,9 +47,31 @@ vector<UserRecord> Sql::findUserByName(string userName)
     return recs;
 }
 
+void Sql::insertUser(UserRecord rec)
+{
+    string sql = "insert into User values('" + rec.username + "', '" + rec.password + "', '" + rec.phonenum + "', " + to_string(rec.secureQue) + ", '" + rec.secureAns + "');";
+    char *errmsg;
+    int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
+    if (sqlRet != 0)
+    {
+        cout << "sqlite3_error err: " << errmsg << endl;
+    }
+}
+
+void Sql::updateUser(std::string username, std::string column, std::string value)
+{
+    string sql = "update User set " + column + " = '" + value + "' where uName = '" + username + "';";
+    char *errmsg;
+    int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
+    if (sqlRet != 0)
+    {
+        cout << "sqlite3_error err: " << errmsg << endl;
+    }
+}
+
 std::vector<std::string> Sql::findFriends(std::string userName)
 {
-    string sql = "select * from Friends where username = " + userName;
+    string sql = "select * from Friends where username = '" + userName + "';";
 
     char **result = NULL;
     int nR = 0, nC = 0;
@@ -64,4 +88,15 @@ std::vector<std::string> Sql::findFriends(std::string userName)
         recs.push_back(string(result[i * nC + 1]));
     }
     return recs;
+}
+
+void Sql::insertFriends(std::string user, std::string friend_user)
+{
+    string sql = "insert into Friends values('" + user + "', '" + friend_user + "');";
+    char *errmsg;
+    int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
+    if (sqlRet != 0)
+    {
+        cout << "sqlite3_error err: " << errmsg << endl;
+    }
 }

@@ -9,15 +9,15 @@ set(PRJ_EXE ${PROJECT_NAME})
 set(PRJ_LIBS ${SQLITE3_LIB})
 
 # 头文件路径
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/src/include)
 
 # 源代码路径
-aux_source_directory(${PROJECT_SOURCE_DIR}/Database DB_CPP_FILES)
-aux_source_directory(${PROJECT_SOURCE_DIR}/TOols TOOLS_CPP_FILES)
-aux_source_directory(${PROJECT_SOURCE_DIR}/json JSON_CPP_FILES)
-aux_source_directory(${PROJECT_SOURCE_DIR}/Server SERVER_CPP_FILES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/json JSONCPPS)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/Server SERVERCPPS)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/Database DBCPPS)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/Tools TOOLSCPPS)
 
-set(CPP_FILES ${JSON_CPP_FILES} ${SERVER_CPP_FILES} ${PROJECT_SOURCE_DIR}/main.cpp)
+set(CPP_FILES ${PROJECT_SOURCE_DIR}/src/main.cpp ${JSONCPPS} ${SERVERCPPS} ${DBCPPS} ${TOOLSCPPS})
 
 # 添加可执行文件
 add_executable(${PRJ_EXE} ${CPP_FILES})

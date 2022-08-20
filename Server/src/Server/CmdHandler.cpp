@@ -1,6 +1,5 @@
 #include "CmdHandler.h"
 #include "sql++.h"
-#include "Record.h"
 #include "Tools.h"
 #include "Server.h"
 
@@ -22,6 +21,9 @@ CmdHandler::CmdHandler()
     __callbacks["chat"] = __Callbacks::_chat;
     __callbacks["askfriendsList"] = __Callbacks::_getFriends;
     __callbacks["addfriends"] = __Callbacks::_addFriends;
+    __callbacks["findpWord1"] = __Callbacks::_findPword_phone;
+    __callbacks["findpWord2"] = __Callbacks::_findPword_que;
+    __callbacks["findpWord3"] = __Callbacks::_findPword_change;
 }
 
 void CmdHandler::handle(fd_t client, Json::Value cmd)
@@ -98,11 +100,10 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
 {
     string _from = cmd["username"].asString();
     Json::Value _to = cmd["userList"];
-    string _msg = cmd["msg"].asString();
+    string _msg = cmd["info"].asString();
 
     cout << "msg from " << _from << " to " << encodeJson(_to) << ": " << _msg << endl;
 
-    // TODO: 找到接收方，发送该信息。
     int len = _to.size();
     for (int i = 0; i < len; i++)
     {
@@ -111,6 +112,8 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
         response["info"] = _msg;
         string userName = _to[i].asString();
         fd_t tgtfd = Server::singleton().getFdByName(userName);
+        cout << "tgtfd = " << tgtfd << endl;
+        cout << "client = " << client << endl;
         sendJson(tgtfd, makeCmd("chat", response));
     }
 }
@@ -135,4 +138,120 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
     string friendUser = cmd["friend_username"].asString();
 
     cout << username << "wants to make friends with " << friendUser << endl;
+
+    vector<UserRecord> user = Sql::singleton().findUserByName(friendUser);
+    Json::Value response;
+    if (user.size() != 0)
+    {
+        response["state"] = 1;
+        response["username"] = friendUser;
+        sendJson(client, makeCmd("addfriends", response));
+        fd_t friend_fd = Server::singleton().getFdByName(friendUser);
+        response["state"] = 1;
+        response["username"] = username;
+        sendJson(friend_fd, makeCmd("addfriends", response));
+
+        Sql::singleton().insertFriends(username, friendUser);
+        Sql::singleton().insertFriends(friendUser, username);
+    }
+    else
+    {
+        response["state"] = 0;
+        response["username"] = "";
+        sendJson(client, makeCmd("addfriends", response));
+    }
+}
+
+void __Callbacks::_findPword_phone(fd_t client, Json::Value cmd)
+{
+    string username = cmd["username"].asString();
+    string phonenum = cmd["phonenum"].asString();
+
+    Sql &sql = Sql::singleton();
+    vector<UserRecord> recs = sql.findUserByName(username);
+    Json::Value response;
+    response["username"] = username;
+    if (recs.size() == 0)
+    {
+        response["state"] = 0;
+        response["info"] = "用户不存在";
+        response["secureQue"] = 0;
+    }
+    else
+    {
+        if (recs[0].phonenum != phonenum)
+        {
+            response["state"] = 0;
+            response["info"] = "电话号码错误";
+            response["secureQue"] = 0;
+        }
+        else
+        {
+            response["state"] = 1;
+            response["secureQue"] = recs[0].secureQue;
+            response["info"] = "";
+            CmdHandler::singleton().getpWordForgotter()[username] = recs[0];
+        }
+    }
+    sendJson(client, makeCmd("findpWord1", response));
+}
+
+void __Callbacks::_findPword_que(fd_t client, Json::Value cmd)
+{
+    string username = cmd["username"].asString();
+    string secureA = cmd["secureAns"].asString();
+    CmdHandler &handler = CmdHandler::singleton();
+    unordered_map<string, UserRecord> &forgotter = handler.getpWordForgotter();
+    auto ur = forgotter.find(username);
+
+    Json::Value response;
+    response["username"] = username;
+    if (ur != forgotter.end())
+    {
+        if (secureA == ur->second.secureAns)
+            response["state"] = 1;
+        else
+            response["state"] = 0;
+    }
+    else
+    {
+        response["state"] = 0;
+    }
+    sendJson(client, makeCmd("findpWord2", response));
+}
+
+void __Callbacks::_findPword_change(fd_t client, Json::Value cmd)
+{
+    string username = cmd["username"].asString();
+    string newpWord = cmd["newpWord"].asString();
+    CmdHandler &handler = CmdHandler::singleton();
+    unordered_map<string, UserRecord> &forgotter = handler.getpWordForgotter();
+    auto ur = forgotter.find(username);
+
+    Json::Value response;
+    response["username"] = username;
+    if (ur != forgotter.end())
+    {
+        Sql::singleton().updateUser(username, "pWord", newpWord);
+        forgotter.erase(ur);
+        response["state"] = 1;
+    }
+    else
+    {
+        response["state"] = 0;
+    }
+    sendJson(client, makeCmd("findpWord3", response));
+}
+
+void __Callbacks::_cancelFindPword(fd_t client, Json::Value cmd)
+{
+    string username = cmd["username"].asString();
+    CmdHandler &handler = CmdHandler::singleton();
+    unordered_map<string, UserRecord> &forgotter = handler.getpWordForgotter();
+    forgotter.erase(username);
+}
+
+unordered_map<string, UserRecord> &CmdHandler::getpWordForgotter()
+{
+    return pWordForgotters;
 }
