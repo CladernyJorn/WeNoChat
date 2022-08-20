@@ -30,6 +30,7 @@ private:
     Ui::user *ui;
     QTcpSocket *client;
     question *q;
+    QString udata;
 };
 
 #endif // USER_H

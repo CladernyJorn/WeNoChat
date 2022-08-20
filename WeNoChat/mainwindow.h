@@ -8,6 +8,7 @@
 #include <chatmessagewidget.h>
 #include <QDateTime>
 #include"communicate_utils.h"
+#include"searchfriends.h"
 namespace Ui {
 class MainWindow;
 }
@@ -26,14 +27,21 @@ private slots:
 
     void on_hideButton_clicked();
 
+    void on_pushButton_addfriend_clicked();
     void on_send_clicked();
-
+    void on_pushButton_2_clicked();
+    void on_pushButton_clicked();
     void hadreadyread();
 
+    void pushMessageIntoChatWindow(bool type,QString msg,QString time,bool isSending = false);
+    void dealMessageTime(QString curMsgTime);
+    void dealMessage(ChatMessageWidget *messageW, QListWidgetItem *item, QString text, QString time,  ChatMessageWidget::User_Type type);
 private:
     Ui::MainWindow *ui;
     QTcpSocket *client;
     QString udata;
+    searchFriends *add;
+    std::vector<std::string>userList;
 };
 
 #endif // MAINWINDOW_H

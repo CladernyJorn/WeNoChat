@@ -17,7 +17,7 @@ class question : public QWidget
 
 public:
     explicit question(QWidget *parent = 0);
-    explicit question(QString q,QTcpSocket *sock,QWidget *parent = 0);
+    explicit question(QString user,QString q,QTcpSocket *sock,QWidget *parent=0);
     ~question();
 
 private slots:
@@ -32,6 +32,7 @@ private:
     QTcpSocket *client;
     QString qu;
     password *pass;
+    QString udata;
 };
 
 #endif // QUESTION_H

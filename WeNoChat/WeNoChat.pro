@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     question.cpp \
     password.cpp \
     chatmessagewidget.cpp \
-    communicate_utils.cpp
+    communicate_utils.cpp \
+    searchfriends.cpp
 
 HEADERS  += login.h \
     mainwindow.h \
@@ -43,7 +44,8 @@ HEADERS  += login.h \
     question.h \
     password.h \
     chatmessagewidget.h \
-    communicate_utils.h
+    communicate_utils.h \
+    searchfriends.h
 
 FORMS    += login.ui \
     mainwindow.ui \
@@ -51,6 +53,7 @@ FORMS    += login.ui \
     user.ui \
     question.ui \
     password.ui \
+    searchfriends.ui
 
 RESOURCES += \
     uires.qrc

@@ -153,7 +153,7 @@ void MainWindow::on_send_clicked()
  * 如果是发消息，注意清空输入框
  * TODO：不清楚分辨率和缩放的影响，可能会有小概率长文本显示横向拖动条
 */
-void MainWindow::pushMessageIntoChatWindow(bool type,QString msg,QString time,bool isSending = false)
+void MainWindow::pushMessageIntoChatWindow(bool type,QString msg,QString time,bool isSending )
 {
     if(msg == ""){
         //TODO：是不是要报个错？
