@@ -196,10 +196,10 @@ font-size:14px;
      </rect>
     </property>
     <property name="text">
-     <string>手机号</string>
+     <string/>
     </property>
     <property name="placeholderText">
-     <string>密码</string>
+     <string>手机号</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="questionEdit">
@@ -212,10 +212,10 @@ font-size:14px;
      </rect>
     </property>
     <property name="text">
-     <string>密保问题</string>
+     <string/>
     </property>
     <property name="placeholderText">
-     <string>密码</string>
+     <string>密保问题</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="answerEdit">
@@ -228,10 +228,10 @@ font-size:14px;
      </rect>
     </property>
     <property name="text">
-     <string>密保问题回答</string>
+     <string/>
     </property>
     <property name="placeholderText">
-     <string>密码</string>
+     <string>密保问题回答</string>
     </property>
    </widget>
   </widget>

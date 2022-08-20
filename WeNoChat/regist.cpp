@@ -14,7 +14,17 @@ Regist::Regist(QWidget *parent) :
     setAttribute(Qt::WA_TranslucentBackground);
 }
 
-
+Regist::Regist(QTcpSocket *sock,QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::Regist)
+{
+    ui->setupUi(this);
+    //去窗口边框
+    setWindowFlags(Qt::FramelessWindowHint | windowFlags());
+    //把窗口背景设置为透明;
+    setAttribute(Qt::WA_TranslucentBackground);
+    client = sock;
+}
 
 //注册按钮按下：在这里处理注册
 void Regist::on_loginButton_clicked()
@@ -25,13 +35,16 @@ void Regist::on_loginButton_clicked()
     QString pwd2 = ui->passwordEdit_2->text();
     //判断两次相同
     if(pwd != pwd2){
-        //TODO：messageBox警告
+        QMessageBox::information(this,"提示","密码不一致");
         return;
     }
     QString phoneNumber = ui->phoneNumberEdit->text();
     QString question = ui->questionEdit->text();
     QString answer = ui->answerEdit->text();
     //TODO：与服务器连接，检查注册
+    //整合数据上传服务器
+    QString packData = userName + pwd + phoneNumber + question + answer;
+    client->write(packData.toLocal8Bit());
 }
 
 
