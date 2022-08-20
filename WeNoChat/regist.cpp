@@ -12,6 +12,10 @@ Regist::Regist(QWidget *parent) :
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     //把窗口背景设置为透明;
     setAttribute(Qt::WA_TranslucentBackground);
+    ui->comboBox->addItem("你最喜欢的颜色是什么");
+    ui->comboBox->addItem("你最喜欢的美食是什么");
+    ui->comboBox->addItem("你最喜欢的电影是什么");
+    ui->comboBox->addItem("你认为中国最好的大学是哪所");
 }
 
 Regist::Regist(QTcpSocket *sock,QWidget *parent) :
@@ -24,6 +28,10 @@ Regist::Regist(QTcpSocket *sock,QWidget *parent) :
     //把窗口背景设置为透明;
     setAttribute(Qt::WA_TranslucentBackground);
     client = sock;
+    ui->comboBox->addItem("你最喜欢的颜色是什么");
+    ui->comboBox->addItem("你最喜欢的美食是什么");
+    ui->comboBox->addItem("你最喜欢的电影是什么");
+    ui->comboBox->addItem("你认为中国最好的大学是哪所");
     connect(client,SIGNAL(readyRead()),this,SLOT(hadreadyread()));
 
 }
@@ -41,10 +49,10 @@ void Regist::on_loginButton_clicked()
         return;
     }
     QString phoneNumber = ui->phoneNumberEdit->text();
-    QString question = ui->questionEdit->text();
+    int question = ui->comboBox->currentIndex();
     QString answer = ui->answerEdit->text();
     //与服务器连接，检查注册
-    std::string data=Encoder_regist(userName.toStdString(),pwd.toStdString(),phoneNumber.toStdString(),question.toInt(),answer.toStdString());
+    std::string data=Encoder_regist(userName.toStdString(),pwd.toStdString(),phoneNumber.toStdString(),question,answer.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
 }

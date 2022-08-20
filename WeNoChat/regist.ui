@@ -202,22 +202,6 @@ font-size:14px;
      <string>手机号</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="questionEdit">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>440</y>
-      <width>511</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="placeholderText">
-     <string>密保问题</string>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="answerEdit">
     <property name="geometry">
      <rect>
@@ -234,6 +218,16 @@ font-size:14px;
      <string>密保问题回答</string>
     </property>
    </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>440</y>
+      <width>511</width>
+      <height>61</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
  <tabstops>
@@ -241,7 +235,6 @@ font-size:14px;
   <tabstop>passwordEdit</tabstop>
   <tabstop>passwordEdit_2</tabstop>
   <tabstop>phoneNumberEdit</tabstop>
-  <tabstop>questionEdit</tabstop>
   <tabstop>answerEdit</tabstop>
   <tabstop>loginButton</tabstop>
   <tabstop>hideButton</tabstop>
