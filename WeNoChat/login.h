@@ -6,9 +6,9 @@
 #include <QMessageBox>
 #include <QDebug>
 #include "mainwindow.h"
-#include "forgotpwd.h"
+#include "user.h"
 #include "regist.h"
-
+#include"communicate_utils.h"
 namespace Ui {
 class login;
 }
@@ -51,7 +51,7 @@ private:
     void showForgotPwdWindow();
     MainWindow * mw;
     Regist * rw;
-    ForgotPwd * fw;
+    user *u;
 };
 
 #endif // LOGIN_H

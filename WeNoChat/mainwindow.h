@@ -3,7 +3,11 @@
 
 #include <QWidget>
 #include <QTcpSocket>
-
+#include <QListWidgetItem>
+#include <QMainWindow>
+#include <chatmessagewidget.h>
+#include <QDateTime>
+#include"communicate_utils.h"
 namespace Ui {
 class MainWindow;
 }

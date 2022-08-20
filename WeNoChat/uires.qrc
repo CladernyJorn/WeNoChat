@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>assets/loginbackground.png</file>
+        <file>assets/defaultHead.png</file>
+        <file>assets/loading.gif</file>
     </qresource>
 </RCC>

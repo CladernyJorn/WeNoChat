@@ -56,6 +56,9 @@ font-size:14px;
 </string>
   </property>
   <widget class="QFrame" name="frame">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -84,6 +87,9 @@ font-size:14px;
     </property>
    </widget>
    <widget class="QLineEdit" name="userEdit">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>110</x>
@@ -100,6 +106,9 @@ font-size:14px;
     </property>
    </widget>
    <widget class="QLineEdit" name="passwordEdit">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>110</x>
@@ -116,6 +125,9 @@ font-size:14px;
     </property>
    </widget>
    <widget class="QPushButton" name="loginButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -129,6 +141,9 @@ font-size:14px;
     </property>
    </widget>
    <widget class="QPushButton" name="closeButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>652</x>
@@ -155,10 +170,13 @@ font-size:14px;
     </property>
    </widget>
    <widget class="QPushButton" name="registButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>390</y>
+      <x>10</x>
+      <y>380</y>
       <width>81</width>
       <height>28</height>
      </rect>
@@ -182,6 +200,9 @@ font-style:MingLiU-ExtB;
     </property>
    </widget>
    <widget class="QPushButton" name="forgetButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>600</x>

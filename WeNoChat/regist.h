@@ -5,7 +5,8 @@
 #include <QTcpSocket>
 #include <QMessageBox>
 #include <QDebug>
-
+#include"communicate_utils.h"
+#include "mainwindow.h"
 namespace Ui {
 class Regist;
 }
@@ -24,6 +25,7 @@ protected:
     void mousePressEvent(QMouseEvent *e);//鼠标按下移动
 
 private slots:
+    void hadreadyread();
     void on_loginButton_clicked();
 
     void on_closeButton_clicked();
@@ -31,8 +33,11 @@ private slots:
     void on_hideButton_clicked();
 
 private:
+    void showMainWindow();
     Ui::Regist *ui;
     QTcpSocket *client;
+    MainWindow * mw;
+    QString udata;
     QPoint p;
 };
 

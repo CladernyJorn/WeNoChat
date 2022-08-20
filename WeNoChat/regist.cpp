@@ -24,6 +24,8 @@ Regist::Regist(QTcpSocket *sock,QWidget *parent) :
     //把窗口背景设置为透明;
     setAttribute(Qt::WA_TranslucentBackground);
     client = sock;
+    connect(client,SIGNAL(readyRead()),this,SLOT(hadreadyread()));
+
 }
 
 //注册按钮按下：在这里处理注册
@@ -41,13 +43,38 @@ void Regist::on_loginButton_clicked()
     QString phoneNumber = ui->phoneNumberEdit->text();
     QString question = ui->questionEdit->text();
     QString answer = ui->answerEdit->text();
-    //TODO：与服务器连接，检查注册
-    //整合数据上传服务器
-    QString packData = userName + pwd + phoneNumber + question + answer;
-    client->write(packData.toLocal8Bit());
+    //与服务器连接，检查注册
+    std::string data=Encoder_regist(userName.toStdString(),pwd.toStdString(),phoneNumber.toStdString(),question.toInt(),answer.toStdString());
+    QString packData = QString::fromStdString(data);
+    client->write((packData.toLocal8Bit()));
 }
+//准备读取服务器内容
+void Regist::hadreadyread()
+{
+    QByteArray recvArray = client->readAll();
+    QString registback=recvArray;
+    std::string username,info;
+    bool state;
+    if(Decoder_regist(registback.toStdString(),username,info,state)==0){
+        qDebug("Regist data back from server error/n");
+        return;
+    }
+    if(state==1)//注册成功
+    {
+        //qDebug(info);
+        udata=QString::fromStdString(username);
+        disconnect(client,SIGNAL(readyRead()),0,0);
+        showMainWindow();
+        this->close();
+    }
+    else QMessageBox::information(this,"提示",QString::fromStdString(info));
 
-
+}
+//打开聊天主界面
+void Regist::showMainWindow(){
+    mw = new MainWindow(udata,client);
+    mw->show();
+}
 //！！！！以下东西不用动！！！！
 void Regist::mousePressEvent(QMouseEvent *e)
 {

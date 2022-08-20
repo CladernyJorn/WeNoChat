@@ -14,7 +14,7 @@ login::login(QWidget *parent) :
     setAttribute(Qt::WA_TranslucentBackground);
     //连接服务器
     client = new QTcpSocket();
-    client->connectToHost("172.16.240.133",8899);
+    client->connectToHost("192.168.3.158",8899);
     connect(client,SIGNAL(connected()),this,SLOT(hadconnected()));
 }
 
@@ -22,6 +22,8 @@ login::login(QWidget *parent) :
 void login::hadconnected()
 {
     ui->loginButton->setEnabled(true);
+    ui->forgetButton->setEnabled(true);
+    ui->registButton->setEnabled(true);
     connect(client,SIGNAL(readyRead()),this,SLOT(hadreadyread()));
 }
 
@@ -29,47 +31,23 @@ void login::hadconnected()
 void login::hadreadyread()
 {
     QByteArray recvArray = client->readAll();
-    if(recvArray.at(0) != '#' || recvArray.at(recvArray.size()-1) != '&')
-        return ;
-    QString recvStr = QString::fromLocal8Bit(recvArray);
-    recvStr = recvStr.mid(1,recvStr.length()-2);
-    //qDebug()<<recvStr;
+    QString loginback=recvArray;
+    std::string username,info;
+    bool state;
+    if(Decoder_login(loginback.toStdString(),username,info,state)==0){
+         qDebug("Login data back from server error/n");
+         return;
+    }
 
-    QStringList recvList = recvStr.split('|');
-    //获取登录信息
-    if(recvList.size() < 3)
-        return;
-    //qDebug()<<recvList;
-    if(recvList[0] == "1")
+    if(state==1)//登陆成功
     {
-        if(recvList[1] == "1")
-        {
-            QMessageBox::information(this,"提示",recvList[2]);
-        }
-        else
-        {
-            disconnect(client,SIGNAL(readyRead()),0,0);
-            showMainWindow();
-            this->close();
-        }
+        //qDebug(info);
+        udata=QString::fromStdString(username);
+        disconnect(client,SIGNAL(readyRead()),0,0);
+        showMainWindow();
+        this->close();
     }
-    if(recvList[0] == "2")
-    {
-        if(recvList[1] == "0")
-        {
-            QMessageBox::information(this,"提示",recvList[2]);
-            rw->close();
-            rw = NULL;
-        }
-        else
-        {
-            QMessageBox::information(this,"提示",recvList[2]);
-        }
-    }
-    if(recvList[0] == "3")
-    {
-
-    }
+    else QMessageBox::information(this,"提示",info.c_str());
 }
 
 void login::on_loginButton_clicked()
@@ -78,8 +56,9 @@ void login::on_loginButton_clicked()
     QString userName = ui->userEdit->text();
     QString userPassword = ui->passwordEdit->text();
     //向服务器发送登录数据
-    //TODO:发送数据协议
-    QString packData = userName + userPassword;
+    //发送数据协议
+    std::string data=Encoder_login(userName.toStdString(),userPassword.toStdString());
+    QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
 }
 
@@ -98,8 +77,8 @@ void login::showRegistWindow(){
 //打开忘记密码界面
 void login::showForgotPwdWindow(){
     //TODO：这里检查一下禁止多开会更好，但是好像不能通过判断NULL来检查
-    fw = new ForgotPwd();
-    fw->show();
+    u = new user(client);
+    u->show();
 }
 
 //！！！！以下东西不用动！！！！
@@ -142,10 +121,15 @@ void login::on_hideButton_clicked()
 
 void login::on_registButton_clicked()
 {
+    disconnect(client,SIGNAL(readyRead()),0,0);
     showRegistWindow();
+
+    this->close();
 }
 
 void login::on_forgetButton_clicked()
 {
+    disconnect(client,SIGNAL(readyRead()),0,0);
     showForgotPwdWindow();
+    this->close();
 }
