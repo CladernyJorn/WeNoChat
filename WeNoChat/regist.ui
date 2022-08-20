@@ -25,21 +25,102 @@ background-image: url(:/assets/loginbackground.png);
 }
 QLineEdit{
 color:#8d98a1;
-background-color:#405361;
+background-color:rgba(64, 83, 97, 230);
 font-size:16px;
 border-style:outset;
 border-radius:10px;
 font-style:MingLiU-ExtB;
 }
-QPushButton{
-background:#ced1d8;
+QLineEdit:hover{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 80);
+font-size:16px;
 border-style:outset;
 border-radius:10px;
 font-style:MingLiU-ExtB;
 }
-QPushButton:pressed{
-background-color:rgb(224,0,0);
+QLineEdit:focus{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 180);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+
+QComboBox{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 230);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+QComboBox:hover{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 80);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+QComboBox:focus{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 180);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+
+QPushButton{
+background:rgb(65, 175, 235);
+color:rgb(220, 220, 220);
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+QPushButton:hover{
+background-color:rgba(80, 190, 250,130);
 border-style:inset;
+font-style:MingLiU-ExtB;
+}
+QPushButton:pressed{
+background-color:rgba(80, 190, 250,255);
+border-style:inset;
+font-style:MingLiU-ExtB;
+}
+
+
+
+QPushButton#hideButton{
+background: rgba(255, 255, 255, 0);
+color: rgb(255, 255, 255);
+font-style:MingLiU-ExtB;
+}
+QPushButton#hideButton:hover{
+background: rgba(212, 212, 212, 100);
+color: rgb(255, 255, 255);
+font-style:MingLiU-ExtB;
+}
+QPushButton#hideButton:pressed{
+background: rgba(212, 212, 212, 255);
+color: rgb(255, 255, 255);
+font-style:MingLiU-ExtB;
+}
+QPushButton#closeButton{
+background: rgba(255, 255, 255, 0);
+color: rgb(255, 255, 255);
+font-style:MingLiU-ExtB;
+}
+QPushButton#closeButton:hover{
+background: rgba(255, 0, 0, 100);
+color: rgb(255, 255, 255);
+font-style:MingLiU-ExtB;
+}
+QPushButton#closeButton:pressed{
+background: rgba(255, 0, 0, 255);
+color: rgb(255, 255, 255);
 font-style:MingLiU-ExtB;
 }
 QCheckBox{
@@ -226,6 +307,9 @@ font-size:14px;
       <width>511</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="currentText">
+     <string/>
     </property>
    </widget>
   </widget>

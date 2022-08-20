@@ -13,6 +13,77 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">
+QLineEdit{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 230);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+QLineEdit:hover{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 80);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+QLineEdit:focus{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 180);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+
+QComboBox{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 230);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+QComboBox:hover{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 80);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+QComboBox:focus{
+color:#8d98a1;
+background-color:rgba(64, 83, 97, 180);
+font-size:16px;
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+
+QPushButton{
+background:rgb(65, 175, 235);
+color:rgb(220, 220, 220);
+border-style:outset;
+border-radius:10px;
+font-style:MingLiU-ExtB;
+}
+QPushButton:hover{
+background-color:rgba(80, 190, 250,130);
+border-style:inset;
+font-style:MingLiU-ExtB;
+}
+QPushButton:pressed{
+background-color:rgba(80, 190, 250,255);
+border-style:inset;
+font-style:MingLiU-ExtB;
+}
+</string>
+  </property>
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
