@@ -98,8 +98,8 @@ void login::showRegistWindow(){
 //打开忘记密码界面
 void login::showForgotPwdWindow(){
     //TODO：这里检查一下禁止多开会更好，但是好像不能通过判断NULL来检查
-    fw = new ForgotPwd();
-    fw->show();
+    u = new user(client);
+    u->show();
 }
 
 //！！！！以下东西不用动！！！！
@@ -147,5 +147,7 @@ void login::on_registButton_clicked()
 
 void login::on_forgetButton_clicked()
 {
+    disconnect(client,SIGNAL(readyRead()),0,0);
     showForgotPwdWindow();
+    this->close();
 }

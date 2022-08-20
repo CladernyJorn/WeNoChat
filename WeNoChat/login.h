@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include "mainwindow.h"
-#include "forgotpwd.h"
+#include "user.h"
 #include "regist.h"
 
 namespace Ui {
@@ -51,7 +51,7 @@ private:
     void showForgotPwdWindow();
     MainWindow * mw;
     Regist * rw;
-    ForgotPwd * fw;
+    user *u;
 };
 
 #endif // LOGIN_H

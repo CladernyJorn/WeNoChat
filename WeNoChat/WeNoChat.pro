@@ -27,22 +27,28 @@ SOURCES += main.cpp\
         login.cpp \
     mainwindow.cpp \
     regist.cpp \
-    forgotpwd.cpp \
     jsoncpp.cpp \
+    user.cpp \
+    question.cpp \
+    password.cpp \
     chatmessagewidget.cpp
 
 HEADERS  += login.h \
     mainwindow.h \
     regist.h \
-    forgotpwd.h \
     json/json.h \
     json/json-forwards.h \
+    user.h \
+    question.h \
+    password.h \
     chatmessagewidget.h
 
 FORMS    += login.ui \
     mainwindow.ui \
     regist.ui \
-    forgotpwd.ui
+    user.ui \
+    question.ui \
+    password.ui \
 
 RESOURCES += \
     uires.qrc

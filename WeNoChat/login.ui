@@ -116,6 +116,9 @@ font-size:14px;
     </property>
    </widget>
    <widget class="QPushButton" name="loginButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>120</x>
