@@ -44,6 +44,7 @@ private:
     std::unordered_set<fd_t> fileClient_fds;
     std::unordered_map<std::string, fd_t> clients;
     std::unordered_map<fd_t, std::string> __clients;
+
     CmdHandler &handler;
 };
 

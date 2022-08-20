@@ -7,6 +7,7 @@
 
 #include <string>
 #include <sstream>
+#include <set>
 #include "Json.h"
 #include "Constants.h"
 
@@ -21,5 +22,26 @@ namespace StrParser
 // 打包发回客户端的信息
 Json::Value makeCmd(std::string type, Json::Value cmd);
 
+// 向客户端发送json消息
 void sendJson(fd_t client, Json::Value json);
+
+/**
+ * 编号生成器。
+ * 从0开始生成序号，可以删除序号，下次生成会采用最小的未使用序号。
+ * 复杂度O(log未使用的id个数)
+ */
+
+typedef unsigned long long idx_t;
+
+class IndexGenerator
+{
+public:
+    IndexGenerator() : max_id(0) {}
+    idx_t getIdx();
+    void popIdx(idx_t idx);
+
+private:
+    idx_t max_id;
+    std::set<idx_t> idxs;
+};
 #endif

@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "Tools.h"
 #include "Constants.h"
 #include "Record.h"
 
@@ -18,15 +19,15 @@ public:
     static CmdHandler &singleton();
     void handle(fd_t client, Json::Value cmd);
 
-    std::unordered_map<std::string, UserRecord> &getpWordForgotter();
+    std::unordered_map<std::string, UserRecord> pWordForgotters;
+    std::unordered_map<idx_t, WriteFileTask> fileTasks;
+    IndexGenerator fileIndex;
 
 private:
     CmdHandler();
     CmdHandler(const CmdHandler &) = delete;
     CmdHandler &operator=(const CmdHandler &) = delete;
     std::unordered_map<std::string, std::function<void(fd_t client, Json::Value cmd)>> __callbacks;
-
-    std::unordered_map<std::string, UserRecord> pWordForgotters;
 };
 
 namespace __Callbacks
@@ -40,5 +41,8 @@ namespace __Callbacks
     void _findPword_que(fd_t client, Json::Value cmd);
     void _findPword_change(fd_t client, Json::Value cmd);
     void _cancelFindPword(fd_t client, Json::Value cmd);
+    void _sendFile(fd_t client, Json::Value cmd);
+    void _updateFile(fd_t client, Json::Value cmd);
+    void _sendOver(fd_t client, Json::Value cmd);
 }
 #endif // CmdHandler.h

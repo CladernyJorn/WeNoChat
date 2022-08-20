@@ -144,3 +144,50 @@ end;
         "username": "andy",
     }
 }
+
+```
+
+## 文件指令
+
+```json
+{
+    "type": "sendFile",
+    "info": {
+        "username": "andy",
+        "fileName": "abc.jpg",
+        "fileSize": 1024
+    }
+}
+
+// 返回：
+{
+    "type": "confirmSendFile",
+    "info": {
+        "fileId": 1,
+    }
+}
+
+{
+    "type": "updateFile",
+    "info": {
+        "fileId": 1,
+        "size": 4096,
+        "bytes": ""
+    }
+}
+
+{
+    "type": "sendOver",
+    "info": {
+        "fileId": 1
+    }
+}
+
+//response:
+{
+    "type": "sendState",
+    "info":{
+        "state": 1;
+    }
+}
+```

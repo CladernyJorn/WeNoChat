@@ -161,6 +161,25 @@ void Server::run()
                         cout << "recv = " << buf << endl;
                         handler.handle(client, decodeJson(buf));
                     }
+                    else if (fileClient_fds.find(client) != fileClient_fds.end())
+                    {
+                        char buf[1024] = {0};
+                        if (recv(client, buf, sizeof(buf), 0) == 0)
+                        {
+                            epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
+                            client_fds.erase(client);
+                            auto info = __clients.find(client);
+                            if (info != __clients.end())
+                            {
+                                string username = info->second;
+                                clients.erase(username);
+                                __clients.erase(info);
+                            }
+                            continue;
+                        }
+                        cout << "recv = " << buf << endl;
+                        handler.handle(client, decodeJson(buf));
+                    }
                 }
             }
         }

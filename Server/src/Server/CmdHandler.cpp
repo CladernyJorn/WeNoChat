@@ -1,8 +1,13 @@
 #include "CmdHandler.h"
 #include "sql++.h"
-#include "Tools.h"
+#include "File.h"
+#include "Constants.h"
 #include "Server.h"
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/fcntl.h>
+#include <sys/stat.h>
 #include <iostream>
 #include <vector>
 
@@ -24,6 +29,9 @@ CmdHandler::CmdHandler()
     __callbacks["findpWord1"] = __Callbacks::_findPword_phone;
     __callbacks["findpWord2"] = __Callbacks::_findPword_que;
     __callbacks["findpWord3"] = __Callbacks::_findPword_change;
+    __callbacks["sendFile"] = __Callbacks::_sendFile;
+    __callbacks["updateFile"] = __Callbacks::_updateFile;
+    __callbacks["sendOver"] = __Callbacks::_sendOver;
 }
 
 void CmdHandler::handle(fd_t client, Json::Value cmd)
@@ -93,6 +101,7 @@ void __Callbacks::_register(fd_t client, Json::Value cmd)
         response["state"] = 1;
         response["info"] = "注册成功！";
     }
+    mkdir((user_path + uName).c_str(), S_IRWXU);
     sendJson(client, makeCmd("regist", response));
 }
 
@@ -190,7 +199,7 @@ void __Callbacks::_findPword_phone(fd_t client, Json::Value cmd)
             response["state"] = 1;
             response["secureQue"] = recs[0].secureQue;
             response["info"] = "";
-            CmdHandler::singleton().getpWordForgotter()[username] = recs[0];
+            CmdHandler::singleton().pWordForgotters[username] = recs[0];
         }
     }
     sendJson(client, makeCmd("findpWord1", response));
@@ -201,12 +210,11 @@ void __Callbacks::_findPword_que(fd_t client, Json::Value cmd)
     string username = cmd["username"].asString();
     string secureA = cmd["secureAns"].asString();
     CmdHandler &handler = CmdHandler::singleton();
-    unordered_map<string, UserRecord> &forgotter = handler.getpWordForgotter();
-    auto ur = forgotter.find(username);
+    auto ur = handler.pWordForgotters.find(username);
 
     Json::Value response;
     response["username"] = username;
-    if (ur != forgotter.end())
+    if (ur != handler.pWordForgotters.end())
     {
         if (secureA == ur->second.secureAns)
             response["state"] = 1;
@@ -225,15 +233,14 @@ void __Callbacks::_findPword_change(fd_t client, Json::Value cmd)
     string username = cmd["username"].asString();
     string newpWord = cmd["newpWord"].asString();
     CmdHandler &handler = CmdHandler::singleton();
-    unordered_map<string, UserRecord> &forgotter = handler.getpWordForgotter();
-    auto ur = forgotter.find(username);
+    auto ur = handler.pWordForgotters.find(username);
 
     Json::Value response;
     response["username"] = username;
-    if (ur != forgotter.end())
+    if (ur != handler.pWordForgotters.end())
     {
         Sql::singleton().updateUser(username, "pWord", newpWord);
-        forgotter.erase(ur);
+        handler.pWordForgotters.erase(ur);
         response["state"] = 1;
     }
     else
@@ -247,11 +254,78 @@ void __Callbacks::_cancelFindPword(fd_t client, Json::Value cmd)
 {
     string username = cmd["username"].asString();
     CmdHandler &handler = CmdHandler::singleton();
-    unordered_map<string, UserRecord> &forgotter = handler.getpWordForgotter();
-    forgotter.erase(username);
+    handler.pWordForgotters.erase(username);
 }
 
-unordered_map<string, UserRecord> &CmdHandler::getpWordForgotter()
+void __Callbacks::_sendFile(fd_t client, Json::Value cmd)
 {
-    return pWordForgotters;
+    string username = cmd["username"].asString();
+    string fileName = cmd["fileName"].asString();
+    unsigned long long fileSize = cmd["fileSize"].asUInt64();
+    string user_dir = user_path + username + "/";
+    File file(fileName);
+    string file_path = user_dir + file.getName();
+    Json::Value response;
+    fd_t fileFd;
+    idx_t fileId;
+    CmdHandler &handler = CmdHandler::singleton();
+    if (access((file_path).c_str(), F_OK) != 0)
+    {
+        fileFd = creat(file_path.c_str(), S_IRWXU);
+        fileId = handler.fileIndex.getIdx();
+    }
+    else
+    {
+        string tmpname;
+        for (int i = 1;; i++)
+        {
+            tmpname = file.fileNameNoExtension + "(" + to_string(i) + ")";
+            if (access((tmpname + file.extension).c_str(), F_OK) != 0)
+                break;
+        }
+        file.fileNameNoExtension = tmpname;
+        file_path = user_dir + file.getName();
+        fileFd = creat(file_path.c_str(), S_IRWXU);
+        fileId = handler.fileIndex.getIdx();
+    }
+    response["fileId"] = (Json::Value::UInt64)fileId;
+    WriteFileTask task;
+    task.fileFd = fileFd;
+    task.fileSize = fileSize;
+    task.progress = 0;
+    handler.fileTasks[fileId] = task;
+    sendJson(client, makeCmd("confirmSendFile", response));
+}
+
+void __Callbacks::_updateFile(fd_t client, Json::Value cmd)
+{
+    idx_t fileId = cmd["fileId"].asUInt64();
+    int size = cmd["size"].asInt();
+    const char *bytes = cmd["Bytes"].asCString();
+    CmdHandler &handler = CmdHandler::singleton();
+    auto p_id = handler.fileTasks.find(fileId);
+    if (p_id != handler.fileTasks.end())
+    {
+        WriteFileTask task = p_id->second;
+        int written = write(task.fileFd, bytes, size);
+        task.progress += written;
+    }
+}
+
+void _sendOver(fd_t client, Json::Value cmd)
+{
+    idx_t fileId = cmd["fileId"].asUInt64();
+    CmdHandler &handler = CmdHandler::singleton();
+    auto p_id = handler.fileTasks.find(fileId);
+    Json::Value response;
+    if (p_id != handler.fileTasks.end())
+    {
+        WriteFileTask task = p_id->second;
+        if (task.progress == task.fileSize)
+            response["state"] = 1;
+        else
+            response["state"] = 0;
+        handler.fileTasks.erase(p_id);
+    }
+    sendJson(client, makeCmd("sendState", response));
 }

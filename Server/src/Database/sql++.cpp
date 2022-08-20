@@ -1,4 +1,6 @@
 #include "sql++.h"
+#include "Constants.h"
+
 #include <iostream>
 #include <sstream>
 
@@ -11,7 +13,7 @@ Sql &Sql::singleton()
 }
 void Sql::open()
 {
-    int status = sqlite3_open("../res/database/info.db", &mySqlite);
+    int status = sqlite3_open((db_path + "info.db").c_str(), &mySqlite);
     if (status != SQLITE_OK)
     {
         cout << "database open error" << endl;
