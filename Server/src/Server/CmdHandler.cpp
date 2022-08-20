@@ -92,6 +92,7 @@ void __Callbacks::_register(fd_t client, Json::Value cmd)
         Sql::singleton().insertUser(rec);
         response["state"] = 1;
         response["info"] = "注册成功！";
+        Server::singleton().addClient(uName, client);
     }
     sendJson(client, makeCmd("regist", response));
 }
