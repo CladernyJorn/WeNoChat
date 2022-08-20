@@ -6,7 +6,7 @@
 #include <cstdlib>
 using namespace std;
 
-Server &Server::singleton(uint32_t addr, uint16_t port)
+Server &Server::singleton(uint32_t addr, uint16_t port, uint16_t filePort)
 {
     static bool inited = false;
     if (addr == 0 && port == 0)
@@ -22,14 +22,20 @@ Server &Server::singleton(uint32_t addr, uint16_t port)
     return singleton;
 }
 
-Server::Server(bool inited, uint32_t addr, uint16_t port) : handler(CmdHandler::singleton())
+Server::Server(bool inited, uint32_t addr, uint16_t port, uint16_t filePort) : handler(CmdHandler::singleton())
 {
     if (!inited)
-        this->addr = addr, this->port = htons(port);
+        this->addr = addr, this->port = htons(port), this->filePort = htons(filePort);
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1)
     {
         cout << "socket error" << endl;
+        exit(-1);
+    }
+    fileSock = socket(AF_INET, SOCK_STREAM, 0);
+    if (fileSock == -1)
+    {
+        cout << "file socket error" << endl;
         exit(-1);
     }
 }
@@ -44,6 +50,16 @@ void Server::connect()
     if (bind(sock, (sockaddr *)&myaddr, sizeof(myaddr)) == -1)
     {
         cout << "bind error" << endl;
+        exit(-1);
+    }
+
+    memset(&myaddr, 0, sizeof(myaddr));
+    myaddr.sin_family = AF_INET;
+    myaddr.sin_port = filePort;
+    myaddr.sin_addr.s_addr = addr;
+    if (bind(sock, (sockaddr *)&myaddr, sizeof(myaddr)) == -1)
+    {
+        cout << "filesock bind error" << endl;
         exit(-1);
     }
 
@@ -62,6 +78,13 @@ void Server::connect()
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sock, &ev) == -1)
     {
         cout << "add epoll_fd error" << endl;
+        exit(-1);
+    }
+    ev.events = EPOLLIN;
+    ev.data.fd = fileSock;
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fileSock, &ev) == -1)
+    {
+        cout << "add file epoll_fd error" << endl;
         exit(-1);
     }
 }
@@ -97,6 +120,21 @@ void Server::run()
                 epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client, &ev);
                 client_fds.insert(client);
                 cout << "get a new client" << endl;
+            }
+            else if (ret_ev[i].data.fd == fileSock && (ret_ev[i].events & EPOLLIN))
+            {
+                int fileClient = accept(sock, NULL, NULL);
+                if (fileClient == -1)
+                {
+                    cout << "accept error" << endl;
+                    continue;
+                }
+
+                ev.events = EPOLLIN;
+                ev.data.fd = fileClient;
+                epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fileClient, &ev);
+                fileClient_fds.insert(fileClient);
+                cout << "get a new fileClient" << endl;
             }
             else
             {

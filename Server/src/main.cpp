@@ -3,7 +3,7 @@
 int main()
 {
     Sql::singleton().open();
-    Server &server = Server::singleton(htonl(INADDR_ANY), 8888);
+    Server &server = Server::singleton(htonl(INADDR_ANY), 8888, 8899);
     server.connect();
     server.run();
     return 0;
