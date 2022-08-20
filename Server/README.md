@@ -4,6 +4,38 @@
 
 暂不支持头像信息和聊天记录暂存
 
+## 编译
+
+首先运行Server文件夹下的env.sh，安装环境
+
+```shell
+sh env.sh
+```
+
+在Server文件夹下，运行build.sh
+
+```shell
+sh build.sh
+```
+
+## 运行
+
+- 我们自己用的（发布的时候删掉）
+
+在Server文件夹下，运行run.sh（这个是调试用的）
+
+```shell
+sh run.sh
+```
+
+- 发布的
+
+进入Server/bin文件夹，运行Server
+
+```shell
+./Server
+```
+
 ## 数据表
 
 ```sql
