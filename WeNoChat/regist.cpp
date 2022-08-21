@@ -12,6 +12,7 @@ Regist::Regist(QWidget *parent) :
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     //把窗口背景设置为透明;
     setAttribute(Qt::WA_TranslucentBackground);
+    ui->comboBox->addItem("请选择密保问题");
     ui->comboBox->addItem("你最喜欢的颜色是什么");
     ui->comboBox->addItem("你最喜欢的美食是什么");
     ui->comboBox->addItem("你最喜欢的电影是什么");
@@ -28,6 +29,7 @@ Regist::Regist(QTcpSocket *sock,QWidget *parent) :
     //把窗口背景设置为透明;
     setAttribute(Qt::WA_TranslucentBackground);
     client = sock;
+    ui->comboBox->addItem("请选择密保问题");
     ui->comboBox->addItem("你最喜欢的颜色是什么");
     ui->comboBox->addItem("你最喜欢的美食是什么");
     ui->comboBox->addItem("你最喜欢的电影是什么");
@@ -39,6 +41,12 @@ Regist::Regist(QTcpSocket *sock,QWidget *parent) :
 //注册按钮按下：在这里处理注册
 void Regist::on_loginButton_clicked()
 {
+    QString temp = ui->comboBox->currentText();
+    if(temp == "请选择密保问题")
+    {
+        QMessageBox::information(this,"提示","请选择密保问题");
+        return;
+    }
     QString userName = ui->userEdit->text();
     QString pwd = ui->passwordEdit->text();
     //TODO：判断密码合法性，不能包含特殊符号

@@ -23,7 +23,7 @@ user::~user()
 
 void user::hadreadyread()
 {
-    std::string questions[4] = {"你最喜欢的颜色是什么","你最喜欢的美食是什么","你最喜欢的电影是什么","你认为中国最好的大学是哪所"};
+    std::string questions[5] = {"请选择密保问题","你最喜欢的颜色是什么","你最喜欢的美食是什么","你最喜欢的电影是什么","你认为中国最好的大学是哪所"};
     QByteArray recvArray = client->readAll();
     QString find1back=recvArray;
     std::string username,info;
