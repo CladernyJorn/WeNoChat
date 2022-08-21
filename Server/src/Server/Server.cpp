@@ -146,9 +146,10 @@ void Server::run()
                 //有客户端发送消息
                 if (ret_ev[i].events & EPOLLIN)
                 {
-                    int client = ret_ev[i].data.fd;
-                    if (client_fds.find(client) != client_fds.end())
+                    int in_fd = ret_ev[i].data.fd;
+                    if (client_fds.find(in_fd) != client_fds.end())
                     {
+                        int client = in_fd;
                         char buf[1024] = {0};
                         int bytes = recv(client, buf, sizeof(buf), 0);
                         if (bytes == 0 || bytes == -1)
@@ -167,18 +168,23 @@ void Server::run()
                         cout << "recv = " << buf << endl;
                         handler.handle(client, buf, bytes);
                     }
-                    else if (fileClient_fds.find(client) != fileClient_fds.end())
+                    else if (fileClient_fds.find(in_fd) != fileClient_fds.end())
                     {
+                        int fileClient = in_fd;
                         char buf[4096] = {0};
-                        int bytes = recv(client, buf, sizeof(buf), 0);
+                        int bytes = recv(fileClient, buf, sizeof(buf), 0);
                         if (bytes == 0 || bytes == -1)
                         {
-                            epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
-                            fileClient_fds.erase(client);
+                            epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fileClient, NULL);
+                            fileClient_fds.erase(fileClient);
                             continue;
                         }
                         cout << "recvSize = " << bytes << endl;
-                        handler.handle(client, buf, bytes);
+                        handler.handle(fileClient, buf, bytes);
+                    }
+                    else if (fileOpened.find(in_fd) != fileOpened.end())
+                    {
+                        int fileFd = in_fd;
                     }
                 }
             }
@@ -209,6 +215,7 @@ void Server::sendFile(fd_t fileClient, std::string filepath)
     {
         cout << "file open error" << endl;
     }
+    fileOpened.insert(fileFd);
     WriteFileTask task;
     struct stat stFile;
     if ((fstat(fileFd, &stFile) == 0 && S_ISREG(stFile.st_mode)))
