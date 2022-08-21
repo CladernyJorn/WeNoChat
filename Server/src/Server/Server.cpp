@@ -180,7 +180,12 @@ void Server::run()
 
 fd_t Server::getFdByName(std::string username)
 {
-    return clients[username];
+    auto user_fd = clients.find("username");
+    if (user_fd != clients.end())
+    {
+        return user_fd->second;
+    }
+    return 0;
 }
 
 void Server::addClient(std::string username, fd_t __fd)

@@ -49,6 +49,7 @@ void __Callbacks::_login(fd_t client, Json::Value cmd)
     vector<UserRecord> users = Sql::singleton().findUserByName(uName);
 
     Json::Value response;
+    response["username"] = uName;
 
     if (users.size() == 0)
     {
@@ -97,6 +98,7 @@ void __Callbacks::_register(fd_t client, Json::Value cmd)
         Sql::singleton().insertUser(rec);
         response["state"] = 1;
         response["info"] = "注册成功！";
+        Server::singleton().addClient(uName, client);
     }
     mkdir((user_path + uName).c_str(), S_IRWXU);
     sendJson(client, makeCmd("regist", response));
@@ -118,9 +120,12 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
         response["info"] = _msg;
         string userName = _to[i].asString();
         fd_t tgtfd = Server::singleton().getFdByName(userName);
-        cout << "tgtfd = " << tgtfd << endl;
-        cout << "client = " << client << endl;
-        sendJson(tgtfd, makeCmd("chat", response));
+        if (tgtfd != 0)
+        {
+            cout << "tgtfd = " << tgtfd << endl;
+            cout << "client = " << client << endl;
+            sendJson(tgtfd, makeCmd("chat", response));
+        }
     }
 }
 
@@ -153,12 +158,14 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
         response["username"] = friendUser;
         sendJson(client, makeCmd("addfriends", response));
         fd_t friend_fd = Server::singleton().getFdByName(friendUser);
-        response["state"] = 1;
-        response["username"] = username;
-        sendJson(friend_fd, makeCmd("addfriends", response));
+        if (friend_fd != 0)
+        {
+            response["state"] = 1;
+            response["username"] = username;
+            sendJson(friend_fd, makeCmd("addfriends", response));
+        }
 
         Sql::singleton().insertFriends(username, friendUser);
-        Sql::singleton().insertFriends(friendUser, username);
     }
     else
     {
