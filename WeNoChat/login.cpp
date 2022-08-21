@@ -22,6 +22,7 @@ login::login(QWidget *parent) :
 void login::hadconnected()
 {
     ui->loginButton->setEnabled(true);
+    ui->loginButton->setText("登录");
     ui->forgetButton->setEnabled(true);
     ui->registButton->setEnabled(true);
     connect(client,SIGNAL(readyRead()),this,SLOT(hadreadyread()));
@@ -60,7 +61,7 @@ void login::on_loginButton_clicked()
     std::string data=Encoder_login(userName.toStdString(),userPassword.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
-    showMainWindow();
+//    showMainWindow();
 }
 
 //新窗体相关函数
