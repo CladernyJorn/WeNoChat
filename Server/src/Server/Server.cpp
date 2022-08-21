@@ -162,17 +162,17 @@ void Server::run()
                         cout << "recv = " << buf << endl;
                         handler.handle(client, decodeJson(buf));
                     }
-                    // else if (fileClient_fds.find(client) != fileClient_fds.end())
-                    // {
-                    //     char buf[4096] = {0};
-                    //     if (recv(client, buf, sizeof(buf), 0) == 0)
-                    //     {
-                    //         epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
-                    //         fileClient_fds.erase(client);
-                    //         continue;
-                    //     }
-                    //     handler.handle(client, decodeJson(buf));
-                    // }
+                    else if (fileClient_fds.find(client) != fileClient_fds.end())
+                    {
+                        char buf[5000] = {0};
+                        if (recv(client, buf, sizeof(buf), 0) == 0)
+                        {
+                            epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
+                            fileClient_fds.erase(client);
+                            continue;
+                        }
+                        handler.handle(client, decodeJson(buf));
+                    }
                 }
             }
         }

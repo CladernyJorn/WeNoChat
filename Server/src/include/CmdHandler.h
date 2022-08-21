@@ -21,7 +21,7 @@ public:
     void handle(fd_t client, Json::Value cmd);
 
     std::unordered_map<std::string, UserRecord> pWordForgotters;
-    std::unordered_map<idx_t, WriteFileTask> fileTasks;
+    std::unordered_map<fd_t, WriteFileTask> fileTasks;
 
 private:
     CmdHandler();
@@ -41,8 +41,8 @@ namespace __Callbacks
     void _findPword_que(fd_t client, Json::Value cmd);
     void _findPword_change(fd_t client, Json::Value cmd);
     void _cancelFindPword(fd_t client, Json::Value cmd);
-    void _sendFile(fd_t client, Json::Value cmd);
-    void _updateFile(fd_t client, Json::Value cmd);
-    void _sendOver(fd_t client, Json::Value cmd);
+    void _sendFile(fd_t fileClient, Json::Value cmd);
+    void _updateFile(fd_t fileClient, Json::Value cmd);
+    void _sendOver(fd_t fileClient, Json::Value cmd);
 }
 #endif // CmdHandler.h

@@ -154,23 +154,14 @@ end;
     "type": "sendFile",
     "info": {
         "username": "andy",
-        "fileName": "abc.jpg",
-        "fileSize": 1024
-    }
-}
-
-// 返回：
-{
-    "type": "confirmSendFile",
-    "info": {
-        "fileFd": 1,
+        "filename": "abc.jpg",
+        "size": 1024
     }
 }
 
 {
-    "type": "updateFile",
+    "type": "updf",
     "info": {
-        "fileFd": 1,
         "size": 4096,
         "bytes": ""
     }
@@ -187,7 +178,7 @@ end;
 {
     "type": "sendState",
     "info":{
-        "state": 1;
+        "state": 1
     }
 }
 ```

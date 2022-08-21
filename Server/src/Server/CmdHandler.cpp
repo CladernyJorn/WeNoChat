@@ -27,7 +27,7 @@ CmdHandler::CmdHandler()
     __callbacks["findpWord2"] = __Callbacks::_findPword_que;
     __callbacks["findpWord3"] = __Callbacks::_findPword_change;
     __callbacks["sendFile"] = __Callbacks::_sendFile;
-    __callbacks["updateFile"] = __Callbacks::_updateFile;
+    __callbacks["updf"] = __Callbacks::_updateFile;
     __callbacks["sendOver"] = __Callbacks::_sendOver;
 }
 
@@ -266,11 +266,11 @@ void __Callbacks::_cancelFindPword(fd_t client, Json::Value cmd)
     handler.pWordForgotters.erase(username);
 }
 
-void __Callbacks::_sendFile(fd_t client, Json::Value cmd)
+void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
 {
     string username = cmd["username"].asString();
     string fileName = cmd["fileName"].asString();
-    unsigned long long fileSize = cmd["fileSize"].asUInt64();
+    unsigned long long fileSize = cmd["size"].asUInt64();
     cout << username << " send a file " << fileName << " with size " << fileSize << endl;
     string user_dir = user_path + username + "/";
     string file_path = user_dir + fileName;
@@ -306,28 +306,28 @@ void __Callbacks::_sendFile(fd_t client, Json::Value cmd)
     }
     response["fileFd"] = fileFd;
     WriteFileTask task;
+    task.fileFd = fileFd;
     task.fileSize = fileSize;
     task.progress = 0;
-    handler.fileTasks[fileFd] = task;
-    sendJson(client, makeCmd("confirmSendFile", response));
+    handler.fileTasks[fileClient] = task;
+    sendJson(fileClient, makeCmd("confirmSendFile", response));
 }
 
-void __Callbacks::_updateFile(fd_t client, Json::Value cmd)
+void __Callbacks::_updateFile(fd_t fileClient, Json::Value cmd)
 {
-    idx_t fileFd = cmd["fileFd"].asUInt64();
     int size = cmd["size"].asInt();
     const char *bytes = cmd["Bytes"].asCString();
     CmdHandler &handler = CmdHandler::singleton();
-    auto p_id = handler.fileTasks.find(fileFd);
+    auto p_id = handler.fileTasks.find(fileClient);
     if (p_id != handler.fileTasks.end())
     {
         WriteFileTask task = p_id->second;
-        int written = write(fileFd, bytes, size);
+        int written = write(task.fileFd, bytes, size);
         task.progress += written;
     }
 }
 
-void __Callbacks::_sendOver(fd_t client, Json::Value cmd)
+void __Callbacks::_sendOver(fd_t fileClient, Json::Value cmd)
 {
     idx_t fileFd = cmd["fileFd"].asUInt64();
     CmdHandler &handler = CmdHandler::singleton();
@@ -342,5 +342,5 @@ void __Callbacks::_sendOver(fd_t client, Json::Value cmd)
             response["state"] = 0;
         handler.fileTasks.erase(p_id);
     }
-    sendJson(client, makeCmd("sendState", response));
+    sendJson(fileClient, makeCmd("sendState", response));
 }
