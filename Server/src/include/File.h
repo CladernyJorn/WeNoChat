@@ -12,11 +12,14 @@
 class File
 {
 public:
-    File(std::string fileName);
-    std::string getName();
+    File(std::string filePath);
     void setName(std::string name);
+    std::string getName();
+    void setPath(std::string path);
+    std::string getPath();
     std::string fileNameNoExtension;
     std::string extension;
+    std::string directory;
 };
 
 struct WriteFileTask

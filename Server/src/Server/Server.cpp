@@ -145,7 +145,8 @@ void Server::run()
                     if (client_fds.find(client) != client_fds.end())
                     {
                         char buf[1024] = {0};
-                        if (recv(client, buf, sizeof(buf), 0) == 0)
+                        int bytes = recv(client, buf, sizeof(buf), 0);
+                        if (bytes == 0 || bytes == -1)
                         {
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
                             client_fds.erase(client);

@@ -33,10 +33,15 @@ CmdHandler::CmdHandler()
 
 void CmdHandler::handle(fd_t client, Json::Value cmd)
 {
-    string name = cmd["type"].asString();
-    auto callback = __callbacks.find(name);
-    if (callback != __callbacks.end())
-        callback->second(client, cmd["info"]);
+    if (cmd.isNull())
+        return;
+    if (cmd.isMember("type") && cmd.isMember("info"))
+    {
+        string name = cmd["type"].asString();
+        auto callback = __callbacks.find(name);
+        if (callback != __callbacks.end())
+            callback->second(client, cmd["info"]);
+    }
 }
 
 void __Callbacks::_login(fd_t client, Json::Value cmd)
@@ -266,28 +271,38 @@ void __Callbacks::_sendFile(fd_t client, Json::Value cmd)
     string username = cmd["username"].asString();
     string fileName = cmd["fileName"].asString();
     unsigned long long fileSize = cmd["fileSize"].asUInt64();
+    cout << username << " send a file " << fileName << " with size " << fileSize << endl;
     string user_dir = user_path + username + "/";
-    File file(fileName);
-    string file_path = user_dir + file.getName();
+    string file_path = user_dir + fileName;
+    File file(file_path);
     Json::Value response;
     fd_t fileFd;
     CmdHandler &handler = CmdHandler::singleton();
     if (access((file_path).c_str(), F_OK) != 0)
     {
+        cout << "no such file" << endl;
         fileFd = creat(file_path.c_str(), S_IRWXU);
+        if (fileFd == -1)
+        {
+            cout << "file create failed" << endl;
+        }
     }
     else
     {
+        cout << "file name exists" << endl;
         string tmpname;
         for (int i = 1;; i++)
         {
             tmpname = file.fileNameNoExtension + "(" + to_string(i) + ")";
-            if (access((tmpname + file.extension).c_str(), F_OK) != 0)
+            if (access((file.directory + tmpname + file.extension).c_str(), F_OK) != 0)
                 break;
         }
         file.fileNameNoExtension = tmpname;
-        file_path = user_dir + file.getName();
-        fileFd = creat(file_path.c_str(), S_IRWXU);
+        fileFd = creat(file.getPath().c_str(), S_IRWXU);
+        if (fileFd == -1)
+        {
+            cout << "file create failed" << endl;
+        }
     }
     response["fileFd"] = fileFd;
     WriteFileTask task;
