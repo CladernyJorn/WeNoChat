@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QMouseEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
@@ -278,4 +279,32 @@ void MainWindow::startChatting(QVariant variant)
         }
 
     }
+}
+
+
+
+//以下是拖动窗口的代码
+void MainWindow::mousePressEvent(QMouseEvent *ev)
+{
+    if(ev->button() == Qt::LeftButton)
+    {
+        //求坐标差值
+        //当前点击坐标-窗口左上角坐标
+        p = ev->globalPos() - this->frameGeometry().topLeft();
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *ev)
+{
+    if(ev->buttons() & Qt::LeftButton&&p.x()!=0&&p.y()!=0)
+    {
+        //移到左上角
+        move(ev->globalPos() - p);
+    }
+
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *ev){
+    p.setX(0);
+    p.setY(0);
 }

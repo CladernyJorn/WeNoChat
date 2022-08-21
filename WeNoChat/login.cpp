@@ -60,7 +60,7 @@ void login::on_loginButton_clicked()
     std::string data=Encoder_login(userName.toStdString(),userPassword.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
-//    showMainWindow();
+    showMainWindow();
 }
 
 //新窗体相关函数
@@ -95,12 +95,17 @@ void login::mousePressEvent(QMouseEvent *e)
 
 void login::mouseMoveEvent(QMouseEvent *e)
 {
-    if(e->buttons() & Qt::LeftButton)
+    if(e->buttons() & Qt::LeftButton&&p.x()!=0&&p.y()!=0)
     {
         //移到左上角
         move(e->globalPos() - p);
     }
 
+}
+
+void login::mouseReleaseEvent(QMouseEvent *event){
+    p.setX(0);
+    p.setY(0);
 }
 
 login::~login()

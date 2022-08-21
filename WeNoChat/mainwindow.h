@@ -24,7 +24,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     explicit MainWindow(QString ud,QTcpSocket * sock,QWidget *parent = 0);
     ~MainWindow();
-
+protected:
+    void mouseMoveEvent(QMouseEvent *ev);//鼠标移动
+    void mousePressEvent(QMouseEvent *ev);//鼠标按下移动
+    void mouseReleaseEvent(QMouseEvent *ev);
 private slots:
     void on_closeButton_clicked();
 
@@ -58,6 +61,7 @@ private:
     Ui::FriendList *friendList;
     ChatInfo chattingInfo;
     void initConnection();
+    QPoint p;
 };
 
 #endif // MAINWINDOW_H

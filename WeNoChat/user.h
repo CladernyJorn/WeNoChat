@@ -19,6 +19,10 @@ public:
     explicit user(QWidget *parent = 0);
     explicit user(QTcpSocket *sock,QWidget *parent = 0);
     ~user();
+protected:
+    void mouseMoveEvent(QMouseEvent *e);//鼠标移动
+    void mousePressEvent(QMouseEvent *e);//鼠标按下移动
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private slots:
 
@@ -26,11 +30,16 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_closeButton_clicked();
+
+    void on_hideButton_clicked();
+
 private:
     Ui::user *ui;
     QTcpSocket *client;
     question *q;
     QString udata;
+    QPoint p;
 };
 
 #endif // USER_H

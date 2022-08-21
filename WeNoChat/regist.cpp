@@ -104,13 +104,18 @@ void Regist::mousePressEvent(QMouseEvent *e)
 
 void Regist::mouseMoveEvent(QMouseEvent *e)
 {
-    if(e->buttons() & Qt::LeftButton)
+    if(e->buttons() & Qt::LeftButton&&p.x()!=0&&p.y()!=0)
     {
         //移到左上角
         move(e->globalPos() - p);
     }
 
 }
+void Regist::mouseReleaseEvent(QMouseEvent *event){
+    p.setX(0);
+    p.setY(0);
+}
+
 void Regist::on_closeButton_clicked()
 {
     close();

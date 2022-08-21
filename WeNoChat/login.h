@@ -24,6 +24,7 @@ public:
 protected:
     void mouseMoveEvent(QMouseEvent *e);//鼠标移动
     void mousePressEvent(QMouseEvent *e);//鼠标按下移动
+    void mouseReleaseEvent(QMouseEvent *event);
 
 public slots:
     void hadconnected();
