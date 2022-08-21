@@ -180,7 +180,7 @@ font-size:14px;
    </widget>
    <widget class="QPushButton" name="loginButton">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -228,7 +228,7 @@ font-size:14px;
    </widget>
    <widget class="QPushButton" name="registButton">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -263,7 +263,7 @@ font-style:MingLiU-ExtB;
    </widget>
    <widget class="QPushButton" name="forgetButton">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
