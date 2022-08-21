@@ -60,6 +60,7 @@ void login::on_loginButton_clicked()
     std::string data=Encoder_login(userName.toStdString(),userPassword.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
+    showMainWindow();
 }
 
 //新窗体相关函数

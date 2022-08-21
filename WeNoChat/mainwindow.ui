@@ -32,61 +32,6 @@
     <string>  WeNoChat</string>
    </property>
   </widget>
-  <widget class="QToolBox" name="toolBox">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>60</y>
-     <width>211</width>
-     <height>591</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(226, 226, 226);</string>
-   </property>
-   <property name="currentIndex">
-    <number>2</number>
-   </property>
-   <widget class="QWidget" name="page_3">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>211</width>
-      <height>501</height>
-     </rect>
-    </property>
-    <attribute name="label">
-     <string>这里显示好友分组</string>
-    </attribute>
-   </widget>
-   <widget class="QWidget" name="page">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>211</width>
-      <height>501</height>
-     </rect>
-    </property>
-    <attribute name="label">
-     <string>除了toolbox没想到特别好的</string>
-    </attribute>
-   </widget>
-   <widget class="QWidget" name="page_2">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>211</width>
-      <height>501</height>
-     </rect>
-    </property>
-    <attribute name="label">
-     <string>太丑了最好换一下</string>
-    </attribute>
-   </widget>
-  </widget>
   <widget class="QFrame" name="windowFrame">
    <property name="geometry">
     <rect>
@@ -333,14 +278,35 @@ font-style:MingLiU-ExtB;
     <string>+</string>
    </property>
   </widget>
+  <widget class="QTreeWidget" name="friendList">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>60</y>
+     <width>211</width>
+     <height>591</height>
+    </rect>
+   </property>
+   <property name="headerHidden">
+    <bool>true</bool>
+   </property>
+   <property name="expandsOnDoubleClick">
+    <bool>false</bool>
+   </property>
+   <column>
+    <property name="text">
+     <string notr="true">1</string>
+    </property>
+   </column>
+  </widget>
   <zorder>frame</zorder>
   <zorder>chatName</zorder>
   <zorder>indowLabel</zorder>
-  <zorder>toolBox</zorder>
   <zorder>windowFrame</zorder>
   <zorder>line</zorder>
   <zorder>line_2</zorder>
   <zorder>pushButton_addfriend</zorder>
+  <zorder>friendList</zorder>
  </widget>
  <resources/>
  <connections/>

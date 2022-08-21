@@ -35,7 +35,7 @@ void ChatMessageWidget::setTextSuccess()
     m_isSending = true;
 }
 
-void ChatMessageWidget::setText(QString text, QString time, QSize allSize, ChatMessageWidget::User_Type userType)
+void ChatMessageWidget::setText(QString text, QString time, QSize allSize, ChatMessageWidget::User_Type userType, QImage* image)
 {
     m_msg = text;
     m_userType = userType;
@@ -43,12 +43,18 @@ void ChatMessageWidget::setText(QString text, QString time, QSize allSize, ChatM
     m_curTime = QDateTime::fromTime_t(time.toInt()).toString("hh:mm");
     m_allSize = allSize;
     if(userType == User_Me) {
+        if(image!=NULL){
+            m_rightPixmap = QPixmap::fromImage(*image);
+        }
         if(!m_isSending) {
             m_loading->move(m_kuangRightRect.x() - m_loading->width() - 10, m_kuangRightRect.y()+m_kuangRightRect.height()/2- m_loading->height()/2);
             m_loading->show();
             m_loadingMovie->start();
         }
     } else {
+        if(image!=NULL){
+            m_leftPixmap = QPixmap::fromImage(*image);
+        }
         m_loading->hide();
     }
 
@@ -156,6 +162,7 @@ void ChatMessageWidget::paintEvent(QPaintEvent *event)
     if(m_userType == User_Type::User_She) { // 用户
         //头像
 //        painter.drawRoundedRect(m_iconLeftRect,m_iconLeftRect.width(),m_iconLeftRect.height());
+
         painter.drawPixmap(m_iconLeftRect, m_leftPixmap);
 
         //框加边
@@ -236,3 +243,8 @@ void ChatMessageWidget::paintEvent(QPaintEvent *event)
     }
 }
 
+void ChatMessageWidget::mouseDoubleClickEvent(QMouseEvent* e){
+    qDebug()<<m_msg;
+    vfm = new ViewFullMessage(m_msg);
+    vfm->show();
+}

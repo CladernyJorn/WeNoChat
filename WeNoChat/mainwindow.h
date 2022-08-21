@@ -9,6 +9,9 @@
 #include <QDateTime>
 #include"communicate_utils.h"
 #include"searchfriends.h"
+#include "friendlist.h"
+#include <QImage>
+#include "messagerecord.h"
 namespace Ui {
 class MainWindow;
 }
@@ -33,15 +36,28 @@ private slots:
     void on_pushButton_clicked();
     void hadreadyread();
 
-    void pushMessageIntoChatWindow(bool type,QString msg,QString time,bool isSending = false);
+    void pushMessageIntoChatWindow(bool type,QString msg,QString time,QImage* image = NULL,bool isSending = false);
+    void clearAllMessage();
     void dealMessageTime(QString curMsgTime);
-    void dealMessage(ChatMessageWidget *messageW, QListWidgetItem *item, QString text, QString time,  ChatMessageWidget::User_Type type);
+    void dealMessage(ChatMessageWidget *messageW, QListWidgetItem *item, QString text, QString time,  ChatMessageWidget::User_Type type, QImage* image = NULL);
+
+    void startChatting(QVariant variant);
+
 private:
+    struct ChatInfo
+    {
+        Ui::User chatFriend;
+        MessageRecord *record;
+    };
+
     Ui::MainWindow *ui;
     QTcpSocket *client;
     QString udata;
     searchFriends *add;
-    std::vector<std::string>userList;
+    std::vector<std::string> userList;
+    Ui::FriendList *friendList;
+    ChatInfo chattingInfo;
+    void initConnection();
 };
 
 #endif // MAINWINDOW_H

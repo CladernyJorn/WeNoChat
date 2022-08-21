@@ -15,12 +15,20 @@ void MainWindow::on_pushButton_2_clicked()
 {
     if(ui->listWidget->count()==0)return;
     delete ui->listWidget->item(ui->listWidget->count()-1);
+
 }
 //测试用函数，正式发布务必删除（相关控件
 void MainWindow::on_pushButton_clicked()
 {
     QString msg = ui->textEdit->toPlainText();
     pushMessageIntoChatWindow(false,msg,QString::number(QDateTime::currentDateTime().toTime_t()),false);
+    qDebug()<<QString::number(QDateTime::currentDateTime().toTime_t());
+}
+
+void MainWindow::clearAllMessage(){
+    while(ui->listWidget->count()>0){
+        delete ui->listWidget->item(ui->listWidget->count()-1);
+    }
 }
 
 MainWindow::MainWindow(QString ud,QTcpSocket *sock,QWidget *parent) :
@@ -40,6 +48,7 @@ MainWindow::MainWindow(QString ud,QTcpSocket *sock,QWidget *parent) :
     std::string data=Encoder_askfriendsList(udata.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
+
 }
 
 MainWindow::~MainWindow()
@@ -67,11 +76,9 @@ void MainWindow::hadreadyread()
              return;
         }
 
-        /*Todo:使用userList生成好友列表
-         *
-         *
-         *
-         */
+        /*Todo:使用userList生成好友列表*/
+        friendList = new Ui::FriendList(ui->friendList, userList);
+        initConnection();
     }
     else if(jtmp["type"].asString()=="chat"){//处理聊天信息
         std::string sender_username,msg;
@@ -132,6 +139,8 @@ void MainWindow::on_send_clicked()
     ui->textEdit->clear();
 }
 
+
+
 /*
  * pushMessageIntoChatWindow函数说明
  * bool type：发给别人消息，右侧气泡==true；接收到消息，左侧气泡==false。
@@ -140,6 +149,7 @@ void MainWindow::on_send_clicked()
  *      参考：time = QString::number(QDateTime::currentDateTime().toTime_t());
  * bool isSending = false：是否正在发送，大概率用不到所以先设置成false
  *      仅发送消息有效，接收消息时这里可以随便赋值。
+ * QImage* image = NULL:头像指针，默认为NULL，则显示默认头像。
  *
  * *******注意********
  * ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓特别注意↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -153,8 +163,9 @@ void MainWindow::on_send_clicked()
  * 如果是发消息，注意清空输入框
  * TODO：不清楚分辨率和缩放的影响，可能会有小概率长文本显示横向拖动条
 */
-void MainWindow::pushMessageIntoChatWindow(bool type,QString msg,QString time,bool isSending )
+void MainWindow::pushMessageIntoChatWindow(bool type,QString msg,QString time,QImage* image,bool isSending)
 {
+
     if(msg == ""){
         //TODO：是不是要报个错？
         return;
@@ -165,7 +176,7 @@ void MainWindow::pushMessageIntoChatWindow(bool type,QString msg,QString time,bo
             dealMessageTime(time);
             ChatMessageWidget* messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
             QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-            dealMessage(messageW, item, msg, time, ChatMessageWidget::User_Me);
+            dealMessage(messageW, item, msg, time, ChatMessageWidget::User_Me, image);
         } else {
             bool isOver = true;
             for(int i = ui->listWidget->count() - 1; i > 0; i--) {
@@ -179,7 +190,7 @@ void MainWindow::pushMessageIntoChatWindow(bool type,QString msg,QString time,bo
                 dealMessageTime(time);
                 ChatMessageWidget* messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
                 QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-                dealMessage(messageW, item, msg, time, ChatMessageWidget::User_Me);
+                dealMessage(messageW, item, msg, time, ChatMessageWidget::User_Me,image);
                 messageW->setTextSuccess();
             }
         }
@@ -187,17 +198,17 @@ void MainWindow::pushMessageIntoChatWindow(bool type,QString msg,QString time,bo
         dealMessageTime(time);
         ChatMessageWidget* messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
         QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-        dealMessage(messageW, item, msg, time, ChatMessageWidget::User_She);
+        dealMessage(messageW, item, msg, time, ChatMessageWidget::User_She,image);
     }
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
 
-void MainWindow::dealMessage(ChatMessageWidget *messageW, QListWidgetItem *item, QString text, QString time,  ChatMessageWidget::User_Type type)
+void MainWindow::dealMessage(ChatMessageWidget *messageW, QListWidgetItem *item, QString text, QString time,  ChatMessageWidget::User_Type type,QImage* image)
 {
     messageW->setFixedWidth(ui->listWidget->width() - 25);
     QSize size = messageW->fontRect(text);
     item->setSizeHint(size);
-    messageW->setText(text, time, size, type);
+    messageW->setText(text, time, size, type, image);
     ui->listWidget->setItemWidget(item, messageW);
 }
 
@@ -232,4 +243,39 @@ void MainWindow::on_pushButton_addfriend_clicked()
 {
     add = new searchFriends(udata,client);
     add->show();
+}
+
+void MainWindow::initConnection()
+{
+    connect(friendList, SIGNAL(openChatroom(QVariant)), this, SLOT(startChatting(QVariant)));
+}
+
+void MainWindow::startChatting(QVariant variant)
+{
+    clearAllMessage();
+
+    Ui::User chatFriend = variant.value<Ui::User>();
+    qDebug()<<"here";
+    qDebug() << QString(chatFriend.userName.c_str());
+    ui->chatName->setText("   " + QString(chatFriend.userName.c_str()));
+    chattingInfo.chatFriend = chatFriend;
+
+    std::vector<std::string> messages;
+    messages.push_back("user1/你好/1661088000");
+    messages.push_back("111/你好/1661088100");
+    messages.push_back("user1/很高兴认识你/1661088200");
+    messages.push_back("111/我也是/1661088290");
+    chattingInfo.record = new MessageRecord(messages);
+    for(std::string rec : chattingInfo.record->getAllMessageRecord())
+    {
+        QStringList list = QString(rec.c_str()).split("/");
+        if(list[0] == udata){
+            //传自己头像的 Qimage
+            pushMessageIntoChatWindow(true, list[1], list[2]);
+        }else{
+            //传对方头像的QImage
+            pushMessageIntoChatWindow(false, list[1], list[2]);
+        }
+
+    }
 }
