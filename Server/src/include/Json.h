@@ -4,7 +4,7 @@
 #ifndef __MJSON_H__
 #define __MJSON_H__
 
-#include <jsoncpp/json/json.h>
+#include <json/json.h>
 #include <string>
 
 extern Json::Reader j_reader;
