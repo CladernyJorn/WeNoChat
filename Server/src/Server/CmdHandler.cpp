@@ -268,7 +268,7 @@ void __Callbacks::_cancelFindPword(fd_t client, Json::Value cmd)
     forgotter.erase(username);
 }
 
-void _submitImage(fd_t client, Json::Value cmd)
+void __Callbacks::_submitImage(fd_t client, Json::Value cmd)
 {
     string username = cmd["username"].asString();
     string image_buf = cmd["image"].asString();
