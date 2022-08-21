@@ -1,6 +1,8 @@
 #include "Tools.h"
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -24,4 +26,16 @@ void sendJson(fd_t client, Json::Value json)
 {
     string jsonStr = encodeJson(json);
     send(client, jsonStr.c_str(), jsonStr.length(), 0);
+}
+
+std::string readFile(std::string filename)
+{
+    ifstream fin(filename);
+    if (!fin.is_open())
+    {
+        return "";
+    }
+    stringstream ss;
+    ss << fin.rdbuf();
+    return ss.str();
 }

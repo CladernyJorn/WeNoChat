@@ -65,7 +65,7 @@ void Server::connect()
         exit(-1);
     }
 }
-
+char buf[1048576] = {0};
 void Server::run()
 {
     epoll_event ev;
@@ -106,7 +106,7 @@ void Server::run()
                     int client = ret_ev[i].data.fd;
                     if (client_fds.find(client) != client_fds.end())
                     {
-                        char buf[1024] = {0};
+
                         if (recv(client, buf, sizeof(buf), 0) == 0)
                         {
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);

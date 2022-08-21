@@ -21,8 +21,9 @@ public:
     std::vector<UserRecord> findUserByName(std::string userName);
     void insertUser(UserRecord rec);
     void updateUser(std::string username, std::string column, std::string value);
-    std::vector<std::string> findFriends(std::string userName);
+    std::vector<UserRecord> findFriends(std::string userName);
     void insertFriends(std::string user, std::string friend_user);
+    void changeHeadFile(std::string user, std::string headFile);
 
 private:
     Sql() {}

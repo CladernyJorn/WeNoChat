@@ -40,5 +40,6 @@ namespace __Callbacks
     void _findPword_que(fd_t client, Json::Value cmd);
     void _findPword_change(fd_t client, Json::Value cmd);
     void _cancelFindPword(fd_t client, Json::Value cmd);
+    void _submitImage(fd_t client, Json::Value cmd);
 }
 #endif // CmdHandler.h

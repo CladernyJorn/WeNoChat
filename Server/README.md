@@ -44,7 +44,8 @@ create table User(
     pWord varchar(32) not null,
     phonenum varchar(11) unique not null,
     secureQue int not null,
-    secureAns text not null
+    secureAns text not null,
+    head text
 );
 
 create table Friends(
@@ -142,5 +143,13 @@ end;
     "type": "cancelFindpWord",
     "info": {
         "username": "andy",
+    }
+}
+{
+    "type": "sendFile",
+    "info": {
+        "name": "abc.jpg",
+        "size": 1024,
+        "bytes": ""
     }
 }

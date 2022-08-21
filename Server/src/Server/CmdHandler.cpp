@@ -4,6 +4,8 @@
 #include "Server.h"
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 
 using namespace std;
@@ -24,6 +26,7 @@ CmdHandler::CmdHandler()
     __callbacks["findpWord1"] = __Callbacks::_findPword_phone;
     __callbacks["findpWord2"] = __Callbacks::_findPword_que;
     __callbacks["findpWord3"] = __Callbacks::_findPword_change;
+    __callbacks["submit_image"] = __Callbacks::_submitImage;
 }
 
 void CmdHandler::handle(fd_t client, Json::Value cmd)
@@ -127,12 +130,14 @@ void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
 {
     string username = cmd["username"].asString();
     cout << username << "getfriends" << endl;
-    vector<string> friends = Sql::singleton().findFriends(username);
+    vector<UserRecord> friends = Sql::singleton().findFriends(username);
+
     Json::Value response;
     response["username"] = username;
     for (int i = 0; i < (int)friends.size(); i++)
     {
-        response["userList"][i] = friends[i];
+        response["userList"][i] = friends[i].username;
+        response["user_image"][i] = readFile(friends[i].headfile);
     }
     sendJson(client, makeCmd("askfriendsList", response));
 }
@@ -145,17 +150,22 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
     cout << username << "wants to make friends with " << friendUser << endl;
 
     vector<UserRecord> user = Sql::singleton().findUserByName(friendUser);
+    vector<UserRecord> me = Sql::singleton().findUserByName(username);
     Json::Value response;
+
     if (user.size() != 0)
     {
         response["state"] = 1;
         response["username"] = friendUser;
+        response["user_image"] = readFile(user[0].headfile);
+
         sendJson(client, makeCmd("addfriends", response));
         fd_t friend_fd = Server::singleton().getFdByName(friendUser);
         if (friend_fd != 0)
         {
             response["state"] = 1;
             response["username"] = username;
+            response["user_image"] = readFile(me[0].headfile);
             sendJson(friend_fd, makeCmd("addfriends", response));
         }
 
@@ -256,6 +266,20 @@ void __Callbacks::_cancelFindPword(fd_t client, Json::Value cmd)
     CmdHandler &handler = CmdHandler::singleton();
     unordered_map<string, UserRecord> &forgotter = handler.getpWordForgotter();
     forgotter.erase(username);
+}
+
+void _submitImage(fd_t client, Json::Value cmd)
+{
+    string username = cmd["username"].asString();
+    string image_buf = cmd["image"].asString();
+    string filepath = "../res/users/" + username + "/head";
+    ofstream fout(filepath);
+    fout << image_buf;
+    Sql::singleton().changeHeadFile(username, filepath);
+    Json::Value response;
+    response["username"] = username;
+    response["state"] = 1;
+    sendJson(client, makeCmd("submit_image", response));
 }
 
 unordered_map<string, UserRecord> &CmdHandler::getpWordForgotter()

@@ -15,6 +15,7 @@ struct UserRecord
     std::string phonenum;
     int secureQue;
     std::string secureAns;
+    std::string headfile;
 };
 /**
  * TODO: 定义每个数据表对应的结构体

@@ -22,4 +22,6 @@ namespace StrParser
 Json::Value makeCmd(std::string type, Json::Value cmd);
 
 void sendJson(fd_t client, Json::Value json);
+
+std::string readFile(std::string filename);
 #endif
