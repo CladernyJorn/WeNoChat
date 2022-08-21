@@ -17,7 +17,7 @@ Server &Server::singleton(uint32_t addr, uint16_t port, uint16_t filePort)
             exit(-1);
         }
     }
-    static Server singleton(inited, addr, port);
+    static Server singleton(inited, addr, port, filePort);
     inited = true;
     return singleton;
 }
@@ -38,6 +38,7 @@ Server::Server(bool inited, uint32_t addr, uint16_t port, uint16_t filePort) : h
         cout << "file socket error" << endl;
         exit(-1);
     }
+    cout << "sock: " << sock << "\nfileSock: " << fileSock << endl;
 }
 
 void Server::connect()
@@ -53,17 +54,19 @@ void Server::connect()
         exit(-1);
     }
 
-    memset(&myaddr, 0, sizeof(myaddr));
-    myaddr.sin_family = AF_INET;
-    myaddr.sin_port = filePort;
-    myaddr.sin_addr.s_addr = addr;
-    if (bind(fileSock, (sockaddr *)&myaddr, sizeof(myaddr)) == -1)
+    sockaddr_in fileaddr;
+    memset(&fileaddr, 0, sizeof(fileaddr));
+    fileaddr.sin_family = AF_INET;
+    fileaddr.sin_port = filePort;
+    fileaddr.sin_addr.s_addr = addr;
+    if (bind(fileSock, (sockaddr *)&fileaddr, sizeof(fileaddr)) == -1)
     {
         cout << "filesock bind error" << endl;
         exit(-1);
     }
 
-    listen(sock, 10);
+    cout << listen(sock, 10) << endl;
+    cout << listen(fileSock, 11) << endl;
 
     epoll_fd = epoll_create(256);
     if (epoll_fd == -1)
@@ -104,7 +107,6 @@ void Server::run()
         }
         for (int i = 0; i < nready; i++)
         {
-
             //有新的客户端接入
             if (ret_ev[i].data.fd == sock && (ret_ev[i].events & EPOLLIN))
             {
@@ -123,7 +125,7 @@ void Server::run()
             }
             else if (ret_ev[i].data.fd == fileSock && (ret_ev[i].events & EPOLLIN))
             {
-                int fileClient = accept(sock, NULL, NULL);
+                int fileClient = accept(fileSock, NULL, NULL);
                 if (fileClient == -1)
                 {
                     cout << "accept error" << endl;
@@ -160,18 +162,20 @@ void Server::run()
                             continue;
                         }
                         cout << "recv = " << buf << endl;
-                        handler.handle(client, decodeJson(buf));
+                        handler.handle(client, buf, bytes);
                     }
                     else if (fileClient_fds.find(client) != fileClient_fds.end())
                     {
-                        char buf[5000] = {0};
-                        if (recv(client, buf, sizeof(buf), 0) == 0)
+                        char buf[4096] = {0};
+                        int bytes = recv(client, buf, sizeof(buf), 0);
+                        if (bytes == 0 || bytes == -1)
                         {
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
                             fileClient_fds.erase(client);
                             continue;
                         }
-                        handler.handle(client, decodeJson(buf));
+                        cout << "recvSize = " << bytes << endl;
+                        handler.handle(client, buf, bytes);
                     }
                 }
             }

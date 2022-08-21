@@ -27,20 +27,26 @@ CmdHandler::CmdHandler()
     __callbacks["findpWord2"] = __Callbacks::_findPword_que;
     __callbacks["findpWord3"] = __Callbacks::_findPword_change;
     __callbacks["sendFile"] = __Callbacks::_sendFile;
-    __callbacks["updf"] = __Callbacks::_updateFile;
-    __callbacks["sendOver"] = __Callbacks::_sendOver;
 }
 
-void CmdHandler::handle(fd_t client, Json::Value cmd)
+void CmdHandler::handle(fd_t client, const char *buf, int _n)
 {
-    if (cmd.isNull())
-        return;
-    if (cmd.isMember("type") && cmd.isMember("info"))
+    cout << buf << endl;
+    Json::Value cmd = decodeJson(buf);
+    if (cmd.isObject())
     {
-        string name = cmd["type"].asString();
-        auto callback = __callbacks.find(name);
-        if (callback != __callbacks.end())
-            callback->second(client, cmd["info"]);
+        if (cmd.isMember("type") && cmd.isMember("info"))
+        {
+            cout << cmd["info"] << endl;
+            string name = cmd["type"].asString();
+            auto callback = __callbacks.find(name);
+            if (callback != __callbacks.end())
+                callback->second(client, cmd["info"]);
+        }
+    }
+    else
+    {
+        __Callbacks::_updateFile(client, buf, _n);
     }
 }
 
@@ -281,7 +287,7 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
     if (access((file_path).c_str(), F_OK) != 0)
     {
         cout << "no such file" << endl;
-        fileFd = creat(file_path.c_str(), S_IRWXU);
+        fileFd = open(file_path.c_str(), O_CREAT | O_TRUNC | O_WRONLY | O_APPEND, S_IRWXU);
         if (fileFd == -1)
         {
             cout << "file create failed" << endl;
@@ -298,49 +304,38 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
                 break;
         }
         file.fileNameNoExtension = tmpname;
-        fileFd = creat(file.getPath().c_str(), S_IRWXU);
+        fileFd = open(file_path.c_str(), O_CREAT | O_TRUNC | O_WRONLY | O_APPEND, S_IRWXU);
         if (fileFd == -1)
         {
             cout << "file create failed" << endl;
         }
     }
-    response["fileFd"] = fileFd;
     WriteFileTask task;
     task.fileFd = fileFd;
     task.fileSize = fileSize;
     task.progress = 0;
     handler.fileTasks[fileClient] = task;
-    sendJson(fileClient, makeCmd("confirmSendFile", response));
+    sendJson(fileClient, makeCmd("readySend", response));
 }
 
-void __Callbacks::_updateFile(fd_t fileClient, Json::Value cmd)
+void __Callbacks::_updateFile(fd_t fileClient, const char *buf, int _n)
 {
-    int size = cmd["size"].asInt();
-    const char *bytes = cmd["Bytes"].asCString();
     CmdHandler &handler = CmdHandler::singleton();
     auto p_id = handler.fileTasks.find(fileClient);
     if (p_id != handler.fileTasks.end())
     {
-        WriteFileTask task = p_id->second;
-        int written = write(task.fileFd, bytes, size);
-        task.progress += written;
-    }
-}
-
-void __Callbacks::_sendOver(fd_t fileClient, Json::Value cmd)
-{
-    idx_t fileFd = cmd["fileFd"].asUInt64();
-    CmdHandler &handler = CmdHandler::singleton();
-    auto p_id = handler.fileTasks.find(fileFd);
-    Json::Value response;
-    if (p_id != handler.fileTasks.end())
-    {
-        WriteFileTask task = p_id->second;
-        if (task.progress == task.fileSize)
+        WriteFileTask *task = &p_id->second;
+        int written = write(task->fileFd, buf, _n);
+        cout << "written: " << written << endl;
+        task->progress += written;
+        cout << "progress: " << task->progress << endl;
+        if (task->progress == task->fileSize)
+        {
+            Json::Value response;
             response["state"] = 1;
-        else
-            response["state"] = 0;
-        handler.fileTasks.erase(p_id);
+            handler.fileTasks.erase(p_id);
+            sendJson(fileClient, makeCmd("sendState", response));
+            close(task->fileFd);
+        }
     }
-    sendJson(fileClient, makeCmd("sendState", response));
 }
