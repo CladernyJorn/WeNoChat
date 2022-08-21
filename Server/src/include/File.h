@@ -21,7 +21,6 @@ public:
 
 struct WriteFileTask
 {
-    fd_t fileFd;
     size_t fileSize;
     size_t progress;
 };

@@ -57,7 +57,7 @@ void Server::connect()
     myaddr.sin_family = AF_INET;
     myaddr.sin_port = filePort;
     myaddr.sin_addr.s_addr = addr;
-    if (bind(sock, (sockaddr *)&myaddr, sizeof(myaddr)) == -1)
+    if (bind(fileSock, (sockaddr *)&myaddr, sizeof(myaddr)) == -1)
     {
         cout << "filesock bind error" << endl;
         exit(-1);
@@ -161,25 +161,17 @@ void Server::run()
                         cout << "recv = " << buf << endl;
                         handler.handle(client, decodeJson(buf));
                     }
-                    else if (fileClient_fds.find(client) != fileClient_fds.end())
-                    {
-                        char buf[1024] = {0};
-                        if (recv(client, buf, sizeof(buf), 0) == 0)
-                        {
-                            epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
-                            client_fds.erase(client);
-                            auto info = __clients.find(client);
-                            if (info != __clients.end())
-                            {
-                                string username = info->second;
-                                clients.erase(username);
-                                __clients.erase(info);
-                            }
-                            continue;
-                        }
-                        cout << "recv = " << buf << endl;
-                        handler.handle(client, decodeJson(buf));
-                    }
+                    // else if (fileClient_fds.find(client) != fileClient_fds.end())
+                    // {
+                    //     char buf[4096] = {0};
+                    //     if (recv(client, buf, sizeof(buf), 0) == 0)
+                    //     {
+                    //         epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
+                    //         fileClient_fds.erase(client);
+                    //         continue;
+                    //     }
+                    //     handler.handle(client, decodeJson(buf));
+                    // }
                 }
             }
         }

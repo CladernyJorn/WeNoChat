@@ -163,14 +163,14 @@ end;
 {
     "type": "confirmSendFile",
     "info": {
-        "fileId": 1,
+        "fileFd": 1,
     }
 }
 
 {
     "type": "updateFile",
     "info": {
-        "fileId": 1,
+        "fileFd": 1,
         "size": 4096,
         "bytes": ""
     }
@@ -179,7 +179,7 @@ end;
 {
     "type": "sendOver",
     "info": {
-        "fileId": 1
+        "fileFd": 1
     }
 }
 

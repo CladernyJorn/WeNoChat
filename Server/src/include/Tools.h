@@ -33,15 +33,4 @@ void sendJson(fd_t client, Json::Value json);
 
 typedef unsigned long long idx_t;
 
-class IndexGenerator
-{
-public:
-    IndexGenerator() : max_id(0) {}
-    idx_t getIdx();
-    void popIdx(idx_t idx);
-
-private:
-    idx_t max_id;
-    std::set<idx_t> idxs;
-};
 #endif

@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "File.h"
 #include "Tools.h"
 #include "Constants.h"
 #include "Record.h"
@@ -21,7 +22,6 @@ public:
 
     std::unordered_map<std::string, UserRecord> pWordForgotters;
     std::unordered_map<idx_t, WriteFileTask> fileTasks;
-    IndexGenerator fileIndex;
 
 private:
     CmdHandler();

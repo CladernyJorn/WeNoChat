@@ -1,11 +1,8 @@
 #include "CmdHandler.h"
 #include "sql++.h"
-#include "File.h"
-#include "Constants.h"
 #include "Server.h"
 
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <iostream>
@@ -267,12 +264,10 @@ void __Callbacks::_sendFile(fd_t client, Json::Value cmd)
     string file_path = user_dir + file.getName();
     Json::Value response;
     fd_t fileFd;
-    idx_t fileId;
     CmdHandler &handler = CmdHandler::singleton();
     if (access((file_path).c_str(), F_OK) != 0)
     {
         fileFd = creat(file_path.c_str(), S_IRWXU);
-        fileId = handler.fileIndex.getIdx();
     }
     else
     {
@@ -286,37 +281,35 @@ void __Callbacks::_sendFile(fd_t client, Json::Value cmd)
         file.fileNameNoExtension = tmpname;
         file_path = user_dir + file.getName();
         fileFd = creat(file_path.c_str(), S_IRWXU);
-        fileId = handler.fileIndex.getIdx();
     }
-    response["fileId"] = (Json::Value::UInt64)fileId;
+    response["fileFd"] = fileFd;
     WriteFileTask task;
-    task.fileFd = fileFd;
     task.fileSize = fileSize;
     task.progress = 0;
-    handler.fileTasks[fileId] = task;
+    handler.fileTasks[fileFd] = task;
     sendJson(client, makeCmd("confirmSendFile", response));
 }
 
 void __Callbacks::_updateFile(fd_t client, Json::Value cmd)
 {
-    idx_t fileId = cmd["fileId"].asUInt64();
+    idx_t fileFd = cmd["fileFd"].asUInt64();
     int size = cmd["size"].asInt();
     const char *bytes = cmd["Bytes"].asCString();
     CmdHandler &handler = CmdHandler::singleton();
-    auto p_id = handler.fileTasks.find(fileId);
+    auto p_id = handler.fileTasks.find(fileFd);
     if (p_id != handler.fileTasks.end())
     {
         WriteFileTask task = p_id->second;
-        int written = write(task.fileFd, bytes, size);
+        int written = write(fileFd, bytes, size);
         task.progress += written;
     }
 }
 
-void _sendOver(fd_t client, Json::Value cmd)
+void __Callbacks::_sendOver(fd_t client, Json::Value cmd)
 {
-    idx_t fileId = cmd["fileId"].asUInt64();
+    idx_t fileFd = cmd["fileFd"].asUInt64();
     CmdHandler &handler = CmdHandler::singleton();
-    auto p_id = handler.fileTasks.find(fileId);
+    auto p_id = handler.fileTasks.find(fileFd);
     Json::Value response;
     if (p_id != handler.fileTasks.end())
     {
