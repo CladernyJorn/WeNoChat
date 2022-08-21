@@ -149,7 +149,11 @@ end;
 
 ## 文件指令
 
+- 服务器收文件
+
+
 ```json
+// from fileClient:
 {
     "type": "sendFile",
     "info": {
@@ -159,25 +163,63 @@ end;
     }
 }
 
+// to fileClient:
 {
-    "type": "updf",
-    "info": {
-        "size": 4096,
-        "bytes": ""
-    }
+    "type": "readySend",
+    "info": {}
 }
 
-{
-    "type": "sendOver",
-    "info": {
-        "fileFd": 1
-    }
-}
+// from fileClient:
+asflasdfjlaksfjddljfk // a stream of bits.
 
-//response:
+// to fileClient: 
 {
     "type": "sendState",
     "info":{
+        "state": 1
+    }
+}
+```
+
+- C->S：
+
+```json
+
+// from fileClient
+// 这个会让服务端建立传输任务后直接开始发送
+{
+    "type": "reqFile",
+    "info": {
+        "fileName": "../res/jack/head.jpg",
+    }
+}
+
+//to client
+{
+    "type": "sendFile",
+    "info": {
+        // does file exist.
+        "state": 1,
+        "fileName": "../res/jack/head.jpg",
+        "size": 4096,
+    }
+}
+
+// from fileClient
+{
+    "type": "readySend",
+    "info": {
+        "fileName": "../res/jack/head.jpg",
+    }
+}
+
+// to fileClient
+asdfasdfadsfa // a stream of bits
+
+// to fileClient
+{
+    "type": "sendState",
+    "info": {
         "state": 1
     }
 }

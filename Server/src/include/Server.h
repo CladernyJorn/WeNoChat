@@ -29,6 +29,8 @@ public:
     fd_t getFdByName(std::string username);
     void addClient(std::string username, fd_t __fd);
 
+    void sendFile(fd_t fileClient, std::string filepath);
+
 private:
     Server(bool inited, uint32_t addr = 0, uint16_t port = 0, uint16_t filePort = 0);
     Server(const Server &) = delete;
@@ -44,6 +46,9 @@ private:
     std::unordered_set<fd_t> fileClient_fds;
     std::unordered_map<std::string, fd_t> clients;
     std::unordered_map<fd_t, std::string> __clients;
+
+    std::unordered_set<fd_t> fileOpened;
+    std::unordered_map<fd_t, WriteFileTask> fileSendTasks;
 
     CmdHandler &handler;
 };

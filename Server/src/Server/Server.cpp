@@ -4,6 +4,9 @@
 #include <cstring>
 #include <iostream>
 #include <cstdlib>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/fcntl.h>
 using namespace std;
 
 Server &Server::singleton(uint32_t addr, uint16_t port, uint16_t filePort)
@@ -197,4 +200,27 @@ void Server::addClient(std::string username, fd_t __fd)
 {
     clients[username] = __fd;
     __clients[__fd] = username;
+}
+
+void Server::sendFile(fd_t fileClient, std::string filepath)
+{
+    int fileFd = open(filepath.c_str(), O_RDONLY);
+    if (fileFd == -1)
+    {
+        cout << "file open error" << endl;
+    }
+    WriteFileTask task;
+    struct stat stFile;
+    if ((fstat(fileFd, &stFile) == 0 && S_ISREG(stFile.st_mode)))
+    {
+        task.fileSize = stFile.st_size;
+    }
+    task.fileFd = fileFd;
+    task.progress = 0;
+
+    epoll_event ev;
+    ev.events = EPOLLIN;
+    ev.data.fd = fileFd;
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fileFd, &ev);
+    fileSendTasks[fileClient] = task;
 }
