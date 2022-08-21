@@ -160,7 +160,6 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
         }
 
         Sql::singleton().insertFriends(username, friendUser);
-        Sql::singleton().insertFriends(friendUser, username);
     }
     else
     {
