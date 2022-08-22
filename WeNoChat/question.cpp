@@ -1,11 +1,16 @@
 #include "question.h"
 #include "ui_question.h"
+#include<QMouseEvent>
 
 question::question(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::question)
 {
     ui->setupUi(this);
+    //去窗口边框
+    setWindowFlags(Qt::FramelessWindowHint | windowFlags());
+    //把窗口背景设置为透明;
+    setAttribute(Qt::WA_TranslucentBackground);
 }
 
 question::question(QString user,QString q,QTcpSocket *sock,QWidget *parent) :
@@ -14,6 +19,10 @@ question::question(QString user,QString q,QTcpSocket *sock,QWidget *parent) :
 {
     udata=user;
     ui->setupUi(this);
+    //去窗口边框
+    setWindowFlags(Qt::FramelessWindowHint | windowFlags());
+    //把窗口背景设置为透明;
+    setAttribute(Qt::WA_TranslucentBackground);
     client = sock;
     qu = q;
     ui->question_2->setText(qu);
@@ -54,4 +63,39 @@ void question::on_confirmButton_clicked()
     std::string data=Encoder_findpWord2(udata.toStdString(),ans.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
+}
+
+void question::on_closeButton_clicked()
+{
+    close();
+}
+
+void question::on_hideButton_clicked()
+{
+    showMinimized();
+}
+//！！！！以下东西不用动！！！！
+void question::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton)
+    {
+        //求坐标差值
+        //当前点击坐标-窗口左上角坐标
+        p = e->globalPos() - this->frameGeometry().topLeft();
+    }
+}
+
+void question::mouseMoveEvent(QMouseEvent *e)
+{
+    if(e->buttons() & Qt::LeftButton&&p.x()!=0&&p.y()!=0)
+    {
+        //移到左上角
+        move(e->globalPos() - p);
+    }
+
+}
+
+void question::mouseReleaseEvent(QMouseEvent *event){
+    p.setX(0);
+    p.setY(0);
 }

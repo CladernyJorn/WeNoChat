@@ -18,14 +18,23 @@ public:
     explicit searchFriends(QWidget *parent = 0);
     explicit searchFriends(QString u,QTcpSocket * sock,QWidget *parent = 0);
     ~searchFriends();
+protected:
+    void mouseMoveEvent(QMouseEvent *e);//鼠标移动
+    void mousePressEvent(QMouseEvent *e);//鼠标按下移动
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private slots:
     void on_pushButton_clicked();
+
+    void on_closeButton_clicked();
+
+    void on_hideButton_clicked();
 
 private:
     Ui::searchFriends *ui;
     QTcpSocket *client;
     QString udata;
+    QPoint p;
 };
 
 #endif // SEARCHFRIENDS_H

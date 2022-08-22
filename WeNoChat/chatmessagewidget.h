@@ -3,7 +3,9 @@
 
 
 #include <QWidget>
+#include <QImage>
 #include"communicate_utils.h"
+#include"viewfullmessage.h"
 class QPaintEvent;
 class QPainter;
 class QLabel;
@@ -19,9 +21,13 @@ public:
         User_Me,    //自己
         User_She,   //对方
         User_Time,  //时间
+        Image_She,
+        Image_Me
     };
+
     void setTextSuccess();
-    void setText(QString text, QString time, QSize allSize, User_Type userType);
+    void setText(QString text, QString time, QSize allSize, User_Type userType,QImage* image = NULL);
+    void setImage(QImage img, QString time, ChatMessageWidget::User_Type userType, QImage* image);
 
     QSize getRealString(QString src);
     QSize fontRect(QString str);
@@ -31,7 +37,11 @@ public:
     inline User_Type userType() {return m_userType;}
 protected:
     void paintEvent(QPaintEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent* e);
 private:
+
+    ViewFullMessage *vfm;
+
     QString m_msg;
     QString m_time;
     QString m_curTime;
@@ -54,6 +64,7 @@ private:
     QRect m_textRightRect;
     QPixmap m_leftPixmap;
     QPixmap m_rightPixmap;
+    QPixmap m_ImageMessage;
     QLabel* m_loading = Q_NULLPTR;
     QMovie* m_loadingMovie = Q_NULLPTR;
     bool m_isSending = false;

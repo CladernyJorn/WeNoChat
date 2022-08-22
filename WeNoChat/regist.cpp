@@ -12,6 +12,11 @@ Regist::Regist(QWidget *parent) :
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     //把窗口背景设置为透明;
     setAttribute(Qt::WA_TranslucentBackground);
+    ui->comboBox->addItem("请选择密保问题");
+    ui->comboBox->addItem("你最喜欢的颜色是什么");
+    ui->comboBox->addItem("你最喜欢的美食是什么");
+    ui->comboBox->addItem("你最喜欢的电影是什么");
+    ui->comboBox->addItem("你认为中国最好的大学是哪所");
 }
 
 Regist::Regist(QTcpSocket *sock,QWidget *parent) :
@@ -24,6 +29,11 @@ Regist::Regist(QTcpSocket *sock,QWidget *parent) :
     //把窗口背景设置为透明;
     setAttribute(Qt::WA_TranslucentBackground);
     client = sock;
+    ui->comboBox->addItem("请选择密保问题");
+    ui->comboBox->addItem("你最喜欢的颜色是什么");
+    ui->comboBox->addItem("你最喜欢的美食是什么");
+    ui->comboBox->addItem("你最喜欢的电影是什么");
+    ui->comboBox->addItem("你认为中国最好的大学是哪所");
     connect(client,SIGNAL(readyRead()),this,SLOT(hadreadyread()));
 
 }
@@ -31,6 +41,12 @@ Regist::Regist(QTcpSocket *sock,QWidget *parent) :
 //注册按钮按下：在这里处理注册
 void Regist::on_loginButton_clicked()
 {
+    QString temp = ui->comboBox->currentText();
+    if(temp == "请选择密保问题")
+    {
+        QMessageBox::information(this,"提示","请选择密保问题");
+        return;
+    }
     QString userName = ui->userEdit->text();
     QString pwd = ui->passwordEdit->text();
     //TODO：判断密码合法性，不能包含特殊符号
@@ -41,10 +57,10 @@ void Regist::on_loginButton_clicked()
         return;
     }
     QString phoneNumber = ui->phoneNumberEdit->text();
-    QString question = ui->questionEdit->text();
+    int question = ui->comboBox->currentIndex();
     QString answer = ui->answerEdit->text();
     //与服务器连接，检查注册
-    std::string data=Encoder_regist(userName.toStdString(),pwd.toStdString(),phoneNumber.toStdString(),question.toInt(),answer.toStdString());
+    std::string data=Encoder_regist(userName.toStdString(),pwd.toStdString(),phoneNumber.toStdString(),question,answer.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
 }
@@ -67,7 +83,7 @@ void Regist::hadreadyread()
         showMainWindow();
         this->close();
     }
-    else QMessageBox::information(this,"提示",QString::fromStdString(info));
+    else QMessageBox::information(this,"提示","注册成功");
 
 }
 //打开聊天主界面
@@ -88,13 +104,18 @@ void Regist::mousePressEvent(QMouseEvent *e)
 
 void Regist::mouseMoveEvent(QMouseEvent *e)
 {
-    if(e->buttons() & Qt::LeftButton)
+    if(e->buttons() & Qt::LeftButton&&p.x()!=0&&p.y()!=0)
     {
         //移到左上角
         move(e->globalPos() - p);
     }
 
 }
+void Regist::mouseReleaseEvent(QMouseEvent *event){
+    p.setX(0);
+    p.setY(0);
+}
+
 void Regist::on_closeButton_clicked()
 {
     close();

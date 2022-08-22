@@ -1,11 +1,17 @@
 #include "searchfriends.h"
 #include "ui_searchfriends.h"
+#include<QMouseEvent>
 
 searchFriends::searchFriends(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::searchFriends)
 {
     ui->setupUi(this);
+    //设置不可改大小
+    this->setFixedSize(this->geometry().size());
+    //去窗口边框
+    setWindowFlags(Qt::FramelessWindowHint | windowFlags());
+
 }
 
 searchFriends::searchFriends(QString u,QTcpSocket * sock,QWidget *parent):
@@ -13,6 +19,10 @@ searchFriends::searchFriends(QString u,QTcpSocket * sock,QWidget *parent):
     ui(new Ui::searchFriends)
 {
     ui->setupUi(this);
+    //设置不可改大小
+    this->setFixedSize(this->geometry().size());
+    //去窗口边框
+    setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     client=sock;
     udata=u;
 }
@@ -30,4 +40,41 @@ void searchFriends::on_pushButton_clicked()
     std::string data=Encoder_addfriends(udata.toStdString(),friend_userName.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
+}
+
+
+
+void searchFriends::on_closeButton_clicked()
+{
+    close();
+}
+
+void searchFriends::on_hideButton_clicked()
+{
+    showMinimized();
+}
+//！！！！以下东西不用动！！！！
+void searchFriends::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton)
+    {
+        //求坐标差值
+        //当前点击坐标-窗口左上角坐标
+        p = e->globalPos() - this->frameGeometry().topLeft();
+    }
+}
+
+void searchFriends::mouseMoveEvent(QMouseEvent *e)
+{
+    if(e->buttons() & Qt::LeftButton&&p.x()!=0&&p.y()!=0)
+    {
+        //移到左上角
+        move(e->globalPos() - p);
+    }
+
+}
+
+void searchFriends::mouseReleaseEvent(QMouseEvent *event){
+    p.setX(0);
+    p.setY(0);
 }
