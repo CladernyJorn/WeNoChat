@@ -24,8 +24,6 @@ vector<UserRecord> Sql::findUserByName(string userName)
 {
     string sql = "select * from User where uName = '" + userName + "';";
 
-    cout << sql << endl;
-
     char **result = NULL;
     int nR = 0, nC = 0;
     char *errmsg = NULL;

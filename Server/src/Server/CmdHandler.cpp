@@ -32,13 +32,11 @@ CmdHandler::CmdHandler()
 
 void CmdHandler::handle(fd_t client, const char *buf, int _n)
 {
-    cout << buf << endl;
     Json::Value cmd = decodeJson(buf);
     if (cmd.isObject())
     {
         if (cmd.isMember("type") && cmd.isMember("info"))
         {
-            cout << cmd["info"] << endl;
             string name = cmd["type"].asString();
             auto callback = __callbacks.find(name);
             if (callback != __callbacks.end())
@@ -132,7 +130,7 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
         response["info"] = _msg;
         string userName = _to[i].asString();
         fd_t tgtfd = Server::singleton().getFdByName(userName);
-        if (tgtfd != 0)
+        if (tgtfd != -1)
         {
             cout << "tgtfd = " << tgtfd << endl;
             cout << "client = " << client << endl;
@@ -316,7 +314,6 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
     task.fileSize = fileSize;
     task.progress = 0;
     handler.fileTasks[fileClient] = task;
-    sendJson(fileClient, makeCmd("readySend", response));
 }
 
 void __Callbacks::_updateFile(fd_t fileClient, const char *buf, int _n)
@@ -344,4 +341,5 @@ void __Callbacks::_updateFile(fd_t fileClient, const char *buf, int _n)
 void __Callbacks::_rqirFile(fd_t fileClient, Json::Value cmd)
 {
     File file(cmd["fileName"].asString());
+    Json::Value response;
 }

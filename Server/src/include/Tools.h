@@ -25,12 +25,9 @@ Json::Value makeCmd(std::string type, Json::Value cmd);
 // 向客户端发送json消息
 void sendJson(fd_t client, Json::Value json);
 
-/**
- * 编号生成器。
- * 从0开始生成序号，可以删除序号，下次生成会采用最小的未使用序号。
- * 复杂度O(log未使用的id个数)
- */
+void sendStr(fd_t client, const char *str, uint len);
 
-typedef unsigned long long idx_t;
+uint32_t bytes2uInt(const char *bytes);
 
+void uInt2Bytes(uint32_t _n, char *buf);
 #endif

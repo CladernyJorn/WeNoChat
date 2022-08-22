@@ -85,7 +85,7 @@ end;
 {
     "type": "login",
     "info": {
-        "username": "jack",
+        "username": "andy",
         "password": "123"
     }
 }
@@ -94,8 +94,8 @@ end;
     "type": "chat",
     "info": {
         "username": "andy",
-        "userList": ["jack"],
-        "info": "你好"
+        "userList": ["andy"],
+        "info": "nh"
     }
 }
 
@@ -163,12 +163,6 @@ end;
     }
 }
 
-// to fileClient:
-{
-    "type": "readySend",
-    "info": {}
-}
-
 // from fileClient:
 asflasdfjlaksfjddljfk // a stream of bits.
 
@@ -189,7 +183,7 @@ asflasdfjlaksfjddljfk // a stream of bits.
 {
     "type": "reqFile",
     "info": {
-        "fileName": "../res/jack/head.jpg",
+        "fileFd": 1,
     }
 }
 
@@ -201,14 +195,6 @@ asflasdfjlaksfjddljfk // a stream of bits.
         "state": 1,
         "fileName": "../res/jack/head.jpg",
         "size": 4096,
-    }
-}
-
-// from fileClient
-{
-    "type": "readySend",
-    "info": {
-        "fileName": "../res/jack/head.jpg",
     }
 }
 

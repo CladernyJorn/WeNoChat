@@ -1,5 +1,6 @@
 #include "Server.h"
 #include "Json.h"
+#include "Tools.h"
 
 #include <cstring>
 #include <iostream>
@@ -69,8 +70,8 @@ void Server::connect()
         exit(-1);
     }
 
-    cout << listen(sock, 10) << endl;
-    cout << listen(fileSock, 11) << endl;
+    listen(sock, 10);
+    listen(fileSock, 11);
 
     epoll_fd = epoll_create(256);
     if (epoll_fd == -1)
@@ -152,7 +153,7 @@ void Server::run()
                     {
                         int client = in_fd;
                         char buf[1024] = {0};
-                        int bytes = recv(client, buf, sizeof(buf), 0);
+                        int bytes = recv(client, buf, 4, 0);
                         if (bytes == 0 || bytes == -1)
                         {
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
@@ -166,20 +167,26 @@ void Server::run()
                             }
                             continue;
                         }
+                        uint byten = bytes2uInt(buf);
+                        cout << byten << " bytes received" << endl;
+                        bytes = recv(client, buf, byten, 0);
                         cout << "recv = " << buf << endl;
                         handler.handle(client, buf, bytes);
                     }
                     else if (fileClient_fds.find(in_fd) != fileClient_fds.end())
                     {
                         int fileClient = in_fd;
-                        char buf[4096] = {0};
-                        int bytes = recv(fileClient, buf, sizeof(buf), 0);
+                        char buf[5000] = {0};
+                        int bytes = recv(fileClient, buf, 4, 0);
                         if (bytes == 0 || bytes == -1)
                         {
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fileClient, NULL);
                             fileClient_fds.erase(fileClient);
                             continue;
                         }
+                        uint byten = bytes2uInt(buf);
+                        cout << byten << " bytes received" << endl;
+                        bytes = recv(fileClient, buf, byten, 0);
                         cout << "recvSize = " << bytes << endl;
                         handler.handle(fileClient, buf, bytes);
                     }
@@ -197,7 +204,7 @@ void Server::run()
                         }
                         WriteFileTask out = fileSendTasks[fileFd];
                         int fileClient = out.fileFd;
-                        send(fileClient, buf, bytes, 0);
+                        sendStr(fileClient, buf, bytes);
                     }
                 }
             }
@@ -207,12 +214,12 @@ void Server::run()
 
 fd_t Server::getFdByName(std::string username)
 {
-    auto user_fd = clients.find("username");
+    auto user_fd = clients.find(username);
     if (user_fd != clients.end())
     {
         return user_fd->second;
     }
-    return 0;
+    return -1;
 }
 
 void Server::addClient(std::string username, fd_t __fd)
