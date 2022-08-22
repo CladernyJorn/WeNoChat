@@ -29,7 +29,7 @@ public:
     void pushImageIntoChatWindow(bool type, QImage msg, QString time, QImage *image = NULL, bool isSending = false);
     void dealImage(ChatMessageWidget *messageW, QListWidgetItem *item, QImage img, QString time, ChatMessageWidget::User_Type type, QImage *image);
     int packData(const QString &pack,Json::Value &data);
-    void MainWindow::changeMyIcon(QImage * uimg);
+    void changeMyIcon(QImage * uimg);
 protected:
     void mouseMoveEvent(QMouseEvent *ev);  //鼠标移动
     void mousePressEvent(QMouseEvent *ev); //鼠标按下移动
@@ -41,8 +41,6 @@ private slots:
 
     void on_pushButton_addfriend_clicked();
     void on_send_clicked();
-    void on_pushButton_2_clicked();
-    void on_pushButton_clicked();
     void hadreadyread();
 
     void pushMessageIntoChatWindow(bool type, QString msg, QString time, QImage *image = NULL, bool isSending = false);

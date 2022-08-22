@@ -46,7 +46,7 @@ void ChatMessageWidget::setText(QString text, QString time, QSize allSize, ChatM
     m_allSize = allSize;
     if (userType == User_Me)
     {
-        if (image != NULL)
+        if (image!=NULL&&!image->isNull())
         {
             m_rightPixmap = QPixmap::fromImage(*image);
         }
@@ -59,7 +59,7 @@ void ChatMessageWidget::setText(QString text, QString time, QSize allSize, ChatM
     }
     else
     {
-        if (image != NULL)
+        if (image!=NULL&&!image->isNull())
         {
             m_leftPixmap = QPixmap::fromImage(*image);
         }
