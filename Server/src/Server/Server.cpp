@@ -65,7 +65,7 @@ void Server::connect()
         exit(-1);
     }
 }
-char buf[1048576] = {0};
+char buf[6291456] = {0};
 void Server::run()
 {
     epoll_event ev;
