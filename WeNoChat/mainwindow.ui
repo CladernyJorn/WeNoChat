@@ -379,10 +379,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QPushButton" name="pushButton_image">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>40</y>
-     <width>171</width>
-     <height>20</height>
+     <x>120</x>
+     <y>10</y>
+     <width>45</width>
+     <height>45</height>
     </rect>
    </property>
    <property name="font">
@@ -391,7 +391,7 @@ p, li { white-space: pre-wrap; }
     </font>
    </property>
    <property name="text">
-    <string>找个放头像，点击更换头像</string>
+    <string>f</string>
    </property>
   </widget>
   <zorder>frame</zorder>

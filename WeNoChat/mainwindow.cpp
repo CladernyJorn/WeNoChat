@@ -127,7 +127,7 @@ void MainWindow::hadreadyread()
             qDebug("chat data back from server error/n");
             return;
         }
-        pushMessageIntoChatWindow(false, QString::fromStdString(msg), QString::number(QDateTime::currentDateTime().toTime_t()), false);
+        pushMessageIntoChatWindow(false, QString::fromStdString(msg), QString::number(QDateTime::currentDateTime().toTime_t()),&chattingInfo.chatFriend.image);
     }
     else if (jtmp["type"].asString() == "addfriends")
     { // mainwindow里处理加好友的返回信息
@@ -161,16 +161,8 @@ void MainWindow::hadreadyread()
         }
         if (state == 1)
         {
-            /*Todo :根据好友列表生成要发送信息好友usersList
-             * 这里暂时用hxy代替
-             *
-             */
             std::vector<std::string> userslist; // userList需要从好友栏导入的，这里固定的占个位置
-            userslist.push_back("hxy");
-            /* Todo：导入要发送给的userList
-             *
-             *
-             */
+            userslist.push_back(chattingInfo.chatFriend.userName);
             imag->send_chatfile_image(userslist);
         }
         else
@@ -212,7 +204,7 @@ void MainWindow::hadreadyread()
 
             QImage chat_image = QString2Qimage(QString::fromStdString(info));
             //处理返回来的chat_image图片信息
-            pushImageIntoChatWindow(false, chat_image, QString::number(QDateTime::currentDateTime().toTime_t()));
+            pushImageIntoChatWindow(false,chat_image,QString::number(QDateTime::currentDateTime().toTime_t()),&chattingInfo.chatFriend.image);
             return;
         }
         // Todo:之后可以加其他类型文件的处理
@@ -255,19 +247,14 @@ void MainWindow::on_send_clicked()
     QString msg = ui->textEdit->toPlainText();
     if (msg.isEmpty())
         return; //空字符不发送
-    /*Todo :根据好友列表生成要发送信息好友usersList
-     * 这里暂时用hxy代替
-     *
-     */
-
-    std::vector<std::string> usersList;
+    std::vector<std::string> usersList ;
     usersList.push_back(chattingInfo.chatFriend.userName);
     //发送数据协议
     std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(), usersList);
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
-    //测试发数据
-    pushMessageIntoChatWindow(true, msg, QString::number(QDateTime::currentDateTime().toTime_t()), false);
+
+    pushMessageIntoChatWindow(true, msg, QString::number(QDateTime::currentDateTime().toTime_t()),&user_image, false);
     ui->textEdit->clear();
 }
 
@@ -409,7 +396,7 @@ void MainWindow::on_pushButton_send_image_clicked()
     imag->getImagefromdir(image_addr);
 
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()));
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
 }
 void MainWindow::initConnection()
 {
@@ -438,12 +425,12 @@ void MainWindow::startChatting(QVariant variant)
         if (list[0] == udata)
         {
             //传自己头像的 Qimage
-            pushMessageIntoChatWindow(true, list[1], list[2]);
+            pushMessageIntoChatWindow(true, list[1], list[2],&user_image);
         }
         else
         {
             //传对方头像的QImage
-            pushMessageIntoChatWindow(false, list[1], list[2]);
+            pushMessageIntoChatWindow(false, list[1], list[2],&chattingInfo.chatFriend.image);
         }
     }
 }
@@ -525,4 +512,11 @@ void MainWindow::dealImage(ChatMessageWidget *messageW, QListWidgetItem *item, Q
     item->setSizeHint(size);
     messageW->setImage(img, time, type, image);
     ui->listWidget->setItemWidget(item, messageW);
+}
+void MainWindow::changeMyIcon(QImage * uimg){
+    if(uimg == NULL){
+        uimg = new QImage(":/assets/defaultHead.png");
+    }
+    QIcon qicon(QPixmap::fromImage(*uimg));
+    ui->pushButton_image->setIcon(qicon);
 }
