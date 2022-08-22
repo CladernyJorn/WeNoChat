@@ -1,0 +1,6 @@
+*.user
+*.user.*
+build-*
+.vscode
+Build
+bin
