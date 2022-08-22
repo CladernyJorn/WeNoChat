@@ -107,8 +107,10 @@ void Server::run()
                     if (client_fds.find(client) != client_fds.end())
                     {
 
-                        if (recv(client, buf, sizeof(buf), 0) == 0)
+                        int bytes = recv(client, buf, sizeof(buf), 0);
+                        if (bytes == 0 || bytes == -1)
                         {
+                            cout << "one client disconnected" << endl;
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
                             client_fds.erase(client);
                             auto info = __clients.find(client);
@@ -121,7 +123,7 @@ void Server::run()
                             continue;
                         }
                         cout << "recv = " << buf << endl;
-                        handler.handle(client, decodeJson(buf));
+                        handler.handle(client, buf);
                     }
                 }
             }
@@ -131,7 +133,7 @@ void Server::run()
 
 fd_t Server::getFdByName(std::string username)
 {
-    auto user_fd = clients.find("username");
+    auto user_fd = clients.find(username);
     if (user_fd != clients.end())
     {
         return user_fd->second;

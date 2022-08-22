@@ -45,7 +45,7 @@ create table User(
     phonenum varchar(11) unique not null,
     secureQue int not null,
     secureAns text not null,
-    head text
+    head text default ''
 );
 
 create table Friends(
@@ -151,5 +151,21 @@ end;
         "name": "abc.jpg",
         "size": 1024,
         "bytes": ""
+    }
+}
+
+{
+    "type":"askFriendsList",
+    "info":{
+        "userList":[
+            {
+                "name":"sdfs",
+                "head":"sdfs"
+            },
+            {
+                "name":"sdfs",
+                "head":"sdfs"
+            }
+        ]
     }
 }

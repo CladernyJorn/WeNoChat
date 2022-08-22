@@ -6,6 +6,7 @@
 #include <functional>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #include "Constants.h"
 #include "Record.h"
@@ -16,9 +17,10 @@ class CmdHandler
 {
 public:
     static CmdHandler &singleton();
-    void handle(fd_t client, Json::Value cmd);
+    void handle(fd_t client, std::string buf);
 
     std::unordered_map<std::string, UserRecord> &getpWordForgotter();
+    std::unordered_map<fd_t, std::string> tmpCmds;
 
 private:
     CmdHandler();

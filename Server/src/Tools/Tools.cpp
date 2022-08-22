@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 using namespace std;
@@ -25,6 +26,8 @@ Json::Value makeCmd(std::string type, Json::Value cmd)
 void sendJson(fd_t client, Json::Value json)
 {
     string jsonStr = encodeJson(json);
+    cout << jsonStr.length() << endl;
+    cout << "send: " << jsonStr << endl;
     send(client, jsonStr.c_str(), jsonStr.length(), 0);
 }
 

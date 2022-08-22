@@ -38,15 +38,10 @@ vector<UserRecord> Sql::findUserByName(string userName)
     {
         UserRecord rec;
         rec.username = string(result[i * nC + 0]);
-        cout << 1 << endl;
         rec.password = string(result[i * nC + 1]);
-        cout << 2 << endl;
         rec.phonenum = string(result[i * nC + 2]);
-        cout << 3 << endl;
         sscanf(result[i * nC + 3], "%d", &rec.secureQue);
-        cout << 4 << endl;
         rec.secureAns = string(result[i * nC + 4]);
-        cout << 5 << endl;
         if (result[i * nC + 5] != NULL)
             rec.headfile = string(result[i * nC + 5]);
         else
@@ -58,7 +53,7 @@ vector<UserRecord> Sql::findUserByName(string userName)
 
 void Sql::insertUser(UserRecord rec)
 {
-    string sql = "insert into User values('" + rec.username + "', '" + rec.password + "', '" + rec.phonenum + "', " + to_string(rec.secureQue) + ", '" + rec.secureAns + "');";
+    string sql = "insert into User values('" + rec.username + "', '" + rec.password + "', '" + rec.phonenum + "', " + to_string(rec.secureQue) + ", '" + rec.secureAns + "', '" + rec.headfile + "');";
     char *errmsg;
     int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
     if (sqlRet != 0)
