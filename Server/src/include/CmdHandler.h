@@ -43,5 +43,6 @@ namespace __Callbacks
     void _cancelFindPword(fd_t client, Json::Value cmd);
     void _sendFile(fd_t fileClient, Json::Value cmd);
     void _updateFile(fd_t fileClient, const char *buf, int _n);
+    void _rqirFile(fd_t fileClient, Json::Value cmd);
 }
 #endif // CmdHandler.h

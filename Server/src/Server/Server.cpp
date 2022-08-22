@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/fcntl.h>
+#include <unistd.h>
 using namespace std;
 
 Server &Server::singleton(uint32_t addr, uint16_t port, uint16_t filePort)
@@ -185,6 +186,18 @@ void Server::run()
                     else if (fileOpened.find(in_fd) != fileOpened.end())
                     {
                         int fileFd = in_fd;
+                        char buf[4096] = {0};
+                        int bytes = read(fileFd, buf, 4096);
+                        if (bytes == 0)
+                        {
+                            epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fileFd, NULL);
+                            fileOpened.erase(fileFd);
+                            close(fileFd);
+                            continue;
+                        }
+                        WriteFileTask out = fileSendTasks[fileFd];
+                        int fileClient = out.fileFd;
+                        send(fileClient, buf, bytes, 0);
                     }
                 }
             }
@@ -222,12 +235,12 @@ void Server::sendFile(fd_t fileClient, std::string filepath)
     {
         task.fileSize = stFile.st_size;
     }
-    task.fileFd = fileFd;
+    task.fileFd = fileClient;
     task.progress = 0;
 
     epoll_event ev;
     ev.events = EPOLLIN;
-    ev.data.fd = fileFd;
+    ev.data.fd = fileClient;
     epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fileFd, &ev);
-    fileSendTasks[fileClient] = task;
+    fileSendTasks[fileFd] = task;
 }

@@ -27,6 +27,7 @@ CmdHandler::CmdHandler()
     __callbacks["findpWord2"] = __Callbacks::_findPword_que;
     __callbacks["findpWord3"] = __Callbacks::_findPword_change;
     __callbacks["sendFile"] = __Callbacks::_sendFile;
+    __callbacks["rqirFile"] = __Callbacks::_rqirFile;
 }
 
 void CmdHandler::handle(fd_t client, const char *buf, int _n)
@@ -338,4 +339,9 @@ void __Callbacks::_updateFile(fd_t fileClient, const char *buf, int _n)
             close(task->fileFd);
         }
     }
+}
+
+void __Callbacks::_rqirFile(fd_t fileClient, Json::Value cmd)
+{
+    File file(cmd["fileName"].asString());
 }

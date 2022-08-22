@@ -186,7 +186,6 @@ asflasdfjlaksfjddljfk // a stream of bits.
 ```json
 
 // from fileClient
-// 这个会让服务端建立传输任务后直接开始发送
 {
     "type": "reqFile",
     "info": {
