@@ -11,10 +11,9 @@ public:
     void appendMessage(std::string message);
     void deleteMessage(int index);
     std::vector<std::string> getAllMessageRecord();
+
 private:
     std::vector<std::string> record;
-
-
 };
 
 #endif // MESSAGERECORD_H

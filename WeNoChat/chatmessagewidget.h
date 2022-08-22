@@ -1,11 +1,10 @@
 #ifndef CHATMESSAGEWIDGET_H
 #define CHATMESSAGEWIDGET_H
 
-
 #include <QWidget>
 #include <QImage>
-#include"communicate_utils.h"
-#include"viewfullmessage.h"
+#include "communicate_utils.h"
+#include "viewfullmessage.h"
 class QPaintEvent;
 class QPainter;
 class QLabel;
@@ -15,31 +14,33 @@ class ChatMessageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ChatMessageWidget(QWidget * parent = nullptr);
-    enum User_Type{
-        User_System,//系统备用（预留好友确认等系统消息，也可以在User_Time里面弄）
-        User_Me,    //自己
-        User_She,   //对方
-        User_Time,  //时间
+    explicit ChatMessageWidget(QWidget *parent = nullptr);
+    enum User_Type
+    {
+        User_System, //系统备用（预留好友确认等系统消息，也可以在User_Time里面弄）
+        User_Me,     //自己
+        User_She,    //对方
+        User_Time,   //时间
         Image_She,
         Image_Me
     };
 
     void setTextSuccess();
-    void setText(QString text, QString time, QSize allSize, User_Type userType,QImage* image = NULL);
-    void setImage(QImage img, QString time, ChatMessageWidget::User_Type userType, QImage* image);
+    void setText(QString text, QString time, QSize allSize, User_Type userType, QImage *image = NULL);
+    void setImage(QImage img, QString time, ChatMessageWidget::User_Type userType, QImage *image);
 
     QSize getRealString(QString src);
     QSize fontRect(QString str);
 
-    inline QString text() {return m_msg;}
-    inline QString time() {return m_time;}
-    inline User_Type userType() {return m_userType;}
+    inline QString text() { return m_msg; }
+    inline QString time() { return m_time; }
+    inline User_Type userType() { return m_userType; }
+
 protected:
     void paintEvent(QPaintEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent* e);
-private:
+    void mouseDoubleClickEvent(QMouseEvent *e);
 
+private:
     ViewFullMessage *vfm;
 
     QString m_msg;
@@ -65,8 +66,8 @@ private:
     QPixmap m_leftPixmap;
     QPixmap m_rightPixmap;
     QPixmap m_ImageMessage;
-    QLabel* m_loading = Q_NULLPTR;
-    QMovie* m_loadingMovie = Q_NULLPTR;
+    QLabel *m_loading = Q_NULLPTR;
+    QMovie *m_loadingMovie = Q_NULLPTR;
     bool m_isSending = false;
 };
 

@@ -3,8 +3,9 @@
 
 #include <QWidget>
 
-namespace Ui {
-class ViewFullMessage;
+namespace Ui
+{
+    class ViewFullMessage;
 }
 
 class ViewFullMessage : public QWidget
@@ -13,7 +14,7 @@ class ViewFullMessage : public QWidget
 
 public:
     explicit ViewFullMessage(QWidget *parent = 0);
-    explicit ViewFullMessage(QString strTxt,QWidget *parent = 0);
+    explicit ViewFullMessage(QString strTxt, QWidget *parent = 0);
     ~ViewFullMessage();
 
 protected:
@@ -21,7 +22,6 @@ protected:
 
 private:
     Ui::ViewFullMessage *ui;
-
 };
 
 #endif // VIEWFULLMESSAGE_H
