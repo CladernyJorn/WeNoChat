@@ -1,5 +1,5 @@
 #include"communicate_utils.h"
-
+#include"wncimage.h"
 std::string Encoder(std::string type,Json::Value info){
     //通用编码，info仍是一个json文件，不建议直接使用
     //将发送的信息按json文件的字符串格式编码，输出string
@@ -122,7 +122,7 @@ std::string Encoder_askfriendsList(std::string username){
     jtmp["username"]=username;
     return Encoder("askfriendsList",jtmp);
 }
-int Decoder_askfriendsList(std::string packdata,std::string &username,std::vector<std::string> &userList,std::string &user_image){
+int Decoder_askfriendsList(std::string packdata,std::string &username,std::vector<Ui::User> &user_info_List,std::string &user_image){
     Json::Reader reader;
     Json::Value jtmp,tmp_info;
 
@@ -132,10 +132,15 @@ int Decoder_askfriendsList(std::string packdata,std::string &username,std::vecto
     tmp_info=jtmp["info"];
     
     username=tmp_info["username"].asString();
-    for(auto user:tmp_info["userList"]){
-        userList.push_back(user.asString());
-    }
     user_image=tmp_info["user_image"].asString();
+
+    for(auto user_info:tmp_info["user_info_List"]){
+        Ui::User friend_info;
+        friend_info.image=QString2Qimage(QString::fromStdString(user_info["friend_image"].asString()));
+        friend_info.userName=user_info["friend_name"].asString();
+        user_info_List.push_back(friend_info);
+    }
+
     return 1;
 }
 

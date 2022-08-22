@@ -80,8 +80,14 @@ void MainWindow::hadreadyread()
             qDebug("askfriends data back from server error/n");
             return;
         }
-        /*Todo:使用userList生成好友列表*/
-        friendList = new Ui::FriendList(ui->friendList, userList);
+        /*使用userList生成好友列表*/
+        user_image=QString2Qimage(QString::fromStdString(userimage));
+        /*Todo:把带好友头像信息的userList导进去，显示头像
+         *
+         *
+         *
+         */
+        //friendList = new Ui::FriendList(ui->friendList, userList);
         initConnection();
     }
     else if (jtmp["type"].asString() == "chat")
@@ -175,8 +181,8 @@ void MainWindow::hadreadyread()
         {
 
             QImage chat_image = QString2Qimage(QString::fromStdString(info));
-            // Todo:处理返回来的chat_image图片信息
-            pushImageIntoChatWindow(true,chat_image,QString::number(QDateTime::currentDateTime().toTime_t()));
+            //处理返回来的chat_image图片信息
+            pushImageIntoChatWindow(false,chat_image,QString::number(QDateTime::currentDateTime().toTime_t()));
             return;
         }
         // Todo:之后可以加其他类型文件的处理
@@ -190,7 +196,12 @@ void MainWindow::hadreadyread()
             qDebug("submit_image data back from server error/n");
             return;
         }
-        // Todo: 打印user_image到各种地方
+        /* Todo: 打印user_image到各种地方
+         *
+         *
+         *
+         *
+         */
     }
     else
     {
@@ -219,7 +230,8 @@ void MainWindow::on_send_clicked()
      *
      */
 
-    std::vector<std::string> usersList = {"hxy"};
+    std::vector<std::string> usersList ;
+    usersList.push_back(chattingInfo.chatFriend.userName);
     //发送数据协议
     std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(), usersList);
     QString packData = QString::fromStdString(data);

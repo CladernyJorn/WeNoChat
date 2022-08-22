@@ -9,6 +9,7 @@
 #include<string>
 #include<iostream>
 #include<vector>
+#include<friendlist.h>
 std::string Encoder(std::string type,Json::Value info);//将发送的信息按json文件的字符串格式编码，输出string
 
 //login
@@ -29,7 +30,7 @@ int Decoder_addfriends(std::string packdata,std::string &username,bool &state,st
 
 //askfriendsList 请求好友列表
 std::string Encoder_askfriendsList(std::string username);
-int Decoder_askfriendsList(std::string packdata,std::string &username,std::vector<std::string> &userList,std::string &user_image);
+int Decoder_askfriendsList(std::string packdata,std::string &username,std::vector<Ui::User> &user_info_List,std::string &user_image);
 
 //inform_chatfile 发图片前先通知服务器
 std::string Encoder_inform_chatfile(std::string filename,std::string username,int size);
