@@ -27,6 +27,9 @@ CmdHandler::CmdHandler()
     __callbacks["findpWord2"] = __Callbacks::_findPword_que;
     __callbacks["findpWord3"] = __Callbacks::_findPword_change;
     __callbacks["submit_image"] = __Callbacks::_submitImage;
+    __callbacks["inform_chatfile"] = __Callbacks::_informChatFile;
+    __callbacks["chatfile"] = __Callbacks::_chatFile;
+    __callbacks["inform_submit_image"] = __Callbacks::_informSubmitImage;
 }
 
 void CmdHandler::handle(fd_t client, Json::Value cmd)
@@ -285,4 +288,43 @@ void __Callbacks::_submitImage(fd_t client, Json::Value cmd)
 unordered_map<string, UserRecord> &CmdHandler::getpWordForgotter()
 {
     return pWordForgotters;
+}
+
+void __Callbacks::_informChatFile(fd_t client, Json::Value cmd)
+{
+    string fileName = cmd["filename"].asString();
+    string username = cmd["username"].asString();
+    int size = cmd["size"].asInt();
+    Json::Value response;
+    response["state"] = 1;
+    sendJson(client, makeCmd("ready_chatfile", response));
+}
+void __Callbacks::_chatFile(fd_t client, Json::Value cmd)
+{
+    string fileName = cmd["filename"].asString();
+    Json::Value userList = cmd["userList"];
+    string username = cmd["username"].asString();
+    Json::Value info = cmd["info"];
+    for (int i = 0; i < userList.size(); i++)
+    {
+        string uName = userList[i].asString();
+        int fd;
+        if ((fd = Server::singleton().getFdByName(uName)) == -1)
+            return;
+
+        Json::Value response;
+        response["filename"] = fileName;
+        response["username"] = username;
+        response["info"] = info;
+        sendJson(fd, makeCmd("chatfile", response));
+    }
+}
+void __Callbacks::_informSubmitImage(fd_t client, Json::Value cmd)
+{
+    string fileName = cmd["filename"].asString();
+    string username = cmd["username"].asString();
+    int size = cmd["size"].asInt();
+    Json::Value response;
+    response["state"] = 1;
+    sendJson(client, makeCmd("ready_submit_image", response));
 }

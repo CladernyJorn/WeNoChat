@@ -136,7 +136,7 @@ fd_t Server::getFdByName(std::string username)
     {
         return user_fd->second;
     }
-    return 0;
+    return -1;
 }
 
 void Server::addClient(std::string username, fd_t __fd)
