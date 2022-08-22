@@ -117,7 +117,7 @@ std::string Encoder_askfriendsList(std::string username)
     jtmp["username"] = username;
     return Encoder("askfriendsList", jtmp);
 }
-int Decoder_askfriendsList(Json::Value packdata, std::string &username, std::vector<std::string> &userList, std::string &user_image)
+int Decoder_askfriendsList(Json::Value packdata, std::string &username, std::vector<Ui::User> &user_info_List, std::string &user_image)
 {
     if (!packdata.isObject())
         return 0;
