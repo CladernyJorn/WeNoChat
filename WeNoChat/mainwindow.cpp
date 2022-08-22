@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent),
                                           ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    tmpCmd = QString();
     //去窗口边框
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     // TODO：没有窗口边框怎么顶部拖动？继承QLabel，重写mouseMoveEvent和press...，顶部两个label就可以实现拖动窗口了
@@ -45,11 +46,11 @@ MainWindow::MainWindow(QString ud, QTcpSocket *sock, QWidget *parent) : QWidget(
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     // TODO：没有窗口边框怎么顶部拖动？继承QLabel，重写mouseMoveEvent和press...，顶部两个label就可以实现拖动窗口了
     connect(client, SIGNAL(readyRead()), this, SLOT(hadreadyread()));
-
+    qDebug()<<"ud="<<ud;
     //发送好友列表请求
     std::string data = Encoder_askfriendsList(udata.toStdString());
     QString packData = QString::fromStdString(data);
-    client->write((packData.toLocal8Bit()));
+    client->write((packData.toUtf8()));
 }
 
 MainWindow::~MainWindow()
@@ -57,25 +58,53 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+int MainWindow::packData(const QString &pack, Json::Value &data)
+{
+    Json::Reader reader;
+    Json::Value jtmp;
+    tmpCmd.append(pack);
+    if (!reader.parse(tmpCmd.toStdString(), jtmp))
+    {
+//        qDebug() << "服务器返回信息错误\n";
+        return 0;
+    }
+    if(!jtmp.isObject())
+    {
+//        qDebug() << "服务器返回信息错误\n";
+        return 0;
+    }
+    if(jtmp.isObject())
+    {
+        data = jtmp;
+        tmpCmd.clear();
+        return 1;
+    }
+}
+
 void MainWindow::hadreadyread()
 {
 
-    QByteArray recvArray = client->readAll();
+    QByteArray recvArray = client->read(1048576);
     //区分是chat信息还是好友列表信息
     QString backdata = recvArray;
-    Json::Reader reader;
+    qDebug()<<backdata;
+
     Json::Value jtmp, tmp_info;
-    if (!reader.parse(backdata.toStdString(), jtmp))
+
+    if(!packData(backdata, jtmp))
     {
-        qDebug() << "服务器返回信息错误\n";
         return;
     }
+
+    Json::FastWriter writer;
+//    qDebug()<<QString::fromStdString(writer.write(jtmp));
+    qDebug()<<"type = "<<QString::fromStdString(jtmp["type"].asString());
     if (jtmp["type"].asString() == "askfriendsList")
     { //处理好友列表信息
         std::string username, info;
         bool state;
         std::string userimage;
-        if (Decoder_askfriendsList(backdata.toStdString(), username, userList, userimage) == 0)
+        if (Decoder_askfriendsList(jtmp["info"], username, userList, userimage) == 0)
         {
             qDebug("askfriends data back from server error/n");
             return;
@@ -87,7 +116,7 @@ void MainWindow::hadreadyread()
     else if (jtmp["type"].asString() == "chat")
     { //处理聊天信息
         std::string sender_username, msg;
-        if (Decoder_chat(backdata.toStdString(), sender_username, msg) == 0)
+        if (Decoder_chat(jtmp["info"], sender_username, msg) == 0)
         {
             qDebug("chat data back from server error/n");
             return;
@@ -99,7 +128,7 @@ void MainWindow::hadreadyread()
         std::string friend_username;
         bool state;
         std::string friendimage;
-        if (Decoder_addfriends(backdata.toStdString(), friend_username, state, friendimage) == 0)
+        if (Decoder_addfriends(jtmp["info"], friend_username, state, friendimage) == 0)
         {
             qDebug("addfriends data back from server error/n");
             return;
@@ -119,7 +148,7 @@ void MainWindow::hadreadyread()
     else if (jtmp["type"].asString() == "ready_chatfile")
     {
         bool state;
-        if (Decoder_ready_chatfile(backdata.toStdString(), state) == 0)
+        if (Decoder_ready_chatfile(jtmp["info"], state) == 0)
         {
             qDebug("ready_chatfile data back from server error/n");
             return;
@@ -146,7 +175,7 @@ void MainWindow::hadreadyread()
     else if (jtmp["type"].asString() == "ready_submit_image")
     {
         bool state;
-        if (Decoder_ready_submit_image(backdata.toStdString(), state) == 0)
+        if (Decoder_ready_submit_image(jtmp["info"], state) == 0)
         {
             qDebug("ready_submit_image data back from server error/n");
             return;
@@ -162,8 +191,9 @@ void MainWindow::hadreadyread()
     }
     else if (jtmp["type"].asString() == "chatfile")
     {
+
         std::string sender_username, info, fn;
-        if (Decoder_chatfile(backdata.toStdString(), fn, sender_username, info) == 0)
+        if (Decoder_chatfile(jtmp["info"], fn, sender_username, info) == 0)
         {
             qDebug("chatfile data back from server error/n");
             return;
@@ -176,7 +206,7 @@ void MainWindow::hadreadyread()
 
             QImage chat_image = QString2Qimage(QString::fromStdString(info));
             // Todo:处理返回来的chat_image图片信息
-            pushImageIntoChatWindow(true,chat_image,QString::number(QDateTime::currentDateTime().toTime_t()));
+            pushImageIntoChatWindow(false,chat_image,QString::number(QDateTime::currentDateTime().toTime_t()));
             return;
         }
         // Todo:之后可以加其他类型文件的处理
@@ -185,7 +215,7 @@ void MainWindow::hadreadyread()
     {
         std::string username;
         bool state;
-        if (Decoder_submit_image(backdata.toStdString(), username, state) == 0)
+        if (Decoder_submit_image(jtmp["info"], username, state) == 0)
         {
             qDebug("submit_image data back from server error/n");
             return;
@@ -348,6 +378,10 @@ void MainWindow::on_pushButton_addfriend_clicked()
 void MainWindow::on_pushButton_image_clicked()
 {
     QString image_addr = QFileDialog::getOpenFileName(this);
+    if(image_addr.length()==0)
+    {
+        return;
+    }
     imag->getImagefromdir(image_addr);
     imag->sendinform_submit_image();
     user_image = imag->image;
@@ -356,6 +390,10 @@ void MainWindow::on_pushButton_image_clicked()
 void MainWindow::on_pushButton_send_image_clicked()
 {
     QString image_addr = QFileDialog::getOpenFileName(this);
+    if(image_addr.length()==0)
+    {
+        return;
+    }
     imag->getImagefromdir(image_addr);
 
     imag->sendinform_chatfile_image();
