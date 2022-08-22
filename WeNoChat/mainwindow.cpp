@@ -116,7 +116,7 @@ void MainWindow::hadreadyread()
          *
          *
          */
-        // friendList = new Ui::FriendList(ui->friendList, userList);
+         friendList = new Ui::FriendList(ui->friendList, userList);
         initConnection();
     }
     else if (jtmp["type"].asString() == "chat")

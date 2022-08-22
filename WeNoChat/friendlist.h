@@ -13,6 +13,7 @@ namespace Ui
     {
         std::string userName;
         QImage image;
+//        std::string imageStr;
     };
 
     class FriendList : public QWidget
@@ -26,11 +27,11 @@ namespace Ui
             isGroup = Qt::UserRole,
             UserInfo = Qt::UserRole + 1
         };
-        explicit FriendList(QTreeWidget *widget, std::vector<std::string> userInfoList, QWidget *parent = 0);
+        explicit FriendList(QTreeWidget *widget, std::vector<Ui::User> userInfoList, QWidget *parent = 0);
         ~FriendList();
 
     private:
-        void initFriendList(std::vector<std::string> userInfoList);
+        void initFriendList(std::vector<Ui::User> userInfoList);
         void initConnection();
 
     signals:

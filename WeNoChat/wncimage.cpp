@@ -45,6 +45,8 @@ void WNCimage::send_submit_image(){
     std::string data=Encoder_submit_image(udata.toStdString(),imageData.toStdString());
     QString packData = QString::fromStdString(data);
     sendOut.writeRawData(data.c_str(), packData.length());
+    client->write(outBlock);
+    qDebug()<<"outBlock = "<<outBlock;
     qDebug() << "整个包的大小: " << totalBytes << endl;
     qDebug()<<"发送成功\n";
     outBlock.clear();

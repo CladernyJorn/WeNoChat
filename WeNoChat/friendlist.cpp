@@ -7,7 +7,7 @@
 #include <QTreeWidget>
 #include <QMenu>
 
-Ui::FriendList::FriendList(QTreeWidget *widget, std::vector<std::string> userList, QWidget *parent) : QWidget(parent), friendlist(widget)
+Ui::FriendList::FriendList(QTreeWidget *widget, std::vector<Ui::User> userList, QWidget *parent) : QWidget(parent), friendlist(widget)
 {
     qDebug("in");
     //    zszs
@@ -23,7 +23,7 @@ Ui::FriendList::FriendList(QTreeWidget *widget, std::vector<std::string> userLis
 
 Ui::FriendList::~FriendList() {}
 
-void Ui::FriendList::initFriendList(std::vector<std::string> userInfoList)
+void Ui::FriendList::initFriendList(std::vector<Ui::User> userInfoList)
 {
 
     friendlist->setHeaderHidden(true);
@@ -47,11 +47,11 @@ void Ui::FriendList::initFriendList(std::vector<std::string> userInfoList)
     for (unsigned int i = 0; i < userInfoList.size(); ++i)
     {
         QTreeWidgetItem *friendRecord = new QTreeWidgetItem();
-        friendRecord->setText(0, QString(userInfoList[i].c_str()));
+        friendRecord->setText(0, QString::fromStdString(userInfoList[i].userName));
         friendRecord->setData(0, isGroup, 0);
         list.append(friendRecord);
         Ui::User f;
-        f.userName = userInfoList[i];
+        f = userInfoList[i];
         friendRecord->setData(0, UserInfo, QVariant::fromValue(f));
     }
 
