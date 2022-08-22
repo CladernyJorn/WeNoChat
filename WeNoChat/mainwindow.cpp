@@ -174,9 +174,9 @@ void MainWindow::hadreadyread()
         if (cat == "jpg" || cat == "jpeg" || cat == "svg" || cat == "bmp" || cat == "png" || cat == "gif")
         {
 
-            user_image = QString2Qimage(QString::fromStdString(info));
-            // Todo:处理返回来的user_image图片信息
-
+            QImage chat_image = QString2Qimage(QString::fromStdString(info));
+            // Todo:处理返回来的chat_image图片信息
+            pushImageIntoChatWindow(true,chat_image,QString::number(QDateTime::currentDateTime().toTime_t()));
             return;
         }
         // Todo:之后可以加其他类型文件的处理
@@ -218,6 +218,7 @@ void MainWindow::on_send_clicked()
      * 这里暂时用hxy代替
      *
      */
+
     std::vector<std::string> usersList = {"hxy"};
     //发送数据协议
     std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(), usersList);
@@ -358,6 +359,7 @@ void MainWindow::on_pushButton_send_image_clicked()
     imag->getImagefromdir(image_addr);
 
     imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()));
 }
 void MainWindow::initConnection()
 {
