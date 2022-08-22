@@ -28,7 +28,7 @@ public:
     ~MainWindow();
     void pushImageIntoChatWindow(bool type, QImage msg, QString time, QImage *image = NULL, bool isSending = false);
     void dealImage(ChatMessageWidget *messageW, QListWidgetItem *item, QImage img, QString time, ChatMessageWidget::User_Type type, QImage *image);
-    void changeMyIcon(QImage * uimg = NULL);
+    int packData(const QString &pack,Json::Value &data);
 protected:
     void mouseMoveEvent(QMouseEvent *ev);  //鼠标移动
     void mousePressEvent(QMouseEvent *ev); //鼠标按下移动
@@ -71,6 +71,8 @@ private:
     ChatInfo chattingInfo;
     void initConnection();
     WNCimage *imag;
+
+    QString tmpCmd;
     QPoint p;
 };
 

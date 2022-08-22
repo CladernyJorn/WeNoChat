@@ -67,7 +67,7 @@ void WNCimage::send_chatfile_image(std::vector<std::string>userList){
 
     outBlock.clear();//清空，上面的加载仅仅是为了计算imageData+文件大小的数据量
     //组合json文件:格式为   打包的图片json+总文件大小+json文件大小
-    std::string data=Encoder_chatfile("image",udata.toStdString(),userList,imageData.toStdString());
+    std::string data=Encoder_chatfile(currentImageName.toStdString(),udata.toStdString(),userList,imageData.toStdString());
     QString packData = QString::fromStdString(data);
     sendOut.writeRawData(data.c_str(), packData.length());
     client->write(outBlock);
