@@ -1,5 +1,5 @@
 #include "communicate_utils.h"
-
+#include "wncimage.h"
 std::string Encoder(std::string type, Json::Value info)
 {
     //通用编码，info仍是一个json文件，不建议直接使用
@@ -119,16 +119,19 @@ std::string Encoder_askfriendsList(std::string username)
 }
 int Decoder_askfriendsList(Json::Value packdata, std::string &username, std::vector<std::string> &userList, std::string &user_image)
 {
-
     if (!packdata.isObject())
         return 0;
-
     username = packdata["username"].asString();
-    for (auto user : packdata["userList"])
-    {
-        userList.push_back(user.asString());
-    }
     user_image = packdata["user_image"].asString();
+
+    for (auto user_info : packdata["user_info_List"])
+    {
+        Ui::User friend_info;
+        friend_info.image = QString2Qimage(QString::fromStdString(user_info["friend_image"].asString()));
+        friend_info.userName = user_info["friend_name"].asString();
+        user_info_List.push_back(friend_info);
+    }
+
     return 1;
 }
 

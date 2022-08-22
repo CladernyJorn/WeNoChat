@@ -46,7 +46,7 @@ MainWindow::MainWindow(QString ud, QTcpSocket *sock, QWidget *parent) : QWidget(
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     // TODO：没有窗口边框怎么顶部拖动？继承QLabel，重写mouseMoveEvent和press...，顶部两个label就可以实现拖动窗口了
     connect(client, SIGNAL(readyRead()), this, SLOT(hadreadyread()));
-    qDebug()<<"ud="<<ud;
+    qDebug() << "ud=" << ud;
     //发送好友列表请求
     std::string data = Encoder_askfriendsList(udata.toStdString());
     QString packData = QString::fromStdString(data);
@@ -65,15 +65,15 @@ int MainWindow::packData(const QString &pack, Json::Value &data)
     tmpCmd.append(pack);
     if (!reader.parse(tmpCmd.toStdString(), jtmp))
     {
-//        qDebug() << "服务器返回信息错误\n";
+        //        qDebug() << "服务器返回信息错误\n";
         return 0;
     }
-    if(!jtmp.isObject())
+    if (!jtmp.isObject())
     {
-//        qDebug() << "服务器返回信息错误\n";
+        //        qDebug() << "服务器返回信息错误\n";
         return 0;
     }
-    if(jtmp.isObject())
+    if (jtmp.isObject())
     {
         data = jtmp;
         tmpCmd.clear();
@@ -87,18 +87,18 @@ void MainWindow::hadreadyread()
     QByteArray recvArray = client->read(1048576);
     //区分是chat信息还是好友列表信息
     QString backdata = recvArray;
-    qDebug()<<backdata;
+    qDebug() << backdata;
 
     Json::Value jtmp, tmp_info;
 
-    if(!packData(backdata, jtmp))
+    if (!packData(backdata, jtmp))
     {
         return;
     }
 
     Json::FastWriter writer;
-//    qDebug()<<QString::fromStdString(writer.write(jtmp));
-    qDebug()<<"type = "<<QString::fromStdString(jtmp["type"].asString());
+    //    qDebug()<<QString::fromStdString(writer.write(jtmp));
+    qDebug() << "type = " << QString::fromStdString(jtmp["type"].asString());
     if (jtmp["type"].asString() == "askfriendsList")
     { //处理好友列表信息
         std::string username, info;
@@ -109,8 +109,14 @@ void MainWindow::hadreadyread()
             qDebug("askfriends data back from server error/n");
             return;
         }
-        /*Todo:使用userList生成好友列表*/
-        friendList = new Ui::FriendList(ui->friendList, userList);
+        /*使用userList生成好友列表*/
+        user_image = QString2Qimage(QString::fromStdString(userimage));
+        /*Todo:把带好友头像信息的userList导进去，显示头像
+         *
+         *
+         *
+         */
+        // friendList = new Ui::FriendList(ui->friendList, userList);
         initConnection();
     }
     else if (jtmp["type"].asString() == "chat")
@@ -205,8 +211,8 @@ void MainWindow::hadreadyread()
         {
 
             QImage chat_image = QString2Qimage(QString::fromStdString(info));
-            // Todo:处理返回来的chat_image图片信息
-            pushImageIntoChatWindow(false,chat_image,QString::number(QDateTime::currentDateTime().toTime_t()));
+            //处理返回来的chat_image图片信息
+            pushImageIntoChatWindow(false, chat_image, QString::number(QDateTime::currentDateTime().toTime_t()));
             return;
         }
         // Todo:之后可以加其他类型文件的处理
@@ -220,7 +226,12 @@ void MainWindow::hadreadyread()
             qDebug("submit_image data back from server error/n");
             return;
         }
-        // Todo: 打印user_image到各种地方
+        /* Todo: 打印user_image到各种地方
+         *
+         *
+         *
+         *
+         */
     }
     else
     {
@@ -249,7 +260,8 @@ void MainWindow::on_send_clicked()
      *
      */
 
-    std::vector<std::string> usersList = {"hxy"};
+    std::vector<std::string> usersList;
+    usersList.push_back(chattingInfo.chatFriend.userName);
     //发送数据协议
     std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(), usersList);
     QString packData = QString::fromStdString(data);
@@ -378,7 +390,7 @@ void MainWindow::on_pushButton_addfriend_clicked()
 void MainWindow::on_pushButton_image_clicked()
 {
     QString image_addr = QFileDialog::getOpenFileName(this);
-    if(image_addr.length()==0)
+    if (image_addr.length() == 0)
     {
         return;
     }
@@ -390,14 +402,14 @@ void MainWindow::on_pushButton_image_clicked()
 void MainWindow::on_pushButton_send_image_clicked()
 {
     QString image_addr = QFileDialog::getOpenFileName(this);
-    if(image_addr.length()==0)
+    if (image_addr.length() == 0)
     {
         return;
     }
     imag->getImagefromdir(image_addr);
 
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()));
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()));
 }
 void MainWindow::initConnection()
 {

@@ -66,7 +66,7 @@ private:
     QString udata;
     QImage user_image;
     searchFriends *add;
-    std::vector<std::string> userList;
+    std::vector<Ui::User> userList;
     Ui::FriendList *friendList;
     ChatInfo chattingInfo;
     void initConnection();
