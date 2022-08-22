@@ -134,14 +134,16 @@ void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
     string username = cmd["username"].asString();
     cout << username << "getfriends" << endl;
     vector<UserRecord> friends = Sql::singleton().findFriends(username);
-
+    vector<UserRecord> me = Sql::singleton().findUserByName(username);
     Json::Value response;
     response["username"] = username;
+    response["user_image"] = readFile(me[0].headfile);
     for (int i = 0; i < (int)friends.size(); i++)
     {
         response["userList"][i] = friends[i].username;
-        response["user_image"][i] = readFile(friends[i].headfile);
+        // response["user_image"][i] = readFile(friends[i].headfile);
     }
+    cout << encodeJson(response) << endl;
     sendJson(client, makeCmd("askfriendsList", response));
 }
 
@@ -275,7 +277,8 @@ void __Callbacks::_submitImage(fd_t client, Json::Value cmd)
 {
     string username = cmd["username"].asString();
     string image_buf = cmd["image"].asString();
-    string filepath = "../res/users/" + username + "/head";
+    cout << image_buf.length() << endl;
+    string filepath = "../res/users/" + username + "/head.jpg";
     ofstream fout(filepath);
     fout << image_buf;
     Sql::singleton().changeHeadFile(username, filepath);
@@ -324,7 +327,12 @@ void __Callbacks::_informSubmitImage(fd_t client, Json::Value cmd)
     string fileName = cmd["filename"].asString();
     string username = cmd["username"].asString();
     int size = cmd["size"].asInt();
+
+    int pos = fileName.find_last_of('.');
+    string ex = fileName.substr(pos);
+
     Json::Value response;
     response["state"] = 1;
+
     sendJson(client, makeCmd("ready_submit_image", response));
 }
