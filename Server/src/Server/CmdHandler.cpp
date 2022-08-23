@@ -166,17 +166,22 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
     cout << username << "wants to make friends with " << friendUser << endl;
 
     vector<UserRecord> user = Sql::singleton().findUserByName(friendUser);
+    vector<UserRecord> me = Sql::singleton().findUserByName(username);
     Json::Value response;
+
     if (user.size() != 0)
     {
         response["state"] = 1;
         response["username"] = friendUser;
+        response["user_image"] = user[0].headfile;
+
         sendJson(client, makeCmd("addfriends", response));
         fd_t friend_fd = Server::singleton().getFdByName(friendUser);
         if (friend_fd != 0)
         {
             response["state"] = 1;
             response["username"] = username;
+            response["user_image"] = me[0].headfile;
             sendJson(friend_fd, makeCmd("addfriends", response));
         }
 
@@ -329,6 +334,7 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
             cout << "file create failed" << endl;
         }
     }
+
     WriteFileTask task;
     task.fileFd = fileFd;
     task.fileSize = fileSize;

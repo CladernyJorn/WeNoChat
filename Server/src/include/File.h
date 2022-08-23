@@ -26,8 +26,10 @@ struct WriteFileTask
 {
     std::string filename;
     fd_t fileFd;
+    fd_t targetFd;
     size_t fileSize;
     size_t progress;
+    WriteFileTask(fd_t targetFd = -1) : targetFd(targetFd) {}
 };
 
 #endif

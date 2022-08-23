@@ -13,13 +13,6 @@
 #include "Constants.h"
 #include "CmdHandler.h"
 
-struct FileInfo
-{
-    fd_t fileFd;
-    fd_t targetFd;
-    size_t fileSize;
-    size_t progress;
-};
 class Server
 {
 public:

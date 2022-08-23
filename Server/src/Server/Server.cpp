@@ -216,25 +216,25 @@ void Server::addClient(std::string username, fd_t __fd)
 void *progressSending(void *arg)
 {
     cout << "thread started" << endl;
-    FileInfo *fileInfo = (FileInfo *)arg;
+    WriteFileTask *task = (WriteFileTask *)arg;
     int bytes;
     char buf[4096] = {0};
-    cout << fileInfo->fileFd << "," << fileInfo->targetFd << endl;
-    while ((bytes = read(fileInfo->fileFd, buf, 4096)) != 0)
+    cout << task->fileFd << "," << task->targetFd << endl;
+    while ((bytes = read(task->fileFd, buf, 4096)) != 0)
     {
         if (bytes == -1)
         {
             break;
         }
-        // fileInfo->progress += sendStr(fileInfo->targetFd, buf, bytes);
-        fileInfo->progress += send(fileInfo->targetFd, buf, bytes, 0);
-        cout << "progress=" << fileInfo->progress << endl;
+        // task->progress += sendStr(task->targetFd, buf, bytes);
+        task->progress += send(task->targetFd, buf, bytes, 0);
+        cout << "progress=" << task->progress << endl;
     }
-    if (fileInfo->progress == fileInfo->fileSize)
+    if (task->progress == task->fileSize)
         cout << "file sent" << endl;
     else
         cout << "file not sent" << endl;
-    close(fileInfo->fileFd);
+    close(task->fileFd);
     pthread_exit(NULL);
 }
 
@@ -252,7 +252,7 @@ int Server::sendFile(fd_t fileClient, std::string filepath)
 
     response["state"] = 1;
 
-    FileInfo info;
+    WriteFileTask info;
 
     struct stat stFile;
     if ((fstat(fileFd, &stFile) == 0 && S_ISREG(stFile.st_mode)))
