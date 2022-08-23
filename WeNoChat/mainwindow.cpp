@@ -99,14 +99,10 @@ void MainWindow::hadreadyread()
         }
         /*使用userList生成好友列表*/
         user_image = QString2Qimage(QString::fromStdString(userimage));
-        /*Todo:把带好友头像信息的userList导进去，显示头像
-         *
-         *
-         *
-         */
         changeMyIcon(&user_image);
-         friendList = new Ui::FriendList(ui->friendList, userList);
+        friendList = new Ui::FriendList(ui->friendList, userList);
         initConnection();
+        ui->cover_label->setVisible(true);
     }
     else if (jtmp["type"].asString() == "chat")
     { //处理聊天信息
@@ -212,12 +208,6 @@ void MainWindow::hadreadyread()
             qDebug("submit_image data back from server error/n");
             return;
         }
-        /* Todo: 打印user_image到各种地方
-         *
-         *
-         *
-         *
-         */
     }
     else
     {
@@ -401,10 +391,11 @@ void MainWindow::on_pushButton_send_image_clicked()
 void MainWindow::initConnection()
 {
     connect(friendList, SIGNAL(openChatroom(QVariant)), this, SLOT(startChatting(QVariant)));
+    connect(friendList, SIGNAL(delFriend(QVariant)), this, SLOT(deleteFriend(QVariant)));
 }
-
 void MainWindow::startChatting(QVariant variant)
 {
+    ui->cover_label->setVisible(false);
     clearAllMessage();
 
     Ui::User chatFriend = variant.value<Ui::User>();
@@ -435,6 +426,20 @@ void MainWindow::startChatting(QVariant variant)
     }
 }
 
+void MainWindow::deleteFriend(QVariant variant)
+{
+    qDebug() << "in delete friend function";
+    Ui::User friendToDel = variant.value<Ui::User>();
+    qDebug() << "del friend: " << friendToDel.userName.c_str();
+    // 返回服务器
+    // friendToDel.userName: 删除的好友的名字
+    std::string data = Encoder_deletefriends(udata.toStdString(), friendToDel.userName);
+    QString packData = QString::fromStdString(data);
+    client->write((packData.toLocal8Bit()));
+    if(chattingInfo.chatFriend.userName==friendToDel.userName){
+        ui->cover_label->setVisible(true);
+    }
+}
 //以下是拖动窗口的代码
 void MainWindow::mousePressEvent(QMouseEvent *ev)
 {

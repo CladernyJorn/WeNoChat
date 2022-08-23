@@ -136,6 +136,23 @@ int Decoder_askfriendsList(Json::Value packdata, std::string &username, std::vec
     return 1;
 }
 
+// deletefriends 删除好友
+std::string Encoder_deletefriends(std::string username, std::string friend_username){
+    Json::Value jtmp;
+    jtmp["username"] = username;
+    jtmp["friend_username"]=friend_username;
+    return Encoder("deletefriends", jtmp);
+}
+
+int Decoder_deletefriends(Json::Value packdata,std::string username, std::string friend_username){
+    if (!packdata.isObject())
+        return 0;
+    username = packdata["username"].asString();
+    friend_username = packdata["friend_username"].asString();
+
+    return 1;
+}
+
 // inform_chatfile 发图片前先通知服务器
 std::string Encoder_inform_chatfile(std::string filename, std::string username, int size)
 {
@@ -145,7 +162,6 @@ std::string Encoder_inform_chatfile(std::string filename, std::string username, 
     jtmp["size"] = size;
     return Encoder("inform_chatfile", jtmp);
 }
-
 int Decoder_ready_chatfile(Json::Value packdata, bool &state)
 {
 

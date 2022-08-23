@@ -35,15 +35,18 @@ namespace Ui
         void insertToGroup(std::string, std::vector<Ui::User> friendInfoList);
         void deleteGroup(std::string name);
         //TODO: delete friend;
+        void deleteFriend(std::string groupName, std::string friendName);
 
     private:
         void initFriendList(std::vector<Ui::User> userInfoList);
         void initConnection();
 
         std::map<std::string, QTreeWidgetItem *> groups;
+        std::map<std::string, QTreeWidgetItem *> friends;
 
     signals:
         void openChatroom(QVariant variant);
+        void delFriend(QVariant variant);
 
     private slots:
         void showFriendListMenu(QPoint pos);

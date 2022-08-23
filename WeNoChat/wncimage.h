@@ -21,7 +21,7 @@ class WNCimage//图像类，封装图片，传输函数等操作
      * -先调用生成函数，传入图片，username和socket（具体看构造函数），
      * -之后直接调用方法就可以向服务器发送对应的json文件了
      * ---上传头像：使用void send_submit_image();
-     * ---发送图片：使用void end_chatfile_image(std::vector<std::string>userList),需要传入发给谁;
+     * ---发送图片：使用void send_chatfile_image(std::vector<std::string>userList),需要传入发给谁;
      * 二者均是先向服务器发送发文件通知，然后接收回复后再发送文件
      */
 public:

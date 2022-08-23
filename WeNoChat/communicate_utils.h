@@ -32,6 +32,11 @@ int Decoder_addfriends(Json::Value packdata, std::string &username, bool &state,
 std::string Encoder_askfriendsList(std::string username);
 int Decoder_askfriendsList(Json::Value packdata, std::string &username, std::vector<Ui::User> &user_info_List, std::string &user_image);
 
+
+// deletefriends 删除好友
+std::string Encoder_deletefriends(std::string username, std::string friend_username);
+int Decoder_deletefriends(Json::Value packdata,std::string username, std::string friend_username);
+
 // inform_chatfile 发图片前先通知服务器
 std::string Encoder_inform_chatfile(std::string filename, std::string username, int size);
 int Decoder_ready_chatfile(Json::Value packdata, bool &state);

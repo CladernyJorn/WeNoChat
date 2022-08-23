@@ -49,7 +49,7 @@ private slots:
     void dealMessage(ChatMessageWidget *messageW, QListWidgetItem *item, QString text, QString time, ChatMessageWidget::User_Type type, QImage *image = NULL);
 
     void startChatting(QVariant variant);
-
+    void deleteFriend(QVariant variant);
     void on_pushButton_image_clicked();
     void on_pushButton_send_image_clicked();
 
@@ -66,6 +66,7 @@ private:
     QImage user_image;
     searchFriends *add;
     std::vector<Ui::User> userList;
+
     Ui::FriendList *friendList;
     ChatInfo chattingInfo;
     void initConnection();
