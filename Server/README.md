@@ -44,7 +44,8 @@ create table User(
     pWord varchar(32) not null,
     phonenum varchar(11) unique not null,
     secureQue int not null,
-    secureAns text not null
+    secureAns text not null,
+    headfile text default ''
 );
 
 create table Friends(

@@ -42,6 +42,7 @@ vector<UserRecord> Sql::findUserByName(string userName)
         rec.phonenum = string(result[i * nC + 2]);
         sscanf(result[i * nC + 3], "%d", &rec.secureQue);
         rec.secureAns = string(result[i * nC + 4]);
+        rec.headfile = string(result[i * nC + 5]);
         recs.push_back(rec);
     }
     return recs;
@@ -69,7 +70,7 @@ void Sql::updateUser(std::string username, std::string column, std::string value
     }
 }
 
-std::vector<std::string> Sql::findFriends(std::string userName)
+std::vector<UserRecord> Sql::findFriends(std::string userName)
 {
     string sql = "select * from Friends where username = '" + userName + "';";
 
@@ -93,6 +94,17 @@ std::vector<std::string> Sql::findFriends(std::string userName)
 void Sql::insertFriends(std::string user, std::string friend_user)
 {
     string sql = "insert into Friends values('" + user + "', '" + friend_user + "');";
+    char *errmsg;
+    int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
+    if (sqlRet != 0)
+    {
+        cout << "sqlite3_error err: " << errmsg << endl;
+    }
+}
+
+void Sql::deleteFriends(std::string user, std::string friend_user)
+{
+    string sql = "delete from Friends where (username = '" + user + "' and friend_user = '" + friend_user + "') or (username = '" + friend_user + "' and friend_user = '" + user + "')";
     char *errmsg;
     int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
     if (sqlRet != 0)

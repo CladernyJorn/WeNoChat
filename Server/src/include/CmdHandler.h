@@ -37,6 +37,7 @@ namespace __Callbacks
     void _chat(fd_t client, Json::Value cmd);
     void _getFriends(fd_t client, Json::Value cmd);
     void _addFriends(fd_t client, Json::Value cmd);
+    void _deleteFriends(fd_t client, Json::Value cmd);
     void _findPword_phone(fd_t client, Json::Value cmd);
     void _findPword_que(fd_t client, Json::Value cmd);
     void _findPword_change(fd_t client, Json::Value cmd);

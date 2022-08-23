@@ -146,6 +146,7 @@ void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
     vector<string> friends = Sql::singleton().findFriends(username);
     Json::Value response;
     response["username"] = username;
+    response["
     for (int i = 0; i < (int)friends.size(); i++)
     {
         response["userList"][i] = friends[i];
@@ -182,6 +183,21 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
         response["state"] = 0;
         response["username"] = "";
         sendJson(client, makeCmd("addfriends", response));
+    }
+}
+
+void __Callbacks::_deleteFriends(fd_t client, Json::Value cmd)
+{
+    string username = cmd["username"].asString();
+    string friendsname = cmd["friendsname"].asString();
+    fd_t tgtFd = Server::singleton().getFdByName(friendsname);
+    Sql::singleton().deleteFriends(username, friendsname);
+    if (tgtFd != -1)
+    {
+        Json::Value response;
+        response["username"] = friendsname;
+        response["friend_username"] = friendsname;
+        sendJson(tgtFd, makeCmd("deletefriends", response));
     }
 }
 
