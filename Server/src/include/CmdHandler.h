@@ -6,6 +6,7 @@
 #include <functional>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <list>
 
 #include "File.h"
 #include "Tools.h"
@@ -22,6 +23,7 @@ public:
 
     std::unordered_map<std::string, UserRecord> pWordForgotters;
     std::unordered_map<fd_t, WriteFileTask> fileTasks;
+    std::unordered_map<std::string, std::list<std::string>> msgRcds;
 
 private:
     CmdHandler();

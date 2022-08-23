@@ -125,6 +125,7 @@ void __Callbacks::_register(fd_t client, Json::Value cmd)
             response["state"] = 1;
             response["info"] = "注册成功！";
             Server::singleton().addClient(uName, client);
+            CmdHandler::singleton().msgRcds[uName] = list<string>();
             mkdir((user_path + uName).c_str(), S_IRWXU);
         }
     }
@@ -136,6 +137,7 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
     string _from = cmd["username"].asString();
     Json::Value _to = cmd["userList"];
     string _msg = cmd["info"].asString();
+    string _time = cmd["time"].asString();
 
     cout << "msg from " << _from << " to " << encodeJson(_to) << ": " << _msg << endl;
 
@@ -145,6 +147,7 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
         Json::Value response;
         response["username"] = _from;
         response["info"] = _msg;
+        response["time"] = _time;
         string userName = _to[i].asString();
         fd_t tgtfd = Server::singleton().getFdByName(userName);
         if (tgtfd != -1)
@@ -153,6 +156,33 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
             cout << "client = " << client << endl;
             sendJson(tgtfd, makeCmd("chat", response));
         }
+        Json::Value Log;
+        Log["sender"] = _from;
+        Log["receiver"] = _to[i].asString();
+        Log["isYou"] = 1;
+        Log["msg"] = _msg;
+        Log["time"] = _time;
+        CmdHandler &handler = CmdHandler::singleton();
+        auto fromrec = handler.msgRcds.find(_from);
+        if (fromrec == handler.msgRcds.end())
+            handler.msgRcds[_from] = list<string>();
+        fromrec->second.push_back(encodeJson(Log));
+        if (fromrec->second.size() > 100)
+            fromrec->second.pop_front();
+
+        Json::Value Log1;
+        Log1["sender"] = _from;
+        Log1["receiver"] = _to[i].asString();
+        Log1["isYou"] = 0;
+        Log1["msg"] = _msg;
+        Log1["time"] = _time;
+        string tto = _to[i].asString();
+        auto torec = handler.msgRcds.find(tto);
+        if (torec == handler.msgRcds.end())
+            handler.msgRcds[tto] = list<string>();
+        torec->second.push_back(encodeJson(Log1));
+        if (torec->second.size() > 100)
+            torec->second.pop_front();
     }
 }
 
@@ -165,14 +195,23 @@ void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
     Json::Value response;
     response["username"] = username;
     response["user_image"] = me[0].headfile;
-    for (UserRecord frd : friends)
+    for (int i = 0; i < (int)friends.size(); i++)
     {
+        UserRecord frd = friends[i];
         Json::Value item;
-        item["friend_name"] = username;
+        item["friend_name"] = frd.username;
         item["friend_image"] = frd.headfile;
-        response["user_info_List"] = item;
+        response["user_info_List"][i] = item;
     }
     sendJson(client, makeCmd("askfriendsList", response));
+    CmdHandler &handler = CmdHandler::singleton();
+    auto recc = handler.msgRcds.find(username);
+    if (recc == handler.msgRcds.end())
+        return;
+    for (string rec : recc->second)
+    {
+        sendJson(client, makeCmd("msgrecord", rec));
+    }
 }
 
 void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
@@ -317,6 +356,7 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
 {
     string username = cmd["username"].asString();
     string fileName = cmd["fileName"].asString();
+    int dft = cmd["default"].asInt();
     unsigned long long fileSize = cmd["size"].asUInt64();
     cout << username << " send a file " << fileName << " with size " << fileSize << endl;
     string user_dir = user_path + username + "/";
@@ -328,7 +368,7 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
     if (access((file_path).c_str(), F_OK) != 0)
     {
         cout << "no such file" << endl;
-        fileFd = open(file_path.c_str(), O_CREAT | O_TRUNC | O_WRONLY | O_APPEND, S_IRWXU);
+        fileFd = open(file_path.c_str(), O_CREAT | O_TRUNC | O_WRONLY, S_IRWXU);
         if (fileFd == -1)
         {
             cout << "file create failed" << endl;
@@ -337,15 +377,23 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
     else
     {
         cout << "file name exists" << endl;
-        string tmpname;
-        for (int i = 1;; i++)
+        if (!dft)
         {
-            tmpname = file.fileNameNoExtension + "(" + to_string(i) + ")";
-            if (access((file.directory + tmpname + file.extension).c_str(), F_OK) != 0)
-                break;
+            string tmpname;
+            for (int i = 1;; i++)
+            {
+                tmpname = file.fileNameNoExtension + "(" + to_string(i) + ")";
+                if (access((file.directory + tmpname + file.extension).c_str(), F_OK) != 0)
+                    break;
+            }
+            file.fileNameNoExtension = tmpname;
+            fileFd = open(file.getPath().c_str(), O_CREAT | O_TRUNC | O_WRONLY, S_IRWXU);
         }
-        file.fileNameNoExtension = tmpname;
-        fileFd = open(file.getPath().c_str(), O_CREAT | O_TRUNC | O_WRONLY | O_APPEND, S_IRWXU);
+        else
+        {
+            fileFd = open(file.getPath().c_str(), O_TRUNC | O_WRONLY);
+        }
+
         if (fileFd == -1)
         {
             cout << "file create failed" << endl;
@@ -433,6 +481,6 @@ void __Callbacks::_submitImage(fd_t client, Json::Value cmd)
     string username = cmd["username"].asString();
     string imagepath = cmd["image"].asString();
     cout << "username = " << username << endl;
-    cout << "imagesize = " << imagepath.length() << endl;
+    cout << "image" << imagepath << endl;
     Sql::singleton().updateUser(username, "headfile", imagepath);
 }

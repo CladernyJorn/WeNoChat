@@ -179,9 +179,11 @@ void Server::run()
                         int fileClient = in_fd;
                         char buf[5000] = {0};
                         int bytes = recv(fileClient, buf, 4, 0);
+                        cout << bytes << endl;
                         if (bytes == 0 || bytes == -1)
                         {
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fileClient, NULL);
+                            cout << "file Client disconnected" << endl;
                             fileClient_fds.erase(fileClient);
                             continue;
                         }

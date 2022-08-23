@@ -102,7 +102,7 @@ int Sql::updateUser(std::string username, std::string column, std::string value)
 
 std::vector<UserRecord> Sql::findFriends(std::string userName)
 {
-    string sql = "select User.uName, head from Friends, User where Friends.username = '" + userName + "' and User.uName = Friends.friend;";
+    string sql = "select User.uName, headfile from Friends, User where Friends.username = '" + userName + "' and User.uName = Friends.friend;";
 
     char **result = NULL;
     int nR = 0, nC = 0;
