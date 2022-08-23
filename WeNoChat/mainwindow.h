@@ -41,8 +41,6 @@ private slots:
 
     void on_pushButton_addfriend_clicked();
     void on_send_clicked();
-    void on_pushButton_2_clicked();
-    void on_pushButton_clicked();
     void hadreadyread();
 
     void pushMessageIntoChatWindow(bool type, QString msg, QString time, QImage *image = NULL, bool isSending = false);

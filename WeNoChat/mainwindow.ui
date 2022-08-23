@@ -258,32 +258,6 @@ p, li { white-space: pre-wrap; }
       <string>发送</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton">
-     <property name="geometry">
-      <rect>
-       <x>320</x>
-       <y>100</y>
-       <width>181</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>（测试用）模拟接收信息</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>100</y>
-       <width>201</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>（测试用）删掉最近一个</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton_send_image">
      <property name="geometry">
       <rect>
@@ -391,7 +365,7 @@ p, li { white-space: pre-wrap; }
     </font>
    </property>
    <property name="text">
-    <string>f</string>
+    <string/>
    </property>
   </widget>
   <zorder>frame</zorder>

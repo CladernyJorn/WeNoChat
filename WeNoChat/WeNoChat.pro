@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     friendlist.cpp \
     messagerecord.cpp \
     viewfullmessage.cpp \
-    wncimage.cpp
+    wncimage.cpp \
+    mydelegate.cpp
 
 HEADERS  += login.h \
     mainwindow.h \
@@ -53,7 +54,8 @@ HEADERS  += login.h \
     friendlist.h \
     messagerecord.h \
     viewfullmessage.h \
-    wncimage.h
+    wncimage.h \
+    mydelegate.h
 
 FORMS    += login.ui \
     mainwindow.ui \

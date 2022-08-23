@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMouseEvent>
+#include<vector>
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent),
                                           ui(new Ui::MainWindow)
@@ -10,20 +12,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent),
     //去窗口边框
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     // TODO：没有窗口边框怎么顶部拖动？继承QLabel，重写mouseMoveEvent和press...，顶部两个label就可以实现拖动窗口了
-}
-//测试用函数，正式发布务必删除（相关控件
-void MainWindow::on_pushButton_2_clicked()
-{
-    if (ui->listWidget->count() == 0)
-        return;
-    delete ui->listWidget->item(ui->listWidget->count() - 1);
-}
-//测试用函数，正式发布务必删除（相关控件
-void MainWindow::on_pushButton_clicked()
-{
-    QString msg = ui->textEdit->toPlainText();
-    pushMessageIntoChatWindow(false, msg, QString::number(QDateTime::currentDateTime().toTime_t()), false);
-    qDebug() << QString::number(QDateTime::currentDateTime().toTime_t());
 }
 
 void MainWindow::clearAllMessage()
@@ -116,7 +104,8 @@ void MainWindow::hadreadyread()
          *
          *
          */
-        // friendList = new Ui::FriendList(ui->friendList, userList);
+        changeMyIcon(&user_image);
+         friendList = new Ui::FriendList(ui->friendList, userList);
         initConnection();
     }
     else if (jtmp["type"].asString() == "chat")
@@ -145,6 +134,11 @@ void MainWindow::hadreadyread()
              *
              *
              */
+            QImage friend_image = QString2Qimage(QString::fromStdString(friendimage));
+            Ui::User f;
+            f.userName = friend_username;
+            f.image = friend_image;
+            friendList->insertToGroup("default", vector<Ui::User>{f});
             QMessageBox::information(this, "提示", ("成功添加好友" + friend_username).c_str()); //
             add->close();
         }
@@ -291,8 +285,10 @@ void MainWindow::pushMessageIntoChatWindow(bool type, QString msg, QString time,
     qDebug() << "addMessage" << msg << time << ui->listWidget->count();
     if (type)
     {
+        qDebug()<<"self";
         if (isSending)
         {
+            qDebug()<<"sending";
             dealMessageTime(time);
             ChatMessageWidget *messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
             QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
@@ -300,10 +296,13 @@ void MainWindow::pushMessageIntoChatWindow(bool type, QString msg, QString time,
         }
         else
         {
+            qDebug()<<"notSendig";
             bool isOver = true;
             for (int i = ui->listWidget->count() - 1; i > 0; i--)
             {
+                qDebug()<<"llo";
                 ChatMessageWidget *messageW = (ChatMessageWidget *)ui->listWidget->itemWidget(ui->listWidget->item(i));
+                qDebug()<<"lp";
                 if (messageW->text() == msg)
                 {
                     isOver = false;
@@ -360,10 +359,10 @@ void MainWindow::dealMessageTime(QString curMsgTime)
     {
         ChatMessageWidget *messageTime = new ChatMessageWidget(ui->listWidget->parentWidget());
         QListWidgetItem *itemTime = new QListWidgetItem(ui->listWidget);
-
         QSize size = QSize(ui->listWidget->width() - 25, 40);
         messageTime->resize(size);
         itemTime->setSizeHint(size);
+        qDebug()<<curMsgTime;
         messageTime->setText(curMsgTime, curMsgTime, size, ChatMessageWidget::User_Time);
         ui->listWidget->setItemWidget(itemTime, messageTime);
     }
@@ -426,12 +425,12 @@ void MainWindow::startChatting(QVariant variant)
         if (list[0] == udata)
         {
             //传自己头像的 Qimage
-            pushMessageIntoChatWindow(true, list[1], list[2],&user_image);
+            pushMessageIntoChatWindow(true, list[1], list[2]);
         }
         else
         {
             //传对方头像的QImage
-            pushMessageIntoChatWindow(false, list[1], list[2],&chattingInfo.chatFriend.image);
+            pushMessageIntoChatWindow(false, list[1], list[2]);
         }
     }
 }
@@ -477,8 +476,10 @@ void MainWindow::pushImageIntoChatWindow(bool type, QImage msg, QString time, QI
 {
     if (type)
     {
+        qDebug()<<"me";
         if (isSending)
         {
+            qDebug()<<"sending";
             dealMessageTime(time);
             ChatMessageWidget *messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
             QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
@@ -486,6 +487,7 @@ void MainWindow::pushImageIntoChatWindow(bool type, QImage msg, QString time, QI
         }
         else
         {
+            qDebug()<<"not sending";
             dealMessageTime(time);
             ChatMessageWidget *messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
             QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
@@ -515,7 +517,7 @@ void MainWindow::dealImage(ChatMessageWidget *messageW, QListWidgetItem *item, Q
     ui->listWidget->setItemWidget(item, messageW);
 }
 void MainWindow::changeMyIcon(QImage * uimg){
-    if(uimg == NULL){
+    if(uimg->isNull()){
         uimg = new QImage(":/assets/defaultHead.png");
     }
     QIcon qicon(QPixmap::fromImage(*uimg));

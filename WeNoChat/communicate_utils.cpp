@@ -128,6 +128,7 @@ int Decoder_askfriendsList(Json::Value packdata, std::string &username, std::vec
     {
         Ui::User friend_info;
         friend_info.image = QString2Qimage(QString::fromStdString(user_info["friend_image"].asString()));
+//        friend_info.imageStr = user_info["friend_image"].asString();
         friend_info.userName = user_info["friend_name"].asString();
         user_info_List.push_back(friend_info);
     }

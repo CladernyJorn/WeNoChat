@@ -1,13 +1,13 @@
 #include "friendlist.h"
 #include "ui_mainwindow.h"
-
+#include"mydelegate.h"
 #include <QLabel>
 #include <QIcon>
 #include <QDebug>
 #include <QTreeWidget>
 #include <QMenu>
 
-Ui::FriendList::FriendList(QTreeWidget *widget, std::vector<std::string> userList, QWidget *parent) : QWidget(parent), friendlist(widget)
+Ui::FriendList::FriendList(QTreeWidget *widget, std::vector<Ui::User> userList, QWidget *parent) : QWidget(parent), friendlist(widget)
 {
     qDebug("in");
     //    zszs
@@ -23,7 +23,7 @@ Ui::FriendList::FriendList(QTreeWidget *widget, std::vector<std::string> userLis
 
 Ui::FriendList::~FriendList() {}
 
-void Ui::FriendList::initFriendList(std::vector<std::string> userInfoList)
+void Ui::FriendList::initFriendList(std::vector<Ui::User> userInfoList)
 {
 
     friendlist->setHeaderHidden(true);
@@ -33,30 +33,11 @@ void Ui::FriendList::initFriendList(std::vector<std::string> userInfoList)
     QTreeWidgetItem *group_default = new QTreeWidgetItem();
     group_default->setText(0, "我的好友");
     group_default->setData(0, isGroup, 1);
+    groups["default"] = group_default;
     friendlist->addTopLevelItem(group_default);
     friendlist->sortByColumn(0);
-
-    // zszs
-    //     QTreeWidgetItem* FixedFrame = new QTreeWidgetItem();
-    //     FixedFrame->setText(0, "11111");
-    //     group_1->addChild(FixedFrame);
-    //     FixedFrame->setData(0, isGroup, 0);
-
-    QList<QTreeWidgetItem *> list;
-
-    for (unsigned int i = 0; i < userInfoList.size(); ++i)
-    {
-        QTreeWidgetItem *friendRecord = new QTreeWidgetItem();
-        friendRecord->setText(0, QString(userInfoList[i].c_str()));
-        friendRecord->setData(0, isGroup, 0);
-        list.append(friendRecord);
-        Ui::User f;
-        f.userName = userInfoList[i];
-        friendRecord->setData(0, UserInfo, QVariant::fromValue(f));
-    }
-
-    group_default->addChildren(list);
-    group_default->sortChildren(0, Qt::AscendingOrder);
+    friendlist->setItemDelegate(new MyDelegate);
+    addFriendInfo(group_default, userInfoList);
 }
 
 void Ui::FriendList::initConnection()
@@ -117,4 +98,53 @@ void Ui::FriendList::showFriendListMenu(QPoint pos)
     {
         qDebug() << "here";
     }
+}
+
+void Ui::FriendList::addFriendInfo(QTreeWidgetItem *group, std::vector<Ui::User> friendInfoList)
+{
+    QList<QTreeWidgetItem*> list;
+
+    for (Ui::User f:friendInfoList)
+    {
+        QTreeWidgetItem* friendRecord = new QTreeWidgetItem();
+
+        friendRecord->setText(0, QString(f.userName.c_str()));
+        friendRecord->setData(0, isGroup, 0);
+
+
+        QImage *img = new QImage;
+        img->load(":/assets/defaultHead.png");
+        if(f.image.isNull())
+        {
+            friendRecord->setIcon(0,QIcon(QPixmap::fromImage(*img)));
+        }
+        else
+        {
+            friendRecord->setIcon(0,QIcon(QPixmap::fromImage(f.image)));
+        }
+        friendRecord->setFont(0, QFont("consolas", 15, QFont::Normal));
+
+        friendRecord->setData(0, UserInfo, QVariant::fromValue(f));
+        list.append(friendRecord);
+    }
+
+    group->addChildren(list);
+    group->sortChildren(0, Qt::AscendingOrder);
+}
+
+void Ui::FriendList::addGroup(std::string name)
+{
+    groups[name] = new QTreeWidgetItem();
+}
+void Ui::FriendList::insertToGroup(std::string groupName, std::vector<Ui::User> friendInfoList)
+{
+    auto pgroup = groups.find(groupName);
+    if(pgroup!=groups.end())
+    {
+        addFriendInfo(pgroup->second, friendInfoList);
+    }
+}
+void Ui::FriendList::deleteGroup(std::string name)
+{
+
 }
