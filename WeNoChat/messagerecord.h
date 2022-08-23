@@ -7,6 +7,7 @@
 class MessageRecord
 {
 public:
+    MessageRecord();
     MessageRecord(std::vector<std::string> messages);
     void appendMessage(std::string message);
     void deleteMessage(int index);

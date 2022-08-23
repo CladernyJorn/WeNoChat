@@ -80,6 +80,7 @@ void MainWindow::_initHandler()
                     frd.image = QImage(fileInfo.absoluteFilePath());
                 userList.push_back(frd);
             }, Net::addr, Net::filePort);
+            msgRcd[frdinfo.name]=MessageRecord();
         }
         friendList = new Ui::FriendList(ui->friendList, userList);
         initConnection(); });
@@ -158,6 +159,17 @@ void MainWindow::_initHandler()
                 return;
             }
         }, Net::addr, Net::filePort);});
+    client.addCallback("msgrecord", [=](const Json::Value &jtmp){
+        string sdr = jtmp["sender"].asString();
+        string rcv = jtmp["receiver"].asString();
+        int isy = jtmp["isYou"].asInt();
+        string msg = jtmp["msg"].asString();
+        string time = jtmp["time"].asString();
+        if(isy)
+        {
+            msgRcd["receiver"].appendMessage()
+        }
+    });
 }
 
 void MainWindow::on_hideButton_clicked()

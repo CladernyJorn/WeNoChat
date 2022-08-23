@@ -1,5 +1,8 @@
 #include "messagerecord.h"
 
+MessageRecord::MessageRecord()
+{}
+
 MessageRecord::MessageRecord(std::vector<std::string> messages)
 {
     record = messages;

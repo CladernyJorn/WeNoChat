@@ -73,12 +73,20 @@ void Ui::FriendList::showFriendListMenu(QPoint pos)
             //            QAction* action2 = new QAction("置顶");
             QAction *action3 = new QAction("消息记录");
             QAction *action4 = new QAction("移动好友至");
+            QAction *action5 = new QAction("删除好友");
             menu->addAction(action1);
             //            menu->addAction(action2);
             menu->addAction(action3);
             menu->addAction(action4);
-            connect(action1, &QAction::triggered, [&, item]()
-                    { emit openChatroom(QVariant::fromValue(item->data(0, UserInfo).value<Ui::User>())); });
+            menu->addAction(action5);
+            connect(action1, &QAction::triggered, [&, item](){
+                emit openChatroom(QVariant::fromValue(item->data(0, UserInfo).value<Ui::User>()));
+            });
+
+            connect(action5, &QAction::triggered, [&, item](){
+                emit delFriend(QVariant::fromValue(item->data(0, UserInfo).value<Ui::User>()));
+                item->parent()->removeChild(item);
+            });
             menu->move(friendlist->cursor().pos());
             menu->show();
         }
@@ -125,6 +133,8 @@ void Ui::FriendList::addFriendInfo(QTreeWidgetItem *group, std::vector<Ui::User>
         friendRecord->setFont(0, QFont("consolas", 15, QFont::Normal));
 
         friendRecord->setData(0, UserInfo, QVariant::fromValue(f));
+
+        friends["f.userName"] = friendRecord;
         list.append(friendRecord);
     }
 
@@ -147,4 +157,10 @@ void Ui::FriendList::insertToGroup(std::string groupName, std::vector<Ui::User> 
 void Ui::FriendList::deleteGroup(std::string name)
 {
 
+}
+
+void Ui::FriendList::deleteFriend(std::string groupName, std::string friendName)
+{
+    QTreeWidgetItem *group = groups[groupName];
+    group->removeChild(friends[friendName]);
 }
