@@ -2,12 +2,14 @@
 #include "ui_mainwindow.h"
 #include <QMouseEvent>
 #include<vector>
+#include <dirent.h>
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent),
                                           ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->biaoqingFrame->setVisible(false);
     tmpCmd = QString();
     //去窗口边框
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
@@ -28,6 +30,7 @@ MainWindow::MainWindow(QString ud, QTcpSocket *sock, QWidget *parent) : QWidget(
     udata = ud;
     client = sock;
     ui->setupUi(this);
+    ui->biaoqingFrame->setVisible(false);
     userList.clear();
     imag = new WNCimage(ud, client);
     //去窗口边框
@@ -39,6 +42,7 @@ MainWindow::MainWindow(QString ud, QTcpSocket *sock, QWidget *parent) : QWidget(
     std::string data = Encoder_askfriendsList(udata.toStdString());
     QString packData = QString::fromStdString(data);
     client->write((packData.toUtf8()));
+
 }
 
 MainWindow::~MainWindow()
@@ -269,7 +273,7 @@ void MainWindow::pushMessageIntoChatWindow(bool type, QString msg, QString time,
 
     if (msg == "")
     {
-        // TODO：是不是要报个错？
+        //是不是要报个错？
         return;
     }
     qDebug() << "addMessage" << msg << time << ui->listWidget->count();
@@ -388,6 +392,68 @@ void MainWindow::on_pushButton_send_image_clicked()
     imag->sendinform_chatfile_image();
     pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
 }
+void MainWindow::on_biaoqingButton_clicked()
+{
+    if(!(ui->biaoqingFrame->visibleRegion().isNull())){
+        ui->biaoqingFrame->setVisible(false);
+    }
+    ui->biaoqingFrame->setVisible(true);
+}
+void MainWindow:: on_bButton1_clicked(){
+    imag->getImagefromdir(":/assets/微笑.jpg");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+void MainWindow:: on_bButton2_clicked(){
+    imag->getImagefromdir(":/assets/好！.jpg");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+void MainWindow:: on_bButton3_clicked(){
+    imag->getImagefromdir(":/assets/大哭.jpg");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+void MainWindow:: on_bButton4_clicked(){
+    imag->getImagefromdir(":/assets/冷笑.jpeg");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+void MainWindow:: on_bButton5_clicked(){
+    imag->getImagefromdir(":/assets/装傻.jpeg");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+void MainWindow:: on_bButton6_clicked(){
+    imag->getImagefromdir(":/assets/点赞.jpeg");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+void MainWindow:: on_bButton7_clicked(){
+    imag->getImagefromdir(":/assets/渴望.jpeg");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+void MainWindow:: on_bButton8_clicked(){
+    imag->getImagefromdir(":/assets/求求你了.jpeg");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+void MainWindow:: on_bButton9_clicked(){
+    imag->getImagefromdir(":/assets/aaa.png");
+    imag->sendinform_chatfile_image();
+    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    ui->biaoqingFrame->setVisible(false);
+}
+
 void MainWindow::initConnection()
 {
     connect(friendList, SIGNAL(openChatroom(QVariant)), this, SLOT(startChatting(QVariant)));

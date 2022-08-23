@@ -52,6 +52,18 @@ private slots:
     void deleteFriend(QVariant variant);
     void on_pushButton_image_clicked();
     void on_pushButton_send_image_clicked();
+    void on_biaoqingButton_clicked();
+
+    void on_bButton1_clicked();
+    void on_bButton2_clicked();
+    void on_bButton3_clicked();
+    void on_bButton4_clicked();
+    void on_bButton5_clicked();
+    void on_bButton6_clicked();
+    void on_bButton7_clicked();
+    void on_bButton8_clicked();
+    void on_bButton9_clicked();
+
 
 private:
     struct ChatInfo
@@ -71,7 +83,6 @@ private:
     ChatInfo chattingInfo;
     void initConnection();
     WNCimage *imag;
-
     QString tmpCmd;
     QPoint p;
 };

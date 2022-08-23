@@ -136,7 +136,7 @@ font-style:MingLiU-ExtB;
     <string notr="true">background-color: rgb(235, 250, 255);</string>
    </property>
    <property name="text">
-    <string>这里显示对方用户名</string>
+    <string/>
    </property>
    <property name="margin">
     <number>10</number>
@@ -258,17 +258,72 @@ p, li { white-space: pre-wrap; }
       <string>发送</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_send_image">
+    <widget class="QPushButton" name="biaoqingButton">
      <property name="geometry">
       <rect>
-       <x>150</x>
-       <y>10</y>
-       <width>261</width>
-       <height>18</height>
+       <x>10</x>
+       <y>100</y>
+       <width>35</width>
+       <height>35</height>
       </rect>
      </property>
      <property name="text">
-      <string>一个表示上传图片的logo，点击上传</string>
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="uires.qrc">
+       <normaloff>:/assets/biaoqing.png</normaloff>:/assets/biaoqing.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>100</y>
+       <width>35</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="uires.qrc">
+       <normaloff>:/assets/jiandao.png</normaloff>:/assets/jiandao.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_send_image">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>100</y>
+       <width>35</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="uires.qrc">
+       <normaloff>:/assets/zhaopian.png</normaloff>:/assets/zhaopian.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_3">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>100</y>
+       <width>35</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="uires.qrc">
+       <normaloff>:/assets/wenjian.png</normaloff>:/assets/wenjian.png</iconset>
      </property>
     </widget>
    </widget>
@@ -282,24 +337,8 @@ p, li { white-space: pre-wrap; }
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="cover_label">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>841</width>
-      <height>591</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <zorder>listWidget</zorder>
    <zorder>frame_2</zorder>
+   <zorder>listWidget</zorder>
    <zorder>cover_label</zorder>
   </widget>
   <widget class="QPushButton" name="pushButton_addfriend">
@@ -384,6 +423,254 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string/>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>45</width>
+     <height>45</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QFrame" name="biaoqingFrame">
+   <property name="geometry">
+    <rect>
+     <x>99</x>
+     <y>300</y>
+     <width>311</width>
+     <height>300</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(227, 248, 252, 235);</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QPushButton" name="bButton1">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/微笑.jpg</normaloff>:/assets/emoji/微笑.jpg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bButton2">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>0</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/好！.jpg</normaloff>:/assets/emoji/好！.jpg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bButton3">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>0</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/大哭.jpeg</normaloff>:/assets/emoji/大哭.jpeg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bButton5">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>100</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/装傻.jpeg</normaloff>:/assets/emoji/装傻.jpeg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bButton6">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>100</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/点赞.jpeg</normaloff>:/assets/emoji/点赞.jpeg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bButton4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/冷笑.jpeg</normaloff>:/assets/emoji/冷笑.jpeg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bButton8">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>200</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/求求你了.jpeg</normaloff>:/assets/emoji/求求你了.jpeg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bButton9">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>200</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/aaa.png</normaloff>:/assets/emoji/aaa.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bButton7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>200</y>
+      <width>90</width>
+      <height>90</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="uires.qrc">
+      <normaloff>:/assets/emoji/渴望.jpeg</normaloff>:/assets/emoji/渴望.jpeg</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>90</width>
+      <height>90</height>
+     </size>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="cover_label">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>211</x>
+     <y>60</y>
+     <width>841</width>
+     <height>591</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/assets/textwenochat.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </widget>
   <zorder>frame</zorder>
   <zorder>chatName</zorder>
@@ -395,7 +682,11 @@ p, li { white-space: pre-wrap; }
   <zorder>hideButton</zorder>
   <zorder>closeButton</zorder>
   <zorder>pushButton_image</zorder>
+  <zorder>biaoqingFrame</zorder>
+  <zorder>cover_label</zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="uires.qrc"/>
+ </resources>
  <connections/>
 </ui>

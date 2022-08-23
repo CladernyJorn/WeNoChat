@@ -11,6 +11,7 @@ WNCimage::WNCimage(QImage ima)
 {
     image=ima;
 }
+
 WNCimage::WNCimage(QString username,QTcpSocket * sock,QString filename){
     client=sock;
     udata=username;

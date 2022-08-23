@@ -67,4 +67,4 @@ FORMS    += login.ui \
     viewfullmessage.ui
 
 RESOURCES += \
-    uires.qrc
+    uires.qrc \
