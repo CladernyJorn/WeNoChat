@@ -143,13 +143,17 @@ void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
 {
     string username = cmd["username"].asString();
     cout << username << "getfriends" << endl;
-    vector<string> friends = Sql::singleton().findFriends(username);
+    vector<UserRecord> friends = Sql::singleton().findFriends(username);
+    vector<UserRecord> me = Sql::singleton().findUserByName(username);
     Json::Value response;
     response["username"] = username;
-    response["
-    for (int i = 0; i < (int)friends.size(); i++)
+    response["user_image"] = me[0].headfile;
+    for (UserRecord frd : friends)
     {
-        response["userList"][i] = friends[i];
+        Json::Value item;
+        item["friend_name"] = username;
+        item["friend_image"] = frd.headfile;
+        response["user_info_List"] = item;
     }
     sendJson(client, makeCmd("askfriendsList", response));
 }
@@ -329,6 +333,7 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
     task.fileFd = fileFd;
     task.fileSize = fileSize;
     task.progress = 0;
+    task.filename = file.getPath();
     handler.fileTasks[fileClient] = task;
 }
 
@@ -347,6 +352,7 @@ void __Callbacks::_updateFile(fd_t fileClient, const char *buf, int _n)
         {
             Json::Value response;
             response["state"] = 1;
+            response["filename"] = task->filename;
             handler.fileTasks.erase(p_id);
             sendJson(fileClient, makeCmd("sendState", response));
             close(task->fileFd);

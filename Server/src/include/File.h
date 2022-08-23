@@ -24,6 +24,7 @@ public:
 
 struct WriteFileTask
 {
+    std::string filename;
     fd_t fileFd;
     size_t fileSize;
     size_t progress;
