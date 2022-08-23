@@ -34,6 +34,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *ev);  //鼠标移动
     void mousePressEvent(QMouseEvent *ev); //鼠标按下移动
     void mouseReleaseEvent(QMouseEvent *ev);
+    void MoveFps();//收到当前聊天框新消息抖动
 private slots:
     void on_closeButton_clicked();
 

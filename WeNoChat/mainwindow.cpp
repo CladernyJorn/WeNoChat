@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include<vector>
 #include <dirent.h>
+#include<windows.h>
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent),
@@ -117,6 +118,8 @@ void MainWindow::hadreadyread()
             return;
         }
         pushMessageIntoChatWindow(false, QString::fromStdString(msg), QString::number(QDateTime::currentDateTime().toTime_t()),&chattingInfo.chatFriend.image);
+        MoveFps();
+
     }
     else if (jtmp["type"].asString() == "addfriends")
     { // mainwindow里处理加好友的返回信息
@@ -199,6 +202,7 @@ void MainWindow::hadreadyread()
             QImage chat_image = QString2Qimage(QString::fromStdString(info));
             //处理返回来的chat_image图片信息
             pushImageIntoChatWindow(false,chat_image,QString::number(QDateTime::currentDateTime().toTime_t()),&chattingInfo.chatFriend.image);
+            MoveFps();
             return;
         }
         // Todo:之后可以加其他类型文件的处理
@@ -593,4 +597,22 @@ void MainWindow::changeMyIcon(QImage * uimg){
     }
     QIcon qicon(QPixmap::fromImage(*uimg));
     ui->pushButton_image->setIcon(qicon);
+}
+void MainWindow::MoveFps()//窗口抖动特效
+{
+    int befor_x = this->x();
+    int befor_y = this->y();
+    int move_x = 2;
+    int move_y = 3;
+
+    for (int i = 0; i < 10; i++) {
+        this->move(befor_x + move_x, befor_y);
+        Sleep(50);
+        this->move(befor_x + move_x, befor_y + move_y);
+        Sleep(50);
+        this->move(befor_x, befor_y + move_y);
+        Sleep(50);
+        this->move(befor_x, befor_y);
+        Sleep(50);
+    }
 }
