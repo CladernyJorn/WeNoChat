@@ -28,6 +28,7 @@ CmdHandler::CmdHandler()
     __callbacks["findpWord3"] = __Callbacks::_findPword_change;
     __callbacks["sendFile"] = __Callbacks::_sendFile;
     __callbacks["rqirFile"] = __Callbacks::_rqirFile;
+    __callbacks["chatfile"] = __Callbacks::_chatFile;
 }
 
 void CmdHandler::handle(fd_t client, const char *buf, int _n)
@@ -388,4 +389,25 @@ void __Callbacks::_rqirFile(fd_t fileClient, Json::Value cmd)
     //     "fileName": "../res/jack/head.jpg",
     //     "size": 4096,
     // }
+}
+
+void __Callbacks::_chatFile(fd_t client, Json::Value cmd)
+{
+    string fileName = cmd["filename"].asString();
+    Json::Value userList = cmd["userList"];
+    string username = cmd["username"].asString();
+    cout << "file from " << username << " to " << encodeJson(userList) << endl;
+
+    for (int i = 0; i < userList.size(); i++)
+    {
+        string uName = userList[i].asString();
+        int fd;
+        if ((fd = Server::singleton().getFdByName(uName)) == -1)
+            continue;
+
+        Json::Value response;
+        response["filename"] = fileName;
+        response["username"] = username;
+        sendJson(fd, makeCmd("chatfile", response));
+    }
 }
