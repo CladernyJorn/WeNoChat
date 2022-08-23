@@ -21,17 +21,18 @@ Json::Value makeCmd(std::string type, Json::Value cmd)
     return response;
 }
 
-void sendStr(fd_t client, const char *str, uint len)
+int sendStr(fd_t client, const char *str, uint len)
 {
-    char sendmsg[5000];
+    char sendmsg[5000] = {0};
     uInt2Bytes(len, sendmsg);
     memcpy(sendmsg + 4, str, len);
-    send(client, sendmsg, len + 4, 0);
+    return send(client, sendmsg, len + 4, 0) - 4;
 }
 
 void sendJson(fd_t client, Json::Value json)
 {
     string jsonStr = encodeJson(json);
+    cout << jsonStr << endl;
     cout << "sending bytes: " << jsonStr.length() << endl;
     char sendmsg[4096];
     uInt2Bytes(jsonStr.length(), sendmsg);

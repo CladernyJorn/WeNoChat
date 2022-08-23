@@ -25,7 +25,7 @@ Json::Value makeCmd(std::string type, Json::Value cmd);
 // 向客户端发送json消息
 void sendJson(fd_t client, Json::Value json);
 
-void sendStr(fd_t client, const char *str, uint len);
+int sendStr(fd_t client, const char *str, uint len);
 
 uint32_t bytes2uInt(const char *bytes);
 

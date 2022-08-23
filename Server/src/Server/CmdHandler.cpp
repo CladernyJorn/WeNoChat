@@ -303,7 +303,7 @@ void __Callbacks::_sendFile(fd_t fileClient, Json::Value cmd)
                 break;
         }
         file.fileNameNoExtension = tmpname;
-        fileFd = open(file_path.c_str(), O_CREAT | O_TRUNC | O_WRONLY | O_APPEND, S_IRWXU);
+        fileFd = open(file.getPath().c_str(), O_CREAT | O_TRUNC | O_WRONLY | O_APPEND, S_IRWXU);
         if (fileFd == -1)
         {
             cout << "file create failed" << endl;
@@ -340,6 +340,24 @@ void __Callbacks::_updateFile(fd_t fileClient, const char *buf, int _n)
 
 void __Callbacks::_rqirFile(fd_t fileClient, Json::Value cmd)
 {
-    File file(cmd["fileName"].asString());
+    cout << encodeJson(cmd) << endl;
+    File file(cmd["filename"].asString());
+    fd_t fileFd;
     Json::Value response;
+    if (access(file.getPath().c_str(), F_OK) != 0)
+    {
+        response["state"] = 0;
+        response["size"] = 0;
+    }
+    else
+    {
+        Server::singleton().sendFile(fileClient, file.getPath());
+    }
+    // "type": "sendFile",
+    // "info": {
+    //     // does file exist.
+    //     "state": 1,
+    //     "fileName": "../res/jack/head.jpg",
+    //     "size": 4096,
+    // }
 }

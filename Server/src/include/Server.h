@@ -13,6 +13,13 @@
 #include "Constants.h"
 #include "CmdHandler.h"
 
+struct FileInfo
+{
+    fd_t fileFd;
+    fd_t targetFd;
+    size_t fileSize;
+    size_t progress;
+};
 class Server
 {
 public:
@@ -29,7 +36,7 @@ public:
     fd_t getFdByName(std::string username);
     void addClient(std::string username, fd_t __fd);
 
-    void sendFile(fd_t fileClient, std::string filepath);
+    int sendFile(fd_t fileClient, std::string filepath);
 
 private:
     Server(bool inited, uint32_t addr = 0, uint16_t port = 0, uint16_t filePort = 0);
@@ -47,7 +54,6 @@ private:
     std::unordered_map<std::string, fd_t> clients;
     std::unordered_map<fd_t, std::string> __clients;
 
-    std::unordered_set<fd_t> fileOpened;
     std::unordered_map<fd_t, WriteFileTask> fileSendTasks;
 
     CmdHandler &handler;

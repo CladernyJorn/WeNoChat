@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 #include <cstdlib>
+#include <pthread.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/fcntl.h>
@@ -185,26 +186,10 @@ void Server::run()
                             continue;
                         }
                         uint byten = bytes2uInt(buf);
-                        cout << byten << " bytes received" << endl;
                         bytes = recv(fileClient, buf, byten, 0);
-                        cout << "recvSize = " << bytes << endl;
+                        cout << "recv = " << buf << endl;
+                        cout << byten << " bytes received" << endl;
                         handler.handle(fileClient, buf, bytes);
-                    }
-                    else if (fileOpened.find(in_fd) != fileOpened.end())
-                    {
-                        int fileFd = in_fd;
-                        char buf[4096] = {0};
-                        int bytes = read(fileFd, buf, 4096);
-                        if (bytes == 0)
-                        {
-                            epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fileFd, NULL);
-                            fileOpened.erase(fileFd);
-                            close(fileFd);
-                            continue;
-                        }
-                        WriteFileTask out = fileSendTasks[fileFd];
-                        int fileClient = out.fileFd;
-                        sendStr(fileClient, buf, bytes);
                     }
                 }
             }
@@ -228,26 +213,69 @@ void Server::addClient(std::string username, fd_t __fd)
     __clients[__fd] = username;
 }
 
-void Server::sendFile(fd_t fileClient, std::string filepath)
+void *progressSending(void *arg)
+{
+    cout << "thread started" << endl;
+    FileInfo *fileInfo = (FileInfo *)arg;
+    int bytes;
+    char buf[4096] = {0};
+    cout << fileInfo->fileFd << "," << fileInfo->targetFd << endl;
+    while ((bytes = read(fileInfo->fileFd, buf, 4096)) != 0)
+    {
+        if (bytes == -1)
+        {
+            break;
+        }
+        // fileInfo->progress += sendStr(fileInfo->targetFd, buf, bytes);
+        fileInfo->progress += send(fileInfo->targetFd, buf, bytes, 0);
+        cout << "progress=" << fileInfo->progress << endl;
+    }
+    if (fileInfo->progress == fileInfo->fileSize)
+        cout << "file sent" << endl;
+    else
+        cout << "file not sent" << endl;
+    close(fileInfo->fileFd);
+    pthread_exit(NULL);
+}
+
+int Server::sendFile(fd_t fileClient, std::string filepath)
 {
     int fileFd = open(filepath.c_str(), O_RDONLY);
+    Json::Value response;
     if (fileFd == -1)
     {
+        response["state"] = 0;
+        response["size"] = 0;
+        sendJson(fileClient, makeCmd("sendFile", response));
         cout << "file open error" << endl;
     }
-    fileOpened.insert(fileFd);
-    WriteFileTask task;
+
+    response["state"] = 1;
+
+    FileInfo info;
+
     struct stat stFile;
     if ((fstat(fileFd, &stFile) == 0 && S_ISREG(stFile.st_mode)))
     {
-        task.fileSize = stFile.st_size;
+        info.fileSize = stFile.st_size;
     }
-    task.fileFd = fileClient;
-    task.progress = 0;
+    cout << info.fileSize << endl;
+    response["size"] = info.fileSize;
+    info.fileFd = fileFd;
+    info.targetFd = fileClient;
+    info.progress = 0;
+    sendJson(fileClient, makeCmd("sendFile", response));
 
-    epoll_event ev;
-    ev.events = EPOLLIN;
-    ev.data.fd = fileClient;
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fileFd, &ev);
-    fileSendTasks[fileFd] = task;
+    cout << "ready to start thread" << endl;
+    pthread_t fileThread;
+    int ret = pthread_create(&fileThread, NULL, progressSending, (void *)&info);
+    if (ret)
+    {
+        cout << "failed to start" << endl;
+    }
+    void *rets;
+    int error = pthread_join(fileThread, &rets);
+    if (error)
+        cout << "thread join error" << endl;
+    return info.fileSize;
 }
