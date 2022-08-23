@@ -19,11 +19,12 @@ public:
 
     void open();
     std::vector<UserRecord> findUserByName(std::string userName);
-    void insertUser(UserRecord rec);
-    void updateUser(std::string username, std::string column, std::string value);
+    std::vector<UserRecord> findUserByPhone(std::string phone);
+    int insertUser(UserRecord rec);
+    int updateUser(std::string username, std::string column, std::string value);
     std::vector<UserRecord> findFriends(std::string userName);
-    void insertFriends(std::string user, std::string friend_user);
-    void deleteFriends(std::string user, std::string friend_user);
+    int insertFriends(std::string user, std::string friend_user);
+    int deleteFriends(std::string user, std::string friend_user);
 
 private:
     Sql() {}

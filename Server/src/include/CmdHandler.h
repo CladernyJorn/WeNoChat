@@ -46,5 +46,6 @@ namespace __Callbacks
     void _updateFile(fd_t fileClient, const char *buf, int _n);
     void _rqirFile(fd_t fileClient, Json::Value cmd);
     void _chatFile(fd_t client, Json::Value cmd);
+    void _submitImage(fd_t client, Json::Value cmd);
 }
 #endif // CmdHandler.h

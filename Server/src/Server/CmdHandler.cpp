@@ -29,6 +29,7 @@ CmdHandler::CmdHandler()
     __callbacks["sendFile"] = __Callbacks::_sendFile;
     __callbacks["rqirFile"] = __Callbacks::_rqirFile;
     __callbacks["chatfile"] = __Callbacks::_chatFile;
+    __callbacks["submit_image"] = __Callbacks::_submitImage;
 }
 
 void CmdHandler::handle(fd_t client, const char *buf, int _n)
@@ -92,12 +93,19 @@ void __Callbacks::_register(fd_t client, Json::Value cmd)
     cout << "register: " << uName << ' ' << pWord << endl;
 
     vector<UserRecord> users = Sql::singleton().findUserByName(uName);
+    vector<UserRecord> phones = Sql::singleton().findUserByName(uName);
 
     Json::Value response;
+    response["username"] = uName;
     if (users.size() != 0)
     {
         response["state"] = 0;
         response["info"] = "用户名已存在！";
+    }
+    else if (phones.size() != 0)
+    {
+        response["state"] = 0;
+        response["info"] = "电话号码重复！";
     }
     else
     {
@@ -106,12 +114,20 @@ void __Callbacks::_register(fd_t client, Json::Value cmd)
                           phone,
                           secureQ,
                           secureA};
-        Sql::singleton().insertUser(rec);
-        response["state"] = 1;
-        response["info"] = "注册成功！";
-        Server::singleton().addClient(uName, client);
+        int ret = Sql::singleton().insertUser(rec);
+        if (ret != 0)
+        {
+            response["state"] = 0;
+            response["info"] = "插入数据库失败，请检查信息是否正确。";
+        }
+        else
+        {
+            response["state"] = 1;
+            response["info"] = "注册成功！";
+            Server::singleton().addClient(uName, client);
+            mkdir((user_path + uName).c_str(), S_IRWXU);
+        }
     }
-    mkdir((user_path + uName).c_str(), S_IRWXU);
     sendJson(client, makeCmd("regist", response));
 }
 
@@ -410,4 +426,13 @@ void __Callbacks::_chatFile(fd_t client, Json::Value cmd)
         response["username"] = username;
         sendJson(fd, makeCmd("chatfile", response));
     }
+}
+
+void __Callbacks::_submitImage(fd_t client, Json::Value cmd)
+{
+    string username = cmd["username"].asString();
+    string imagepath = cmd["image"].asString();
+    cout << "username = " << username << endl;
+    cout << "imagesize = " << imagepath.length() << endl;
+    Sql::singleton().updateUser(username, "headfile", imagepath);
 }
