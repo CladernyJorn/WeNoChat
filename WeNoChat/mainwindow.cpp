@@ -384,6 +384,7 @@ void MainWindow::on_pushButton_image_clicked()
     imag->getImagefromdir(image_addr);
     imag->sendinform_submit_image();
     user_image = imag->image;
+    changeMyIcon(&user_image);
 }
 
 void MainWindow::on_pushButton_send_image_clicked()

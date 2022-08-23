@@ -13,7 +13,7 @@ login::login(QWidget *parent) : QWidget(parent),
     setAttribute(Qt::WA_TranslucentBackground);
     //连接服务器
     client = new QTcpSocket();
-    client->connectToHost("192.168.1.112", 8888);
+    client->connectToHost("192.168.3.158", 8888);
     connect(client, SIGNAL(connected()), this, SLOT(hadconnected()));
 }
 
