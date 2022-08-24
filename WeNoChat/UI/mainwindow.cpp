@@ -211,7 +211,13 @@ void MainWindow::_initHandler()
     client.addCallback("submit_image", [=](const Json::Value &jtmp){
         string username = jtmp["username"].asString();
         string imgPath = jtmp["image"].asString();
-//        createRequireTask(QString::fromStdString(imgPath), "./assets/friend")
+        createRequireTask(QString::fromStdString(imgPath), "./assets/"+udata+"/friendheads",[=](FileSock *fsk, const QFileInfo &fileName){
+            QImage friend_image;
+            if(fileName.absolutePath().length()!=0)
+                friend_image.load(fileName.absoluteFilePath());
+            changeIcon(QString::fromStdString(username), friend_image);
+        }, QString::fromStdString(username+"head"));
+
     });
     client.addCallback("deletefriends", [=](const Json::Value &jtmp){
         string username = jtmp["username"].asString();
@@ -425,7 +431,7 @@ void MainWindow::on_bButton3_clicked()
 }
 void MainWindow::on_bButton4_clicked()
 {
-    sendChatImage(":/assets/emoji/冷笑.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/冷笑    .jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton5_clicked()
