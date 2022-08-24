@@ -1,4 +1,3 @@
-<<<<<<< HEAD:WeNoChat/mainwindow.h
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -24,6 +23,7 @@ class MainWindow : public QWidget
     Q_OBJECT
 
 public:
+    explicit MainWindow(QWidgit *parent = 0);
     explicit MainWindow(QString ud, QWidget *parent = 0);
     ~MainWindow();
     void pushImageIntoChatWindow(bool type, QImage msg, QString time, QImage *image = NULL, bool isSending = false);
@@ -92,4 +92,3 @@ private:
 };
 
 #endif // MAINWINDOW_H
->>>>>>> ClientFile:WeNoChat/UI/mainwindow.h

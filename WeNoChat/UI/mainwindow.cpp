@@ -1,4 +1,3 @@
-<<<<<<< HEAD:WeNoChat/mainwindow.cpp
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMouseEvent>
@@ -6,7 +5,7 @@
 #include "constants.h"
 #include <vector>
 #include <dirent.h>
-#include<windows.h>
+#include <windows.h>
 #include <QFileDialog>
 #include "socket/filesock.h"
 using namespace std;
@@ -174,8 +173,9 @@ void MainWindow::_initHandler()
                 pushImageIntoChatWindow(false, chat_image, QString::number(QDateTime::currentDateTime().toTime_t()), &chattingInfo.chatFriend.image);
                 return;
             }
-        }, Net::addr, Net::filePort);});
-    client.addCallback("msgrecord", [=](const Json::Value &jtmp){
+        }, Net::addr, Net::filePort); });
+    client.addCallback("msgrecord", [=](const Json::Value &jtmp)
+                       {
         string sdr = jtmp["sender"].asString();
         string rcv = jtmp["receiver"].asString();
         int isy = jtmp["isYou"].asInt();
@@ -188,8 +188,7 @@ void MainWindow::_initHandler()
         else
         {
             msgRcd[QString::fromStdString(sdr)].appendMessage(sdr+"/"+msg+"/"+time);
-        }
-    });
+        } });
 }
 
 void MainWindow::on_hideButton_clicked()
@@ -213,7 +212,7 @@ void MainWindow::on_send_clicked()
     std::vector<std::string> usersList;
     usersList.push_back(chattingInfo.chatFriend.userName);
     //发送数据协议
-    std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(),time.toStdString(), usersList);
+    std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(), time.toStdString(), usersList);
     QString packData = QString::fromStdString(data);
     client.sendMessage(packData);
     ui->textEdit->clear();
@@ -383,63 +382,73 @@ void MainWindow::on_pushButton_send_image_clicked()
 }
 void MainWindow::on_biaoqingButton_clicked()
 {
-    if(!(ui->biaoqingFrame->visibleRegion().isNull())){
+    if (!(ui->biaoqingFrame->visibleRegion().isNull()))
+    {
         ui->biaoqingFrame->setVisible(false);
     }
     ui->biaoqingFrame->setVisible(true);
 }
-void MainWindow:: on_bButton1_clicked(){
+void MainWindow::on_bButton1_clicked()
+{
     imag->getImagefromdir(":/assets/微笑.jpg");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
-void MainWindow:: on_bButton2_clicked(){
+void MainWindow::on_bButton2_clicked()
+{
     imag->getImagefromdir(":/assets/好！.jpg");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
-void MainWindow:: on_bButton3_clicked(){
+void MainWindow::on_bButton3_clicked()
+{
     imag->getImagefromdir(":/assets/大哭.jpg");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
-void MainWindow:: on_bButton4_clicked(){
+void MainWindow::on_bButton4_clicked()
+{
     imag->getImagefromdir(":/assets/冷笑.jpeg");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
-void MainWindow:: on_bButton5_clicked(){
+void MainWindow::on_bButton5_clicked()
+{
     imag->getImagefromdir(":/assets/装傻.jpeg");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
-void MainWindow:: on_bButton6_clicked(){
+void MainWindow::on_bButton6_clicked()
+{
     imag->getImagefromdir(":/assets/点赞.jpeg");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
-void MainWindow:: on_bButton7_clicked(){
+void MainWindow::on_bButton7_clicked()
+{
     imag->getImagefromdir(":/assets/渴望.jpeg");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
-void MainWindow:: on_bButton8_clicked(){
+void MainWindow::on_bButton8_clicked()
+{
     imag->getImagefromdir(":/assets/求求你了.jpeg");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
-void MainWindow:: on_bButton9_clicked(){
+void MainWindow::on_bButton9_clicked()
+{
     imag->getImagefromdir(":/assets/aaa.png");
     imag->sendinform_chatfile_image();
-    pushImageIntoChatWindow(true,imag->image,QString::number(QDateTime::currentDateTime().toTime_t()),&user_image);
+    pushImageIntoChatWindow(true, imag->image, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
     ui->biaoqingFrame->setVisible(false);
 }
 
@@ -463,7 +472,7 @@ void MainWindow::startChatting(QVariant variant)
     chattingInfo.record = &msgRcd[QString::fromStdString(chatFriend.userName)];
     for (std::string rec : chattingInfo.record->getAllMessageRecord())
     {
-        qDebug()<<QString::fromStdString(rec);
+        qDebug() << QString::fromStdString(rec);
         QStringList list = QString(rec.c_str()).split("/");
         if (list[0] == udata)
         {
@@ -488,7 +497,8 @@ void MainWindow::deleteFriend(QVariant variant)
     std::string data = Encoder_deletefriends(udata.toStdString(), friendToDel.userName);
     QString packData = QString::fromStdString(data);
     client->write((packData.toLocal8Bit()));
-    if(chattingInfo.chatFriend.userName==friendToDel.userName){
+    if (chattingInfo.chatFriend.userName == friendToDel.userName)
+    {
         ui->cover_label->setVisible(true);
     }
 }
@@ -582,14 +592,15 @@ void MainWindow::changeMyIcon(QImage *uimg)
     QIcon qicon(QPixmap::fromImage(*uimg));
     ui->pushButton_image->setIcon(qicon);
 }
-void MainWindow::MoveFps()//窗口抖动特效
+void MainWindow::MoveFps() //窗口抖动特效
 {
     int befor_x = this->x();
     int befor_y = this->y();
     int move_x = 2;
     int move_y = 3;
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         this->move(befor_x + move_x, befor_y);
         Sleep(50);
         this->move(befor_x + move_x, befor_y + move_y);
