@@ -1,5 +1,6 @@
 #include "group.h"
 #include "ui_group.h"
+using namespace std;
 
 group::group(Ui::FriendList *f,QWidget *parent) :
     QWidget(parent),
@@ -8,7 +9,8 @@ group::group(Ui::FriendList *f,QWidget *parent) :
 {
     ui->setupUi(this);
     friendlist = f;
-    for(int i = 0; i < ; i++)
+    map<string, QTreeWidgetItem *> friends = friendlist->getFriends();
+    for(map<string, QTreeWidgetItem *>::iterator it = friends.begin(); it!=friends.end(); it++)
     {
         QListWidgetItem *item = new QListWidgetItem();
         QCheckBox *checkbox = new QCheckBox();
@@ -16,9 +18,9 @@ group::group(Ui::FriendList *f,QWidget *parent) :
         ui->listWidget->addItem(item);
         ui->listWidget->setItemWidget(item,checkbox);
         //TODO:设置好友列表
-        checkbox->setText(friendlist->groups["default"]->child(i)->text(0));
+        checkbox->setText(it->second->text(0));
 
-        connect(checkbox, SIGNAL(stateChanged(int)),this,SLOT(anystateChanged()));
+        connect(checkbox, SIGNAL(stateChanged(int)),this,SLOT(anystateChanged(int)));
     }
 }
 
@@ -27,10 +29,11 @@ group::~group()
     delete ui;
 }
 
-void group::anystateChanged()
+void group::anystateChanged(int __n)
 {
     selectedItems.clear();
-    for(int i = 0;i < ; i++)
+    map<string, QTreeWidgetItem *> friends = friendlist->getFriends();
+    for(int i = 0; i < ui->listWidget->count();i++)
     {
         QListWidgetItem *item = ui->listWidget->item(i);
         QCheckBox *checkbox = static_cast<QCheckBox *>(ui->listWidget->itemWidget(item));
@@ -45,13 +48,13 @@ void group::on_pushButton_clicked()
 {
     QString groupname = ui->lineEdit->text();
     qDebug()<<selectedItems;
-    QString user;
+    std::vector<std::string> user;
     for(int i = 0;i < selectedItems.size();i++)
     {
+        user.push_back(friendlist->getGroups()["default"]->child(selectedItems.at(i))->text(0).toStdString());
         //把群聊中好友加进去
-        user += friendlist->groups["default"]->child->text(0);
     }
-    std::string data = Encoder_add_group_chat(groupname.toStdString(), user.toStdString());
+    std::string data = Encoder_add_group_chat(groupname.toStdString(), user);
     QString packData = QString::fromStdString(data);
     client.sendMessage(packData);
     this->close();

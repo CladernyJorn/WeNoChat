@@ -11,7 +11,7 @@ FileSock::FileSock(QObject *parent) : BaseSock(parent), file(NULL)
 
 FileSock::~FileSock()
 {
-    if(file!=NULL)
+    if (file != NULL)
         delete file;
 }
 
@@ -33,6 +33,7 @@ void FileSock::handReadyRead()
             onSendSuccess(this, fileName, QString::fromStdString(server_name));
         sock->disconnectFromHost();
         sock->close();
+        emit finished();
     }
     else if (type == "sendFile")
     {
@@ -50,7 +51,7 @@ void FileSock::handReadyRead()
             task.bytestoWrite = size;
             disconnect(sock, SIGNAL(readyRead()), 0, 0);
             connect(sock, SIGNAL(readyRead()), this, SLOT(upgradeRecvProgress()));
-            if(sock->bytesAvailable()>0)
+            if (sock->bytesAvailable() > 0)
             {
                 upgradeRecvProgress();
             }
@@ -80,15 +81,16 @@ void FileSock::sendFile(const QString &uName, const QString &fileName, const QSt
     Json::Value sdf;
     sdf["type"] = "sendFile";
     sdf["info"]["username"] = uName.toStdString();
-    QString fileAbsName = fileName.mid(fileName.lastIndexOf("/")+1);
+    QString fileAbsName = fileName.mid(fileName.lastIndexOf("/") + 1);
     int pos = fileAbsName.lastIndexOf(".");
     QString ext = fileAbsName.mid(pos);
-    if(defaultName.length()!=0)
+    if (defaultName.length() != 0)
     {
-        fileAbsName = defaultName+ext;
+        fileAbsName = defaultName + ext;
         sdf["info"]["default"] = 1;
     }
-    else sdf["info"]["default"] = 0;
+    else
+        sdf["info"]["default"] = 0;
     sdf["info"]["fileName"] = fileAbsName.toStdString();
     sdf["info"]["size"] = file->size();
     sendMessage(QString::fromStdString(Json::FastWriter().write(sdf)));
@@ -105,8 +107,8 @@ void FileSock::upgradeSendProgress(qint64 bytenum)
 {
     // 已经发送的数据大小
     task.bytesWritten += bytenum - 4;
-    qDebug()<<"delta = "<<bytenum-4;
-    qDebug() << "byteswritten "<<task.bytesWritten;
+    qDebug() << "delta = " << bytenum - 4;
+    qDebug() << "byteswritten " << task.bytesWritten;
 
     // 如果还有数据未发送
 
@@ -115,7 +117,7 @@ void FileSock::upgradeSendProgress(qint64 bytenum)
         outBlock = file->read(qMin(task.bytestoWrite, BLOCKSIZE));
         // 发送完一次数据后还剩余数据的大小
         quint32 size = sendMsg(sock, outBlock) - 4;
-        qDebug()<<"blocksize"<<size;
+        qDebug() << "blocksize" << size;
         task.bytestoWrite -= size;
         // 清空发送缓冲区
         outBlock.resize(0);
@@ -128,20 +130,19 @@ void FileSock::upgradeSendProgress(qint64 bytenum)
     // 如果发送完毕
     if (task.bytesWritten == task.totalBytes)
     {
-        qDebug()<<"send over"<<endl;
+        qDebug() << "send over" << endl;
         file->close();
     }
 }
 
 void FileSock::rqirFile(const QString &fileName, const QString &path, const QString &defaultName)
 {
-    qDebug()<<"hahaha";
-    if(fileName.length()==0)
+    if (fileName.length() == 0)
     {
-        qDebug()<<"hehehe";
         onRecvSuccess(this, fileName);
         sock->disconnectFromHost();
         sock->close();
+        emit finished();
         return;
     }
     QDir dir;
@@ -166,7 +167,7 @@ void FileSock::rqirFile(const QString &fileName, const QString &path, const QStr
         ext = absfileName.mid(posd);
     }
     QString fTmpName;
-    if(defaultName.length()!=0)
+    if (defaultName.length() != 0)
     {
         fTmpName = defaultName + ext;
     }
@@ -182,9 +183,8 @@ void FileSock::rqirFile(const QString &fileName, const QString &path, const QStr
                 idx++;
         } while (false);
     }
-    qDebug() << fTmpName;
     this->fileName = path + "/" + fTmpName;
-    qDebug()<<this->fileName;
+    qDebug() << this->fileName;
     this->file = new QFile(this->fileName);
     if (!this->file->open(QFile::WriteOnly))
     {
@@ -208,31 +208,34 @@ void FileSock::upgradeRecvProgress()
     qDebug() << "byteswritten " << task.bytesWritten;
     if (task.bytesWritten == task.totalBytes)
     {
+        qDebug() << "receive succeeded";
         file->close();
         onRecvSuccess(this, this->fileName);
         sock->disconnectFromHost();
         sock->close();
-
+        qDebug()<<"prepare to emit";
+        emit finished();
     }
 }
 
-
-void createRequireTask(const QString &fileName, const QString &path,
-                       std::function<void(FileSock *,const QFileInfo &fileInfo)> onSuccess, const QString &defaultName,
-                       const QString &addr, quint16 port ,QIODevice::OpenMode mode)
+FileSock *createRequireTask(const QString &fileName, const QString &path,
+                            std::function<void(FileSock *, const QFileInfo &fileInfo)> onSuccess, const QString &defaultName,
+                            const QString &addr, quint16 port, QIODevice::OpenMode mode)
 {
     FileSock *filesock = new FileSock;
     filesock->setRecvCallback(onSuccess);
     filesock->connectToHost(addr, port, mode);
     filesock->rqirFile(fileName, path, defaultName);
+    return filesock;
 }
 
-void createSendTask(const QString &userName, const QString &fileName,
-                    std::function<void(FileSock *,const QFileInfo &fileInfo, const QString &serverFileName)> onSuccess,
-                    const QString &defaultName, const QString &addr, quint16 port,QIODevice::OpenMode mode)
+FileSock *createSendTask(const QString &userName, const QString &fileName,
+                         std::function<void(FileSock *, const QFileInfo &fileInfo, const QString &serverFileName)> onSuccess,
+                         const QString &defaultName, const QString &addr, quint16 port, QIODevice::OpenMode mode)
 {
     FileSock *filesock = new FileSock;
     filesock->setSendCallback(onSuccess);
     filesock->connectToHost(addr, port);
     filesock->sendFile(userName, fileName, defaultName);
+    return filesock;
 }

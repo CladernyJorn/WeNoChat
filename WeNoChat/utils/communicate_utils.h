@@ -12,7 +12,7 @@
 #include "UI/friendlist.h"
 std::string Encoder(std::string type, Json::Value info); //将发送的信息按json文件的字符串格式编码，输出string
 //add_group_chat
-std::string Encoder_add_group_chat(std::string groupname, std::string user);
+std::string Encoder_add_group_chat(std::string groupname, std::vector<std::string> user);
 // login
 std::string Encoder_login(std::string username, std::string pwd);                               // login编码
 int Decoder_login(Json::Value packdata, std::string &username, std::string &info, bool &state); // login解码

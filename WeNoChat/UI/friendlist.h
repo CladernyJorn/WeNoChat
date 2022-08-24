@@ -36,6 +36,9 @@ namespace Ui
         void deleteGroup(std::string name);
         //TODO: delete friend;
         void deleteFriend(std::string groupName, std::string friendName);
+        std::map<std::string, QTreeWidgetItem *> getGroups();
+        std::map<std::string, QTreeWidgetItem *> getFriends();
+        void changeIcon(QString username, QImage icon);
 
     private:
         void initFriendList(std::vector<Ui::User> userInfoList);

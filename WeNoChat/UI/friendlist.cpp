@@ -134,7 +134,7 @@ void Ui::FriendList::addFriendInfo(QTreeWidgetItem *group, std::vector<Ui::User>
 
         friendRecord->setData(0, UserInfo, QVariant::fromValue(f));
 
-        friends["f.userName"] = friendRecord;
+        friends[f.userName] = friendRecord;
         list.append(friendRecord);
     }
 
@@ -163,4 +163,32 @@ void Ui::FriendList::deleteFriend(std::string groupName, std::string friendName)
 {
     QTreeWidgetItem *group = groups[groupName];
     group->removeChild(friends[friendName]);
+}
+
+std::map<std::string, QTreeWidgetItem *> Ui::FriendList::getGroups()
+{
+    return groups;
+}
+std::map<std::string, QTreeWidgetItem *> Ui::FriendList::getFriends()
+{return friends;}
+
+void Ui::FriendList::changeIcon(QString username, QImage icon)
+{
+    QTreeWidgetItem *friendRecord = friends[username.toStdString()];
+    QImage *img = new QImage;
+    img->load(":/assets/defaultHead.png");
+    Ui::User ff;
+    ff.userName = username.toStdString();
+    ff.image = icon;
+
+    if(icon.isNull())
+    {
+        friendRecord->setIcon(0,QIcon(QPixmap::fromImage(*img)));
+        friendRecord->setData(0, UserInfo, QVariant::fromValue(ff));
+    }
+    else
+    {
+        friendRecord->setIcon(0,QIcon(QPixmap::fromImage(icon)));
+        friendRecord->setData(0, UserInfo, QVariant::fromValue(ff));
+    }
 }

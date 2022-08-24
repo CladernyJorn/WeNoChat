@@ -43,7 +43,8 @@ SOURCES += main.cpp \
     constants.cpp \
     utils/jsoncpp.cpp \
     UI/picturecut.cpp \
-    UI/mydelegate.cpp
+    UI/mydelegate.cpp \
+    UI/group.cpp
 
 HEADERS  += \
     socket/basesock.h \
@@ -66,7 +67,8 @@ HEADERS  += \
     messagerecord.h \
     constants.h \
     UI/picturecut.h \
-    UI/mydelegate.h
+    UI/mydelegate.h \
+    UI/group.h
 
 FORMS    += \
     UI/login.ui \
@@ -77,7 +79,8 @@ FORMS    += \
     UI/searchfriends.ui \
     UI/user.ui \
     UI/viewfullmessage.ui \
-    UI/picturecut.ui
+    UI/picturecut.ui \
+    UI/group.ui
 
 RESOURCES += \
     uires.qrc \

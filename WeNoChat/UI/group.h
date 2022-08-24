@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QList>
 #include <QTreeWidget>
+#include <QCheckBox>
 #include "friendlist.h"
 #include "utils/communicate_utils.h"
 #include "socket/datasock.h"
@@ -25,7 +26,7 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-    void anystateChanged();
+    void anystateChanged(int __n);
 
 private:
     Ui::group *ui;

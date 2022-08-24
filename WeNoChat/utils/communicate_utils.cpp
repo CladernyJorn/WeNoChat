@@ -1,5 +1,6 @@
 #include "communicate_utils.h"
 #include <utility>
+using namespace std;
 std::string Encoder(std::string type, Json::Value info)
 {
     //通用编码，info仍是一个json文件，不建议直接使用
@@ -16,11 +17,12 @@ std::string Encoder(std::string type, Json::Value info)
     return strJson;
 }
 //add_group_chat
-std::string Encoder_add_group_chat(std::string groupname, std::string user)
+std::string Encoder_add_group_chat(std::string groupname, vector<string> user)
 {
     Json::Value jtmp;
     jtmp["groupname"] = groupname;
-    jtmp["user"] = user;
+    for(int i=0;i<user.size();i++)
+        jtmp["user"][i] = user[i];
     return Encoder("add_group_chat", jtmp);
 }
 // login

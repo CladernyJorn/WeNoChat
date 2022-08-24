@@ -38,8 +38,8 @@ MainWindow::MainWindow(QString ud, QWidget *parent) : QWidget(parent),
 {
     ui->setupUi(this);
     ui->biaoqingFrame->setVisible(false);
+    ui->indowLabel->setText(ud);
     _initHandler();
-    userList.clear();
     //    imag = new WNCimage(ud, client);
     //去窗口边框
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
@@ -70,8 +70,7 @@ void MainWindow::_initHandler()
             qDebug("askfriends data back from server error/n");
             return;
         }
-        createRequireTask(QString::fromStdString(userimage), "./assets/"+ QString::fromStdString(username), [&](FileSock *fsk, const QFileInfo &fileName){
-            qDebug()<<"filename "<<fileName.absoluteFilePath();
+        createRequireTask(QString::fromStdString(userimage), "./assets/"+ QString::fromStdString(username), [=](FileSock *fsk, const QFileInfo &fileName){
             if(fileName.absolutePath().length()!=0)
                 user_image = QImage(fileName.absoluteFilePath());
             changeMyIcon(&user_image);
@@ -85,22 +84,28 @@ void MainWindow::_initHandler()
          */
         //first: name,second:imagefile
         //获取好友头像
+        std::vector<Ui::User> userList;
         for(pair<string, string> frdinfo: uinfolist)
         {
-            createRequireTask(QString::fromStdString(frdinfo.second), "./assets/"+QString::fromStdString(username)+"/friendheads",
-                              [&](FileSock *fsk, const QFileInfo &fileInfo){
-                Ui::User frd;
-                frd.userName = frdinfo.first;
-                if(fileInfo.absolutePath().length() == 0)
-                    frd.image = QImage();
-                else
-                    frd.image = QImage(fileInfo.absoluteFilePath());
-                userList.push_back(frd);
-            });
+            Ui::User frd;
+            frd.userName = frdinfo.first;
+            frd.image = QImage();
+            userList.push_back(frd);
             msgRcd[QString::fromStdString(frdinfo.first)]=MessageRecord();
         }
         friendList = new Ui::FriendList(ui->friendList, userList);
-        initConnection(); });
+        initConnection();
+        for(pair<string, string> frdinfo: uinfolist){
+
+            createRequireTask(QString::fromStdString(frdinfo.second), "./assets/"+QString::fromStdString(username)+"/friendheads",
+                              [=](FileSock *fsk, const QFileInfo &fileInfo){
+                QImage icon;
+                if(fileInfo.absolutePath().length() != 0)
+                    icon.load(fileInfo.absoluteFilePath());
+                changeIcon(QString::fromStdString(frdinfo.first), icon);
+            }, QString::fromStdString(username) + "head");
+        }
+    });
 
     client.addCallback("chat", [=](const Json::Value &jtmp)
                        {
@@ -139,8 +144,7 @@ void MainWindow::_initHandler()
                 f.image = friend_image;
                 friendList->insertToGroup("default", vector<Ui::User>{f});
                 QMessageBox::information(this, "提示", ("成功添加好友" + friend_username).c_str()); //
-
-            });
+            }, QString::fromStdString(friend_username+"head"));
 
         }
         else
@@ -153,7 +157,7 @@ void MainWindow::_initHandler()
             qDebug("chatfile data back from server error/n");
             return;
         }
-        createRequireTask(QString::fromStdString(fn), "./assets/"+udata+"/FileRecv", [&](FileSock *sk, const QFileInfo &filesName){
+        createRequireTask(QString::fromStdString(fn), "./assets/"+udata+"/FileRecv", [=](FileSock *sk, const QFileInfo &filesName){
             QString filename;
             QString cat;
             if(filesName.absolutePath().length()==0)
@@ -174,10 +178,15 @@ void MainWindow::_initHandler()
             {
                 QImage chat_image = QImage(filename);
                 //处理返回来的chat_image图片信息
-                pushImageIntoChatWindow(false, chat_image, QString::number(QDateTime::currentDateTime().toTime_t()), &chattingInfo.chatFriend.image);
+                pushImageIntoChatWindow(false, chat_image, QString::fromStdString(time), &chattingInfo.chatFriend.image);
                 msgRcd[QString::fromStdString(sender_username)].push_back(MessageInfo(QString::fromStdString(sender_username), chat_image, QString::fromStdString(time), MessageInfo::IMAGE));
                 MoveFps();
-                return;
+            }
+            else
+            {
+                pushFileIntoChatWindow(false, filename, QString::fromStdString(time), &chattingInfo.chatFriend.image);
+                msgRcd[QString::fromStdString(sender_username)].push_back(MessageInfo(QString::fromStdString(sender_username), filename, QString::fromStdString(time), MessageInfo::FILE));
+                MoveFps();
             }
         }); });
     client.addCallback("msgrecord", [=](const Json::Value &jtmp)
@@ -195,6 +204,11 @@ void MainWindow::_initHandler()
         {
             msgRcd[QString::fromStdString(sdr)].push_back(MessageInfo(QString::fromStdString(sdr), QString::fromStdString(msg), QString::fromStdString(time), MessageInfo::PLAIN_TXT));
         } });
+    client.addCallback("submit_image", [=](const Json::Value &jtmp){
+        string username = jtmp["username"].asString();
+        string imgPath = jtmp["image"].asString();
+//        createRequireTask(QString::fromStdString(imgPath), "./assets/friend")
+    });
 }
 
 void MainWindow::on_hideButton_clicked()
@@ -217,6 +231,8 @@ void MainWindow::on_send_clicked()
     pushMessageIntoChatWindow(true, msg, time = QString::number(QDateTime::currentDateTime().toTime_t()), &user_image, false);
     std::vector<std::string> usersList;
     usersList.push_back(chattingInfo.chatFriend.userName);
+    msgRcd[QString::fromStdString(chattingInfo.chatFriend.userName)].
+            push_back(MessageInfo(QString::fromStdString(chattingInfo.chatFriend.userName),msg,time,MessageInfo::PLAIN_TXT));
     //发送数据协议
     std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(), time.toStdString(), usersList);
     QString packData = QString::fromStdString(data);
@@ -336,12 +352,14 @@ void MainWindow::on_pushButton_addfriend_clicked()
 void MainWindow::on_pushButton_image_clicked()
 {
     QString image_addr = QFileDialog::getOpenFileName(this, tr("打开图片"), "/", "Image Files(*.jpg *.jpeg *.bmp *.png)");
+    qDebug()<<image_addr;
     if (image_addr.length() == 0)
     {
         return;
     }
 
     PictureCut *w = new PictureCut(image_addr.toStdString());
+    w->show();
     connect(w, SIGNAL(getSelectedPicture(Ui::headImage)), this, SLOT(submitheadImage(Ui::headImage)));
 }
 
@@ -349,7 +367,7 @@ void MainWindow::submitheadImage(Ui::headImage hdimage)
 {
     QString image_addr = QString::fromStdString(hdimage.path);
     createSendTask(
-        udata, image_addr, [&](FileSock *, const QFileInfo &fileName, const QString &serverFileName)
+        udata, image_addr, [=](FileSock *, const QFileInfo &fileName, const QString &serverFileName)
         {
         std::string data = Encoder_submit_image(udata.toStdString(), serverFileName.toStdString());
         QString packData = QString::fromStdString(data);
@@ -367,18 +385,10 @@ void MainWindow::on_pushButton_send_image_clicked()
     {
         return;
     }
-
-    createSendTask(
-        udata, image_addr, [=](FileSock *skt, const QFileInfo &fileName, const QString &serverFileName)
-        {
-        std::vector<std::string> userslist; // userList需要从好友栏导入的，这里固定的占个位置
-        userslist.push_back(chattingInfo.chatFriend.userName);
-
-        std::string data = Encoder_chatfile(serverFileName.toStdString(), udata.toStdString(), userslist);
-        QString packData = QString::fromStdString(data);
-        client.sendMessage(packData);
-        QImage chatimage(fileName.absoluteFilePath());
-        pushImageIntoChatWindow(true, chatimage, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image); });
+    std::vector<std::string> userslist; // userList需要从好友栏导入的，这里固定的占个位置
+    userslist.push_back(chattingInfo.chatFriend.userName);
+    sendChatImage(image_addr, userslist, [=]()
+    {});
 }
 void MainWindow::on_biaoqingButton_clicked()
 {
@@ -455,17 +465,18 @@ void MainWindow::startChatting(QVariant variant)
     for (MessageInfo rec : *chattingInfo.record)
     {
         bool isyou = (rec.Sender == udata);
+        QImage *img = isyou?&user_image:&chattingInfo.chatFriend.image;
         if(rec.type == MessageInfo::PLAIN_TXT)
         {
-            pushMessageIntoChatWindow(isyou, rec.msg, rec.time);
+            pushMessageIntoChatWindow(isyou, rec.msg, rec.time, img);
         }
         else if(rec.type == MessageInfo::IMAGE)
         {
-            pushImageIntoChatWindow(isyou, rec.img, rec.time);
+            pushImageIntoChatWindow(isyou, rec.img, rec.time, img);
         }
         else if(rec.type == MessageInfo::FILE)
         {
-            pushFileIntoChatWindow(isyou, rec.filePath, rec.time);
+            pushFileIntoChatWindow(isyou, rec.filePath, rec.time, img);
         }
     }
 }
@@ -655,3 +666,24 @@ void MainWindow::dealFile(ChatMessageWidget *messageW, QListWidgetItem *item,QSt
     ui->listWidget->setItemWidget(item, messageW);
 }
 
+void MainWindow::changeIcon(QString username, QImage icon)
+{
+    friendList->changeIcon(username, icon);
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "选择文件");
+    qDebug()<<filename;
+    if(filename.length() ==0)
+        return;
+    QFileInfo fileinfo(filename);
+    createSendTask(udata, filename, [=](FileSock *, const QFileInfo &, const QString &){
+        vector<string> userList;
+        userList.push_back(chattingInfo.chatFriend.userName);
+        string packData = Encoder_chatfile(filename.toStdString(), udata.toStdString(),userList);
+        client.sendMessage(QString::fromStdString(packData));
+        pushFileIntoChatWindow(true, filename, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
+        msgRcd[QString::fromStdString(chattingInfo.chatFriend.userName)].push_back(MessageInfo(udata, filename, QString::number(QDateTime::currentDateTime().toTime_t()), MessageInfo::FILE));
+    });
+}

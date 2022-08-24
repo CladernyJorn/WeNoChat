@@ -38,7 +38,8 @@ private slots:
     void upgradeSendProgress(qint64 bytenum);
     void upgradeRecvProgress();
     void handReadyRead();
-
+signals:
+    finished();
 
 private:
     QString fileName;
@@ -58,14 +59,13 @@ private:
     bool running = false;
 };
 
-void createRequireTask(const QString &fileName, const QString &path, std::function<void(FileSock *,const QFileInfo &)> onSuccess,
+FileSock *createRequireTask(const QString &fileName, const QString &path, std::function<void(FileSock *,const QFileInfo &)> onSuccess,
                        const QString &defaultName = "", const QString &addr = Net::addr, quint16 port = Net::filePort, QIODevice::OpenMode mode = QIODevice::ReadWrite);
 
 
-void createSendTask(const QString &userName, const QString &fileName,
+FileSock *createSendTask(const QString &userName, const QString &fileName,
                     std::function<void(FileSock *, const QFileInfo &, const QString &)> onSuccess,
                     const QString &defaultName = "",
                     const QString &addr = Net::addr, quint16 port= Net::filePort,  QIODevice::OpenMode mode = QIODevice::ReadWrite);
-
 
 #endif // FILESOCK_H

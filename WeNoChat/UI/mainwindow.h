@@ -33,7 +33,7 @@ public:
     void pushImageIntoChatWindow(bool type, QImage msg, QString time, QImage *image = NULL, bool isSending = false);
     void dealImage(ChatMessageWidget *messageW, QListWidgetItem *item, QImage img, QString time, ChatMessageWidget::User_Type type, QImage *image);
     void changeMyIcon(QImage *uimg);
-
+    void changeIcon(QString username, QImage icon);
 protected:
     void mouseMoveEvent(QMouseEvent *ev);  //鼠标移动
     void mousePressEvent(QMouseEvent *ev); //鼠标按下移动
@@ -68,7 +68,10 @@ private slots:
     void on_bButton7_clicked();
     void on_bButton8_clicked();
     void on_bButton9_clicked();
+    void on_pushButton_3_clicked();
 
+signals:
+    all_finished();
 
 private:
     struct ChatInfo
@@ -82,7 +85,6 @@ private:
     QString udata;
     QImage user_image;
     searchFriends *add;
-    std::vector<Ui::User> userList;
 
     Ui::FriendList *friendList;
     ChatInfo chattingInfo;

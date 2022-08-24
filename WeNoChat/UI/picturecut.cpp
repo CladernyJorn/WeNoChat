@@ -2,6 +2,7 @@
 #include "ui_picturecut.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QFileInfo>
 #include <QCursor>
 
@@ -95,7 +96,9 @@ void PictureCut::on_btnCancel_clicked()
 void PictureCut::on_btnConfirm_clicked()
 {
     QImage resultPic = oriPic->copy(int(selectedPart.x / ratio), int(selectedPart.y / ratio), int(selectedPart.w / ratio), int(selectedPart.w  / ratio));
-    QString picExt= QString::fromStdString(picPath.substr(picPath.find_last_of(".") + 1));
+    QString picExt= QString::fromStdString(picPath.substr(picPath.find_last_of(".")));
+    QDir dir;
+    if(!dir.exists("./assets/")) dir.mkdir("./assets/");
     resultPic.save("./assets/head"+picExt);
     Ui::headImage result;
     result.image = resultPic;

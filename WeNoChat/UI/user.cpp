@@ -47,6 +47,7 @@ void user::on_pushButton_clicked()
     //发送数据协议
     std::string data = Encoder_findpWord1(uName.toStdString(), phonenum.toStdString());
     QString packData = QString::fromStdString(data);
+    client.sendMessage(packData);
 }
 
 void user::on_closeButton_clicked()
