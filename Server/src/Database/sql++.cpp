@@ -138,7 +138,7 @@ int Sql::insertFriends(std::string user, std::string friend_user)
 
 int Sql::deleteFriends(std::string user, std::string friend_user)
 {
-    string sql = "delete from Friends where (username = '" + user + "' and friend_user = '" + friend_user + "') or (username = '" + friend_user + "' and friend_user = '" + user + "')";
+    string sql = "delete from Friends where (username = '" + user + "' and friend = '" + friend_user + "') or (username = '" + friend_user + "' and friend = '" + user + "');";
     char *errmsg;
     int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
     if (sqlRet != 0)
@@ -181,7 +181,7 @@ int Sql::getGroupCounts()
 
     return nR;
 }
-int insertGroups(string username, string groupid)
+int Sql::insertGroups(string username, string groupid)
 {
     string sql = "insert into Group values('" + username + "', '" + groupid + "');";
     char *errmsg;

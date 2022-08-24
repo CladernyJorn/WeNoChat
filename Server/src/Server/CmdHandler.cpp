@@ -23,6 +23,7 @@ CmdHandler::CmdHandler()
     __callbacks["chat"] = __Callbacks::_chat;
     __callbacks["askfriendsList"] = __Callbacks::_getFriends;
     __callbacks["addfriends"] = __Callbacks::_addFriends;
+    __callbacks["deletefriends"] = __Callbacks::_deleteFriends;
     __callbacks["findpWord1"] = __Callbacks::_findPword_phone;
     __callbacks["findpWord2"] = __Callbacks::_findPword_que;
     __callbacks["findpWord3"] = __Callbacks::_findPword_change;
@@ -304,13 +305,14 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
 void __Callbacks::_deleteFriends(fd_t client, Json::Value cmd)
 {
     string username = cmd["username"].asString();
-    string friendsname = cmd["friendsname"].asString();
+    string friendsname = cmd["friend_username"].asString();
     fd_t tgtFd = Server::singleton().getFdByName(friendsname);
     Sql::singleton().deleteFriends(username, friendsname);
+    cout << tgtFd << endl;
     if (tgtFd != -1)
     {
         Json::Value response;
-        response["username"] = friendsname;
+        response["username"] = username;
         response["friend_username"] = friendsname;
         sendJson(tgtFd, makeCmd("deletefriends", response));
     }
@@ -491,6 +493,7 @@ void __Callbacks::_rqirFile(fd_t fileClient, Json::Value cmd)
     {
         response["state"] = 0;
         response["size"] = 0;
+        sendJson(fileClient, makeCmd("sendFile", response));
     }
     else
     {
@@ -535,4 +538,16 @@ void __Callbacks::_submitImage(fd_t client, Json::Value cmd)
     cout << "username = " << username << endl;
     cout << "image" << imagepath << endl;
     Sql::singleton().updateUser(username, "headfile", imagepath);
+    vector<UserRecord> recs = Sql::singleton().findFriends(username);
+    Json::Value response;
+    for (auto rec : recs)
+    {
+        response["username"] = username;
+        response["image"] = imagepath;
+        fd_t tgtfd = Server::singleton().getFdByName(rec.username);
+        if (tgtfd != -1)
+        {
+            sendJson(tgtfd, makeCmd("submit_image", response));
+        }
+    }
 }
