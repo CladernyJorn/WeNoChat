@@ -22,5 +22,6 @@
         <file>assets/cross.jpg</file>
         <file>assets/save.jpg</file>
         <file>assets/settings.jpg</file>
+        <file>assets/head.png</file>
     </qresource>
 </RCC>
