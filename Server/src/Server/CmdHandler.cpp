@@ -30,12 +30,36 @@ CmdHandler::CmdHandler()
     __callbacks["rqirFile"] = __Callbacks::_rqirFile;
     __callbacks["chatfile"] = __Callbacks::_chatFile;
     __callbacks["submit_image"] = __Callbacks::_submitImage;
-    __callbacks["group_chat"] = [=](fd_t client, Json::Value cmd)
+    __callbacks["add_group_chat"] = [=](fd_t client, Json::Value cmd)
+    {
+        string groupname = cmd["groupname"].asString();
+        Json::Value userList = cmd["userList"];
+
+        int len = userList.size();
+        
+        int groupid=Sql::singleton().getGroupCounts()+1;
+        Sql::singleton().insertGroups(groupid,groupname);
+        for (int i = 0; i < len; i++)
+        {
+            Json::Value response;
+            respons["state"]=1;
+            response["groupname"] = groupname;
+            response["userList"] = userList;
+            response["groupid"]= groupid;
+            string userName = userList[i].asString();
+            Sql::singleton().insertGroups(groupid,groupid);
+            sendJson(client,makeCmd("add_group_chat",response));
+        }
+
+        vector<string> targets = Sql::singleton().getGroupMembers(groupid);
+
+    };
+    __callbacks["chat_group"] = [=](fd_t client, Json::Value cmd)
     {
         string groupid = cmd["groupid"].asString();
         string username = cmd["username"].asString();
         string info = cmd["info"].asString();
-
+        string time = cmd["time"].asString();
         vector<string> targets = Sql::singleton().getGroupMembers(groupid);
 
         for (string uname : targets)
@@ -45,9 +69,11 @@ CmdHandler::CmdHandler()
             Json::Value response;
             response["groupid"] = groupid;
             //发送方
-            response["username"] = username;
+            response["sendername"] = username;
+            response["username"]=uname;
             response["info"] = info;
-            sendJson(client, makeCmd("group_chat", response));
+            response["time"]= time;
+            sendJson(client, makeCmd("chat_group", response));
         }
     };
 }

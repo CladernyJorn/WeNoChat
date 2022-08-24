@@ -167,3 +167,27 @@ vector<string> Sql::getGroupMembers(string groupid)
     }
     return recs;
 }
+
+vector<string> Sql::getGroupCounts()
+{
+    string sql = "select * from GroupInfo";
+
+    char **result = NULL;
+    int nR = 0, nC = 0;
+    char *errmsg = NULL;
+    sqlite3_get_table(mySqlite, sql.c_str(), &result, &nR, &nC, &errmsg);
+
+    cout << nR << " users found" << endl;
+
+    return nR;
+}
+int insertGroups(string username, string groupid){
+    string sql = "insert into Group values('" + username + "', '" + groupid + "');";
+    char *errmsg;
+    int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
+    if (sqlRet != 0)
+    {
+        cout << "sqlite3_error err: " << errmsg << endl;
+    }
+    return sqlRet;
+}
