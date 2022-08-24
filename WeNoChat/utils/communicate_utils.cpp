@@ -15,6 +15,14 @@ std::string Encoder(std::string type, Json::Value info)
     std::string strJson = writer.write(json_tmp);
     return strJson;
 }
+//add_group_chat
+std::string Encoder_add_group_chat(std::string groupname, std::string user)
+{
+    Json::Value jtmp;
+    jtmp["groupname"] = groupname;
+    jtmp["user"] = user;
+    return Encoder("add_group_chat", jtmp);
+}
 // login
 std::string Encoder_login(std::string username, std::string pwd)
 {
@@ -80,7 +88,7 @@ std::string Encoder_chat(std::string username, std::string info, std::string tim
     }
     return Encoder("chat", jtmp);
 }
-int Decoder_chat(Json::Value packdata, std::string &sender_username, std::string &info)
+int Decoder_chat(Json::Value packdata, std::string &sender_username, std::string &info, std::string &time)
 {
 
     if (!packdata.isObject())
@@ -88,6 +96,7 @@ int Decoder_chat(Json::Value packdata, std::string &sender_username, std::string
 
     sender_username = packdata["username"].asString();
     info = packdata["info"].asString();
+    time = packdata["time"].asString();
     return 1;
 }
 
@@ -185,7 +194,7 @@ std::string Encoder_chatfile(std::string filename, std::string username, std::ve
     jtmp["filename"] = filename;
     return Encoder("chatfile", jtmp);
 }
-int Decoder_chatfile(Json::Value packdata, std::string &filename, std::string &sender_name)
+int Decoder_chatfile(Json::Value packdata, std::string &filename, std::string &sender_name, std::string &time)
 {
 
     qDebug() << "chatfile recv = " << QString::fromStdString(Json::FastWriter().write(packdata));
@@ -193,6 +202,7 @@ int Decoder_chatfile(Json::Value packdata, std::string &filename, std::string &s
         return 0;
 
     sender_name = packdata["username"].asString();
+    time = packdata["time"].asString();
     filename = packdata["filename"].asString();
     return 1;
 }

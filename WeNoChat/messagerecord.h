@@ -3,18 +3,41 @@
 
 #include <string>
 #include <vector>
+#include <QImage>
 
-class MessageRecord
+struct MessageInfo
 {
-public:
-    MessageRecord();
-    MessageRecord(std::vector<std::string> messages);
-    void push(std::string message);
-    void remove(int index);
-    std::vector<std::string> getRecord();
-
-private:
-    std::vector<std::string> record;
+    QString Sender;
+    QString time;
+    QString msg;
+    QImage img;
+    QString filePath;
+    enum type_t{
+        PLAIN_TXT,
+        IMAGE,
+        FILE
+    } type;
+    MessageInfo(const QString &_sdr, const QString &_msg, const QString _time, type_t _type):
+        Sender(_sdr),
+        time(_time)
+    {
+        type = _type;
+        if(_type == PLAIN_TXT) msg = _msg;
+        else filePath = _msg;
+    }
+    MessageInfo(const QString &_sdr, const QImage &_img, const QString _time, type_t _type):
+        Sender(_sdr),
+        time(_time)
+    {
+        type = _type;
+        img = _img;
+    }
+    friend bool operator<(const MessageInfo &a, const MessageInfo &b)
+    {
+        return a.time.toULongLong() < b.time.toULongLong();
+    }
 };
+
+typedef std::vector<MessageInfo> MessageRecord;
 
 #endif // MESSAGERECORD_H

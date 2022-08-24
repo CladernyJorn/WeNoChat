@@ -2,6 +2,7 @@
 #include "ui_picturecut.h"
 
 #include <QDebug>
+#include <QFileInfo>
 #include <QCursor>
 
 PictureCut::PictureCut(std::string path, QWidget *parent) :
@@ -94,10 +95,11 @@ void PictureCut::on_btnCancel_clicked()
 void PictureCut::on_btnConfirm_clicked()
 {
     QImage resultPic = oriPic->copy(int(selectedPart.x / ratio), int(selectedPart.y / ratio), int(selectedPart.w / ratio), int(selectedPart.w  / ratio));
-    resultPic.save("C:/Users/lenvoo/Desktop/yuuki_1.png");
+    QString picExt= QString::fromStdString(picPath.substr(picPath.find_last_of(".") + 1));
+    resultPic.save("./assets/head"+picExt);
     Ui::headImage result;
     result.image = resultPic;
-    result.path = picPath;
+    result.path = QFileInfo("./assets/head"+picExt).absoluteFilePath().toStdString();
     emit getSelectedPicture(result);
     close();
 }

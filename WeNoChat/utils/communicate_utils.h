@@ -11,7 +11,8 @@
 #include <vector>
 #include "UI/friendlist.h"
 std::string Encoder(std::string type, Json::Value info); //将发送的信息按json文件的字符串格式编码，输出string
-
+//add_group_chat
+std::string Encoder_add_group_chat(std::string groupname, std::string user);
 // login
 std::string Encoder_login(std::string username, std::string pwd);                               // login编码
 int Decoder_login(Json::Value packdata, std::string &username, std::string &info, bool &state); // login解码
@@ -22,7 +23,7 @@ int Decoder_regist(Json::Value packdata, std::string &username, std::string &inf
 
 // chat
 std::string Encoder_chat(std::string username, std::string info, std::string time, std::vector<std::string> userList);
-int Decoder_chat(Json::Value packdata, std::string &sender_username, std::string &info);
+int Decoder_chat(Json::Value packdata, std::string &sender_username, std::string &info, std::string &time);
 
 // addfriends加好友
 std::string Encoder_addfriends(std::string username, std::string friend_username);
@@ -42,7 +43,7 @@ int Decoder_ready_chatfile(Json::Value packdata, bool &state);
 
 // chatfile 聊天发送图片
 std::string Encoder_chatfile(std::string filename, std::string username, std::vector<std::string> userList);
-int Decoder_chatfile(Json::Value packdata, std::string &filename, std::string &sender_name);
+int Decoder_chatfile(Json::Value packdata, std::string &filename, std::string &sender_name, std::string &time);
 
 // submit_image上传个人头像
 std::string Encoder_submit_image(std::string username, std::string image);

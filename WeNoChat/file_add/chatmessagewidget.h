@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QImage>
-#include "utils/communicate_utils.h"
+#include "communicate_utils.h"
 #include "viewfullmessage.h"
 class QPaintEvent;
 class QPainter;

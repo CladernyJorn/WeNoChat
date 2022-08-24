@@ -5,6 +5,7 @@
 #include <QTcpSocket>
 #include <QListWidgetItem>
 #include <QMainWindow>
+#include "picturecut.h"
 #include <UI/chatmessagewidget.h>
 #include <QDateTime>
 #include "utils/communicate_utils.h"
@@ -27,6 +28,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     explicit MainWindow(QString ud, QWidget *parent = 0);
     ~MainWindow();
+    void pushFileIntoChatWindow(bool type,QString filePath, QString time, QImage *image = NULL, bool isSending = false);
+    void dealFile(ChatMessageWidget *messageW, QListWidgetItem *item,QString filePath,QString msg, QString time, ChatMessageWidget::User_Type type, QImage *image);
     void pushImageIntoChatWindow(bool type, QImage msg, QString time, QImage *image = NULL, bool isSending = false);
     void dealImage(ChatMessageWidget *messageW, QListWidgetItem *item, QImage img, QString time, ChatMessageWidget::User_Type type, QImage *image);
     void changeMyIcon(QImage *uimg);
@@ -37,6 +40,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *ev);
     void MoveFps();//收到当前聊天框新消息抖动
 private slots:
+    void submitheadImage(Ui::headImage);
     void on_closeButton_clicked();
 
     void on_hideButton_clicked();
