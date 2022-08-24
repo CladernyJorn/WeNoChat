@@ -34,7 +34,12 @@ void Ui::FriendList::initFriendList(std::vector<Ui::User> userInfoList)
     group_default->setText(0, "我的好友");
     group_default->setData(0, isGroup, 1);
     groups["default"] = group_default;
+    QTreeWidgetItem *group_group = new QTreeWidgetItem();
+    group_group->setText(0, "我的群聊");
+    group_group->setData(0, isGroup, 1);
+    groups["group"] = group_group;
     friendlist->addTopLevelItem(group_default);
+    friendlist->addTopLevelItem(group_group);
     friendlist->sortByColumn(0);
     friendlist->setItemDelegate(new MyDelegate);
     addFriendInfo(group_default, userInfoList);
@@ -52,7 +57,14 @@ void Ui::FriendList::initConnection()
             {
         if (!item->data(0, isGroup).toBool())
         {
-            emit openChatroom(QVariant::fromValue(item->data(0, UserInfo).value<Ui::User>()));
+            if(!item->data(0, UserInfo+1).toBool())
+            {
+                emit openChatroom(QVariant::fromValue(item->data(0, UserInfo).value<Ui::User>()),item->data(0, UserInfo+1).toInt());
+            }
+            else
+            {
+                emit openChatroom(QVariant::fromValue(item->data(0, UserInfo).value<Ui::Group>()),item->data(0, UserInfo+1).toInt());
+            }
         } });
 
     friendlist->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -133,7 +145,7 @@ void Ui::FriendList::addFriendInfo(QTreeWidgetItem *group, std::vector<Ui::User>
         friendRecord->setFont(0, QFont("consolas", 15, QFont::Normal));
 
         friendRecord->setData(0, UserInfo, QVariant::fromValue(f));
-
+        friendRecord->setData(0, UserInfo + 1, 0);
         friends[f.userName] = friendRecord;
         list.append(friendRecord);
     }
@@ -142,6 +154,22 @@ void Ui::FriendList::addFriendInfo(QTreeWidgetItem *group, std::vector<Ui::User>
     group->sortChildren(0, Qt::AscendingOrder);
 }
 
+void Ui::FriendList::addGroupInfo( Ui::Group groupInfo)
+{
+
+
+        QTreeWidgetItem* groupRecord = new QTreeWidgetItem();
+
+        groupRecord->setText(0, QString::number(g.groupid));
+        groupRecord->setData(0, isGroup, 1);
+
+        groupRecord->setData(0, UserInfo, QVariant::fromValue(groupInfo));
+    groupRecord->setData(0, UserInfo + 1, 1);
+    QTreeWidgetItem *group = groups["我的群聊"];
+    group->addChild(groupRecord);
+    group->sortChildren(0, Qt::AscendingOrder);
+
+}
 void Ui::FriendList::addGroup(std::string name)
 {
     groups[name] = new QTreeWidgetItem();

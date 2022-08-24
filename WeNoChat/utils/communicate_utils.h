@@ -13,6 +13,10 @@
 std::string Encoder(std::string type, Json::Value info); //将发送的信息按json文件的字符串格式编码，输出string
 //add_group_chat
 std::string Encoder_add_group_chat(std::string groupname, std::vector<std::string> user);
+int Decoder_add_group_chat(Json::Value packdata, std::vector<std::string> &username, int &groupid, bool &state);
+//chat_group
+std::string Encoder_chat_group(std::string username, int groupid, std::string info, std::string time);
+int Decoder_chat_group(Json::Value packdata, std::string &username, int &groupid, std::string &info, std::string &time);
 // login
 std::string Encoder_login(std::string username, std::string pwd);                               // login编码
 int Decoder_login(Json::Value packdata, std::string &username, std::string &info, bool &state); // login解码

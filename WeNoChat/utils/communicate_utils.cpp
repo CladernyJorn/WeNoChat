@@ -25,6 +25,43 @@ std::string Encoder_add_group_chat(std::string groupname, vector<string> user)
         jtmp["user"][i] = user[i];
     return Encoder("add_group_chat", jtmp);
 }
+int Decoder_add_group_chat(Json::Value packdata, std::vector<std::string> &username, int &groupid, bool &state)
+{
+    if (!packdata.isObject())
+        return 0;
+    groupid = packdata["groupid"].asInt();
+    state = packdata["state"].asBool();
+
+    for (auto user : packdata["username"])
+    {
+        std::string user_info = user.asString();
+        username.push_back(user_info);
+    }
+
+    return 1;
+}
+//chat_group
+std::string Encoder_chat_group(std::string username, int groupid, std::string info, std::string time)
+{
+    Json::Value jtmp;
+    jtmp["username"] = username;
+    jtmp["groupid"] = groupid;
+    jtmp["info"] = info;
+    jtmp["time"] = time;
+    return Encoder("chat_group", jtmp);
+}
+int Decoder_chat_group(Json::Value packdata, std::string &username, int &groupid, std::string &info, std::string &time)
+{
+    if (!packdata.isObject())
+        return 0;
+    username = packdata["username"].asString();
+    groupid = packdata["groupid"].asInt();
+    info = packdata["info"].asString();
+    time = packdata["time"].asString();
+
+    return 1;
+}
+
 // login
 std::string Encoder_login(std::string username, std::string pwd)
 {
