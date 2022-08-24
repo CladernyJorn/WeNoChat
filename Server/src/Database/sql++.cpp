@@ -183,7 +183,7 @@ int Sql::getGroupCounts()
 }
 int Sql::insertGroups(string username, string groupid)
 {
-    string sql = "insert into Group values('" + username + "', '" + groupid + "');";
+    string sql = "insert into Groups values('" + username + "', '" + groupid + "');";
     char *errmsg;
     int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
     if (sqlRet != 0)
