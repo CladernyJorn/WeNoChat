@@ -9,9 +9,9 @@ class MessageRecord
 public:
     MessageRecord();
     MessageRecord(std::vector<std::string> messages);
-    void appendMessage(std::string message);
-    void deleteMessage(int index);
-    std::vector<std::string> getAllMessageRecord();
+    void push(std::string message);
+    void remove(int index);
+    std::vector<std::string> getRecord();
 
 private:
     std::vector<std::string> record;
