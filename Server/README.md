@@ -56,10 +56,31 @@ create table Friends(
     foreign key (friend) references User(uName)
 );
 
+create table GroupInfo(
+    groupid varchar(32) primary key,
+    groupname varchar(32) not null
+);
+
+create table Groups(
+    username varchar(32) not null,
+    groupid varchar(32) not null,
+    primary key (username, groupid),
+    foreign key (username) references User(uName),
+    foreign key (groupid) references GroupInfo(groupid)
+);
+
+select username from Group where groupid = '123123';
+
 create trigger drop_user before delete
 on User
 begin
     delete from Friends where username = old.uName or friend = old.uName;
+end;
+
+create trigger drop_group before delete
+on GroupInfo
+begin
+    delete from Groups where groupid = old.groupid;
 end;
 
 create trigger add_friends after insert on Friends

@@ -25,6 +25,7 @@ public:
     std::vector<UserRecord> findFriends(std::string userName);
     int insertFriends(std::string user, std::string friend_user);
     int deleteFriends(std::string user, std::string friend_user);
+    std::vector<std::string> getGroupMembers(std::string groupid);
 
 private:
     Sql() {}

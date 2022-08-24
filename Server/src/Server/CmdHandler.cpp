@@ -30,6 +30,26 @@ CmdHandler::CmdHandler()
     __callbacks["rqirFile"] = __Callbacks::_rqirFile;
     __callbacks["chatfile"] = __Callbacks::_chatFile;
     __callbacks["submit_image"] = __Callbacks::_submitImage;
+    __callbacks["group_chat"] = [=](fd_t client, Json::Value cmd)
+    {
+        string groupid = cmd["groupid"].asString();
+        string username = cmd["username"].asString();
+        string info = cmd["info"].asString();
+
+        vector<string> targets = Sql::singleton().getGroupMembers(groupid);
+
+        for (string uname : targets)
+        {
+            if (uname == username)
+                continue;
+            Json::Value response;
+            response["groupid"] = groupid;
+            //发送方
+            response["username"] = username;
+            response["info"] = info;
+            sendJson(client, makeCmd("group_chat", response));
+        }
+    };
 }
 
 void CmdHandler::handle(fd_t client, const char *buf, int _n)
@@ -210,7 +230,8 @@ void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
         return;
     for (string rec : recc->second)
     {
-        sendJson(client, makeCmd("msgrecord", rec));
+        Json::Value reccc = decodeJson(rec);
+        sendJson(client, makeCmd("msgrecord", reccc));
     }
 }
 

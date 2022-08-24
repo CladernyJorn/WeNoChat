@@ -147,3 +147,23 @@ int Sql::deleteFriends(std::string user, std::string friend_user)
     }
     return sqlRet;
 }
+
+vector<string> Sql::getGroupMembers(string groupid)
+{
+    string sql = "select username from Groups where groupid = '" + groupid + "';";
+
+    char **result = NULL;
+    int nR = 0, nC = 0;
+    char *errmsg = NULL;
+    sqlite3_get_table(mySqlite, sql.c_str(), &result, &nR, &nC, &errmsg);
+
+    cout << nR << " users found" << endl;
+
+    vector<string> recs;
+    for (int i = 1; i <= nR; i++)
+    {
+        string rec = result[i * nC];
+        recs.push_back(rec);
+    }
+    return recs;
+}
