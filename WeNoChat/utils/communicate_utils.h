@@ -30,7 +30,7 @@ int Decoder_addfriends(Json::Value packdata, std::string &username, bool &state,
 
 // askfriendsList 请求好友列表
 std::string Encoder_askfriendsList(std::string username);
-int Decoder_askfriendsList(Json::Value packdata, std::string &username, std::vector<Ui::User> &user_info_List, std::string &user_image);
+int Decoder_askfriendsList(Json::Value packdata, std::string &username, std::vector<std::pair<std::string, std::string>> &user_info_List, std::string &user_image);
 
 // deletefriends 删除好友
 std::string Encoder_deletefriends(std::string username, std::string friend_username);

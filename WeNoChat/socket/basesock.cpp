@@ -64,6 +64,7 @@ void BaseSock::handReadyRead()
         }
         pack>>msg;
         if(msg.length()==0) break;
+        msgLen = msg.length() + sizeof(uint);
         Json::Reader reader;
         Json::Value json;
         qDebug()<<"recv = "<<msg;
@@ -88,7 +89,9 @@ void BaseSock::handReadyRead()
         {
             qDebug()<<"服务器返回信息错误";
         }
-        buf = buffer.right(tot-)
+        buf = buffer.right(tot - msgLen);
+        tot = buf.size();
+        buffer = buf;
     }
 }
 

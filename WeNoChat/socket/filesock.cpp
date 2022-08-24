@@ -218,8 +218,8 @@ void FileSock::upgradeRecvProgress()
 
 
 void createRequireTask(const QString &fileName, const QString &path,
-                       std::function<void(FileSock *,const QFileInfo &fileInfo)> onSuccess,
-                       const QString &addr, quint16 port , const QString &defaultName, QIODevice::OpenMode mode)
+                       std::function<void(FileSock *,const QFileInfo &fileInfo)> onSuccess, const QString &defaultName,
+                       const QString &addr, quint16 port ,QIODevice::OpenMode mode)
 {
     FileSock *filesock = new FileSock;
     filesock->setRecvCallback(onSuccess);
@@ -229,7 +229,7 @@ void createRequireTask(const QString &fileName, const QString &path,
 
 void createSendTask(const QString &userName, const QString &fileName,
                     std::function<void(FileSock *,const QFileInfo &fileInfo, const QString &serverFileName)> onSuccess,
-                    const QString &addr, quint16 port,const QString &defaultName,QIODevice::OpenMode mode)
+                    const QString &defaultName, const QString &addr, quint16 port,QIODevice::OpenMode mode)
 {
     FileSock *filesock = new FileSock;
     filesock->setSendCallback(onSuccess);

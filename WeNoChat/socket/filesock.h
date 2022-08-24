@@ -7,6 +7,7 @@
 #include<QFileInfo>
 #include <QDataStream>
 #include <functional>
+#include "constants.h"
 #include "basesock.h"
 
 struct FileTask
@@ -58,20 +59,13 @@ private:
 };
 
 void createRequireTask(const QString &fileName, const QString &path, std::function<void(FileSock *,const QFileInfo &)> onSuccess,
-                       const QString &addr, quint16 port,  const QString &defaultName = "", QIODevice::OpenMode mode = QIODevice::ReadWrite);
+                       const QString &defaultName = "", const QString &addr = Net::addr, quint16 port = Net::filePort, QIODevice::OpenMode mode = QIODevice::ReadWrite);
 
 
 void createSendTask(const QString &userName, const QString &fileName,
                     std::function<void(FileSock *, const QFileInfo &, const QString &)> onSuccess,
-                    const QString &addr, quint16 port,const QString &defaultName = "", QIODevice::OpenMode mode = QIODevice::ReadWrite);
-//class FileSockManager
-//{
-//public:
-//    static FileSockManager &get();
-//private:
-//    FileSockManager();
-//    FileSockManager(const FileSockManager &) = delete;
-//    FileSockManager &operator=(const FileSockManager &) = delete;
-//};
+                    const QString &defaultName = "",
+                    const QString &addr = Net::addr, quint16 port= Net::filePort,  QIODevice::OpenMode mode = QIODevice::ReadWrite);
+
 
 #endif // FILESOCK_H

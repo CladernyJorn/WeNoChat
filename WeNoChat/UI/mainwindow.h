@@ -10,6 +10,7 @@
 #include "utils/communicate_utils.h"
 #include "searchfriends.h"
 #include "friendlist.h"
+#include <functional>
 #include <QImage>
 #include "messagerecord.h"
 #include "socket/datasock.h"
@@ -23,7 +24,7 @@ class MainWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidgit *parent = 0);
+    explicit MainWindow(QWidget *parent = 0);
     explicit MainWindow(QString ud, QWidget *parent = 0);
     ~MainWindow();
     void pushImageIntoChatWindow(bool type, QImage msg, QString time, QImage *image = NULL, bool isSending = false);
@@ -89,6 +90,8 @@ private:
     QPoint p;
 
     void _initHandler();
+
+    void sendChatImage(const QString &imgFile, std::vector<std::string> userList, std::function<void()>onSuccess);
 };
 
 #endif // MAINWINDOW_H
