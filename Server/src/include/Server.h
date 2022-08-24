@@ -30,6 +30,7 @@ public:
     void addClient(std::string username, fd_t __fd);
 
     int sendFile(fd_t fileClient, std::string filepath);
+    void recvFile();
 
 private:
     Server(bool inited, uint32_t addr = 0, uint16_t port = 0, uint16_t filePort = 0);

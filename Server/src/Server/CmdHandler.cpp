@@ -176,33 +176,37 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
             cout << "client = " << client << endl;
             sendJson(tgtfd, makeCmd("chat", response));
         }
+        cout << "logging" << endl;
         Json::Value Log;
         Log["sender"] = _from;
-        Log["receiver"] = _to[i].asString();
+        Log["receiver"] = userName;
         Log["isYou"] = 1;
         Log["msg"] = _msg;
         Log["time"] = _time;
         CmdHandler &handler = CmdHandler::singleton();
+
         auto fromrec = handler.msgRcds.find(_from);
         if (fromrec == handler.msgRcds.end())
             handler.msgRcds[_from] = list<string>();
-        fromrec->second.push_back(encodeJson(Log));
-        if (fromrec->second.size() > 100)
-            fromrec->second.pop_front();
+        list<string> &logg = handler.msgRcds[_from];
+
+        logg.push_back(encodeJson(Log));
+        if (logg.size() > 100)
+            logg.pop_front();
 
         Json::Value Log1;
         Log1["sender"] = _from;
-        Log1["receiver"] = _to[i].asString();
+        Log1["receiver"] = userName;
         Log1["isYou"] = 0;
         Log1["msg"] = _msg;
         Log1["time"] = _time;
-        string tto = _to[i].asString();
-        auto torec = handler.msgRcds.find(tto);
+        auto torec = handler.msgRcds.find(userName);
         if (torec == handler.msgRcds.end())
-            handler.msgRcds[tto] = list<string>();
-        torec->second.push_back(encodeJson(Log1));
-        if (torec->second.size() > 100)
-            torec->second.pop_front();
+            handler.msgRcds[userName] = list<string>();
+        list<string> &logr = handler.msgRcds[userName];
+        logr.push_back(encodeJson(Log1));
+        if (logr.size() > 100)
+            logr.pop_front();
     }
 }
 
@@ -481,6 +485,7 @@ void __Callbacks::_chatFile(fd_t client, Json::Value cmd)
     string fileName = cmd["filename"].asString();
     Json::Value userList = cmd["userList"];
     string username = cmd["username"].asString();
+    string time = cmd["time"].asString();
     cout << "file from " << username << " to " << encodeJson(userList) << endl;
 
     for (int i = 0; i < userList.size(); i++)
@@ -493,6 +498,7 @@ void __Callbacks::_chatFile(fd_t client, Json::Value cmd)
         Json::Value response;
         response["filename"] = fileName;
         response["username"] = username;
+        response["time"] = time;
         sendJson(fd, makeCmd("chatfile", response));
     }
 }

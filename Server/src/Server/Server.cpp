@@ -281,3 +281,7 @@ int Server::sendFile(fd_t fileClient, std::string filepath)
         cout << "thread join error" << endl;
     return info.fileSize;
 }
+
+void Server::recvFile()
+{
+}
