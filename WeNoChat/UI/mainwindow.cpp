@@ -5,10 +5,13 @@
 #include "constants.h"
 #include <vector>
 #include <dirent.h>
+#include <QPainter>
 #include "UI/picturecut.h"
 #include <windows.h>
+#include <QBitmap>
 #include <QFileDialog>
 #include "socket/filesock.h"
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent),
@@ -37,6 +40,7 @@ MainWindow::MainWindow(QString ud, QWidget *parent) : QWidget(parent),
                                                       ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    changeBackGround(":/assets/preview.jpg");
     ui->biaoqingFrame->setVisible(false);
     ui->indowLabel->setText(ud);
     _initHandler();
@@ -208,6 +212,12 @@ void MainWindow::_initHandler()
         string username = jtmp["username"].asString();
         string imgPath = jtmp["image"].asString();
 //        createRequireTask(QString::fromStdString(imgPath), "./assets/friend")
+    });
+    client.addCallback("deletefriends", [=](const Json::Value &jtmp){
+        string username = jtmp["username"].asString();
+        string friendname = jtmp["friendname"].asString();
+        friendList->deleteFriend("default", username);
+        msgRcd.erase(QString::fromStdString(username));
     });
 }
 
@@ -400,47 +410,47 @@ void MainWindow::on_biaoqingButton_clicked()
 }
 void MainWindow::on_bButton1_clicked()
 {
-    sendChatImage(":/assets/微笑.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/微笑.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton2_clicked()
 {
-    sendChatImage(":/assets/好！.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/好！.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton3_clicked()
 {
-    sendChatImage(":/assets/大哭！.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/大哭.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton4_clicked()
 {
-    sendChatImage(":/assets/冷笑！.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/冷笑.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton5_clicked()
 {
-    sendChatImage(":/assets/装傻.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/装傻.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton6_clicked()
 {
-    sendChatImage(":/assets/点赞.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/点赞.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton7_clicked()
 {
-    sendChatImage(":/assets/渴望.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/渴望.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton8_clicked()
 {
-    sendChatImage(":/assets/求求你了.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/求求你了.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton9_clicked()
 {
-    sendChatImage(":/assets/aaa.png", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/emoji/aaa.png", vector<string>{chattingInfo.chatFriend.userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 
@@ -651,7 +661,7 @@ void MainWindow::pushFileIntoChatWindow(bool type,QString filePath, QString time
         dealMessageTime(time);
         ChatMessageWidget *messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
         QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
-        dealFile(messageW, item,filePath, msg, time, ChatMessageWidget::User_She, image);
+        dealFile(messageW, item,filePath, msg, time, ChatMessageWidget::File_She, image);
     }
     ui->listWidget->setCurrentRow(ui->listWidget->count() - 1);
 }
@@ -678,12 +688,42 @@ void MainWindow::on_pushButton_3_clicked()
     if(filename.length() ==0)
         return;
     QFileInfo fileinfo(filename);
-    createSendTask(udata, filename, [=](FileSock *, const QFileInfo &, const QString &){
+    createSendTask(udata, filename, [=](FileSock *, const QFileInfo &info, const QString &serverName){
         vector<string> userList;
         userList.push_back(chattingInfo.chatFriend.userName);
-        string packData = Encoder_chatfile(filename.toStdString(), udata.toStdString(),userList);
+        string packData = Encoder_chatfile(serverName.toStdString(), udata.toStdString(),userList);
         client.sendMessage(QString::fromStdString(packData));
         pushFileIntoChatWindow(true, filename, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
         msgRcd[QString::fromStdString(chattingInfo.chatFriend.userName)].push_back(MessageInfo(udata, filename, QString::number(QDateTime::currentDateTime().toTime_t()), MessageInfo::FILE));
     });
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    screenShot();
+}
+
+void MainWindow::screenShot()
+{
+    scrCut = new ScreenCut;
+    connect(scrCut, &ScreenCut::cancel, [&](){
+        this->setVisible(true);
+    });
+    connect(scrCut, SIGNAL(gotScreenCut(QImage)), this, SLOT(getScreenCut(QImage)));
+    scrCut->cut();
+}
+
+
+void MainWindow::on_setting_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "选择背景", "/", "Image Files(*.jpg *.jpeg *.bmp *.png)");
+    if(filename.length()==0)return;
+    changeBackGround(filename);
+}
+
+void MainWindow::changeBackGround(QString filename)
+{
+    QPixmap pix(filename);
+    pix = pix.scaled(ui->background->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    ui->background->setPixmap(pix);
 }

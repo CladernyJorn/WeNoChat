@@ -5,9 +5,11 @@
 #include <QTcpSocket>
 #include <QListWidgetItem>
 #include <QMainWindow>
+#include <QPixmap>
 #include "picturecut.h"
 #include <UI/chatmessagewidget.h>
 #include <QDateTime>
+#include "screencut.h"
 #include "utils/communicate_utils.h"
 #include "searchfriends.h"
 #include "friendlist.h"
@@ -34,6 +36,7 @@ public:
     void dealImage(ChatMessageWidget *messageW, QListWidgetItem *item, QImage img, QString time, ChatMessageWidget::User_Type type, QImage *image);
     void changeMyIcon(QImage *uimg);
     void changeIcon(QString username, QImage icon);
+    void changeBackGround(QString filename);
 protected:
     void mouseMoveEvent(QMouseEvent *ev);  //鼠标移动
     void mousePressEvent(QMouseEvent *ev); //鼠标按下移动
@@ -70,6 +73,11 @@ private slots:
     void on_bButton9_clicked();
     void on_pushButton_3_clicked();
 
+    void on_pushButton_2_clicked();
+
+
+    void on_setting_clicked();
+
 signals:
     all_finished();
 
@@ -91,11 +99,12 @@ private:
     void initConnection();
 
     std::map <QString, MessageRecord> msgRcd;
-
+    ScreenCut *scrCut;
     QString tmpCmd;
     QPoint p;
 
     void _initHandler();
+    void screenShot();
 
     void sendChatImage(const QString &imgFile, std::vector<std::string> userList, std::function<void()>onSuccess);
 };
