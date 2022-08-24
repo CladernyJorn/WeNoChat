@@ -16,6 +16,11 @@ namespace Ui
         QImage image;
 //        std::string imageStr;
     };
+    struct Group : public QObjectUserData
+    {
+        int groupid;
+        std::vector<std::string> member;
+    };
 
     class FriendList : public QWidget
     {
@@ -31,6 +36,8 @@ namespace Ui
         explicit FriendList(QTreeWidget *widget, std::vector<Ui::User> userInfoList, QWidget *parent = 0);
         ~FriendList();
         void addFriendInfo(QTreeWidgetItem *group, std::vector<Ui::User> friendInfoList);
+        void addGroupInfo( Ui::Group groupInfoList);
+
         void addGroup(std::string name);
         void insertToGroup(std::string, std::vector<Ui::User> friendInfoList);
         void deleteGroup(std::string name);
@@ -39,16 +46,16 @@ namespace Ui
         std::map<std::string, QTreeWidgetItem *> getGroups();
         std::map<std::string, QTreeWidgetItem *> getFriends();
         void changeIcon(QString username, QImage icon);
-
+        std::map<std::string, QTreeWidgetItem *> groups;
+        std::map<std::string, QTreeWidgetItem *> friends;
     private:
         void initFriendList(std::vector<Ui::User> userInfoList);
         void initConnection();
 
-        std::map<std::string, QTreeWidgetItem *> groups;
-        std::map<std::string, QTreeWidgetItem *> friends;
+
 
     signals:
-        void openChatroom(QVariant variant);
+        void openChatroom(QVariant variant, int a);
         void delFriend(QVariant variant);
 
     private slots:
@@ -60,5 +67,5 @@ namespace Ui
 }
 
 Q_DECLARE_METATYPE(Ui::User)
-
+Q_DECLARE_METATYPE(Ui::Group)
 #endif // FRIENDLIST_H

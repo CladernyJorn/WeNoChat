@@ -24,19 +24,19 @@ ScreenCut::ScreenCut(QWidget *parent) :
     QPushButton *button1 = new QPushButton(toolBox);
     button1->setGeometry(23, 2, 36, 36);
     button1->setIconSize(QSize(36, 36));
-    button1->setIcon(QIcon(":/assets/check.jpg"));
+    button1->setIcon(QIcon(":/new/icon/check.jpg"));
     button1->setCursor(Qt::PointingHandCursor);
 
     QPushButton *button2 = new QPushButton(toolBox);
     button2->setGeometry(82, 2, 36, 36);
     button2->setIconSize(QSize(36, 36));
-    button2->setIcon(QIcon(":/assets/save.jpg"));
+    button2->setIcon(QIcon(":/new/icon/save.jpg"));
     button2->setCursor(Qt::PointingHandCursor);
 
     QPushButton *button3 = new QPushButton(toolBox);
     button3->setGeometry(141, 2, 36, 36);
     button3->setIconSize(QSize(36, 36));
-    button3->setIcon(QIcon(":/assets/cross.jpg"));
+    button3->setIcon(QIcon(":/new/icon/cross.jpg"));
     button3->setCursor(Qt::PointingHandCursor);
 
     toolBox->setVisible(false);

@@ -18,9 +18,5 @@
         <file>assets/emoji/装傻.jpeg</file>
         <file>assets/emoji/aaa.png</file>
         <file>assets/preview.jpg</file>
-        <file>assets/check.jpg</file>
-        <file>assets/cross.jpg</file>
-        <file>assets/save.jpg</file>
-        <file>assets/settings.jpg</file>
     </qresource>
 </RCC>
