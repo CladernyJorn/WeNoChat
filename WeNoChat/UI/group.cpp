@@ -2,8 +2,9 @@
 #include "ui_group.h"
 using namespace std;
 
-group::group(Ui::FriendList *f,QWidget *parent) :
+group::group(Ui::FriendList *f, QString ud,QWidget *parent) :
     QWidget(parent),
+    ud(ud),
     client(DataSock::get()),
     ui(new Ui::group)
 {
@@ -54,6 +55,7 @@ void group::on_pushButton_clicked()
         user.push_back(friendlist->getGroups()["default"]->child(selectedItems.at(i))->text(0).toStdString());
         //把群聊中好友加进去
     }
+    user.push_back(ud.toStdString());
     std::string data = Encoder_add_group_chat(groupname.toStdString(), user);
     QString packData = QString::fromStdString(data);
     client.sendMessage(packData);

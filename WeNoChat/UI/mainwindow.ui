@@ -107,7 +107,7 @@ font-style:MingLiU-ExtB;
      <x>100</x>
      <y>0</y>
      <width>111</width>
-     <height>95</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="mouseTracking">
@@ -120,7 +120,7 @@ font-style:MingLiU-ExtB;
     <string>  WeNoChat</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
    </property>
    <property name="margin">
     <number>10</number>
@@ -132,7 +132,7 @@ font-style:MingLiU-ExtB;
      <x>210</x>
      <y>0</y>
      <width>841</width>
-     <height>91</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -333,8 +333,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QListWidget" name="listWidget">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>30</y>
+      <x>0</x>
+      <y>0</y>
       <width>841</width>
       <height>451</height>
      </rect>
@@ -596,8 +596,6 @@ p, li { white-space: pre-wrap; }
     <zorder>bButton9</zorder>
     <zorder>bButton7</zorder>
     <zorder>bButton1</zorder>
-    <zorder>listWidget</zorder>
-    <zorder>cover_label</zorder>
    </widget>
    <widget class="QLabel" name="cover_label">
     <property name="enabled">
@@ -618,16 +616,15 @@ p, li { white-space: pre-wrap; }
    <zorder>background</zorder>
    <zorder>frame_2</zorder>
    <zorder>biaoqingFrame</zorder>
-   <zorder>chatName</zorder>
    <zorder>listWidget</zorder>
    <zorder>cover_label</zorder>
   </widget>
   <widget class="QPushButton" name="pushButton_addfriend">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>120</y>
-     <width>31</width>
+     <x>120</x>
+     <y>50</y>
+     <width>71</width>
      <height>28</height>
     </rect>
    </property>
@@ -636,17 +633,20 @@ p, li { white-space: pre-wrap; }
      <pointsize>-1</pointsize>
     </font>
    </property>
+   <property name="whatsThis">
+    <string>加好友</string>
+   </property>
    <property name="text">
-    <string>+</string>
+    <string>添加好友</string>
    </property>
   </widget>
   <widget class="QTreeWidget" name="friendList">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>160</y>
+     <y>130</y>
      <width>211</width>
-     <height>531</height>
+     <height>561</height>
     </rect>
    </property>
    <property name="headerHidden">
@@ -690,8 +690,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QPushButton" name="pushButton_image">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>6</y>
+     <x>10</x>
+     <y>20</y>
      <width>81</width>
      <height>81</height>
     </rect>
@@ -701,24 +701,34 @@ p, li { white-space: pre-wrap; }
      <pointsize>-1</pointsize>
     </font>
    </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+   </property>
    <property name="text">
     <string/>
    </property>
+   <property name="icon">
+    <iconset resource="../uires.qrc">
+     <normaloff>:/assets/head.png</normaloff>:/assets/head.png</iconset>
+   </property>
    <property name="iconSize">
     <size>
-     <width>45</width>
-     <height>45</height>
+     <width>81</width>
+     <height>81</height>
     </size>
    </property>
   </widget>
   <widget class="QPushButton" name="setting">
    <property name="geometry">
     <rect>
-     <x>940</x>
-     <y>10</y>
+     <x>960</x>
+     <y>0</y>
      <width>35</width>
      <height>35</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
    </property>
    <property name="text">
     <string/>
@@ -728,20 +738,32 @@ p, li { white-space: pre-wrap; }
      <normaloff>:/assets/settings.jpg</normaloff>:/assets/settings.jpg</iconset>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QPushButton" name="pushButton_addgroup">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>100</y>
-     <width>91</width>
-     <height>21</height>
+     <x>120</x>
+     <y>90</y>
+     <width>71</width>
+     <height>28</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>-1</pointsize>
+    </font>
+   </property>
+   <property name="whatsThis">
+    <string>加群</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton#pushButton_addgroup{}
+background-color: rgb(0, 255, 0);
+</string>
+   </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>添加群聊</string>
    </property>
   </widget>
-  <zorder>friendList</zorder>
   <zorder>chatName</zorder>
   <zorder>indowLabel</zorder>
   <zorder>line</zorder>
@@ -751,10 +773,9 @@ p, li { white-space: pre-wrap; }
   <zorder>hideButton</zorder>
   <zorder>closeButton</zorder>
   <zorder>pushButton_image</zorder>
-  <zorder>biaoqingFrame</zorder>
   <zorder>frame</zorder>
   <zorder>setting</zorder>
-  <zorder>label</zorder>
+  <zorder>pushButton_addgroup</zorder>
  </widget>
  <resources>
   <include location="../uires.qrc"/>

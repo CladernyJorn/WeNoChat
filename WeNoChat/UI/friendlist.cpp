@@ -7,6 +7,11 @@
 #include <QTreeWidget>
 #include <QMenu>
 
+Ui::FriendList::FriendList(QTreeWidget *widget, QWidget *parent):QWidget(parent), friendlist(widget)
+{
+    initConnection();
+}
+
 Ui::FriendList::FriendList(QTreeWidget *widget, std::vector<Ui::User> userList, QWidget *parent) : QWidget(parent), friendlist(widget)
 {
     qDebug("in");
@@ -20,6 +25,8 @@ Ui::FriendList::FriendList(QTreeWidget *widget, std::vector<Ui::User> userList, 
     initConnection();
     qDebug("out");
 }
+
+//void Ui::FriendList::setList()
 
 Ui::FriendList::~FriendList() {}
 
@@ -92,7 +99,7 @@ void Ui::FriendList::showFriendListMenu(QPoint pos)
             menu->addAction(action4);
             menu->addAction(action5);
             connect(action1, &QAction::triggered, [&, item](){
-                emit openChatroom(QVariant::fromValue(item->data(0, UserInfo).value<Ui::User>()));
+                emit openChatroom(QVariant::fromValue(item->data(0, UserInfo).value<Ui::User>()),item->data(0, UserInfo+1).toInt());
             });
 
             connect(action5, &QAction::triggered, [&, item](){
@@ -157,17 +164,25 @@ void Ui::FriendList::addFriendInfo(QTreeWidgetItem *group, std::vector<Ui::User>
 void Ui::FriendList::addGroupInfo( Ui::Group groupInfo)
 {
 
-
+    qDebug()<<"fuck";
         QTreeWidgetItem* groupRecord = new QTreeWidgetItem();
 
-        groupRecord->setText(0, QString::number(g.groupid));
-        groupRecord->setData(0, isGroup, 1);
+        qDebug()<<"fuck";
+        groupRecord->setText(0, "Group"+QString::number(groupInfo.groupid));
+        qDebug()<<"fuck";
+        groupRecord->setData(0, isGroup, 0);
+        qDebug()<<"fuck";
 
         groupRecord->setData(0, UserInfo, QVariant::fromValue(groupInfo));
+        qDebug()<<"fuck";
     groupRecord->setData(0, UserInfo + 1, 1);
-    QTreeWidgetItem *group = groups["我的群聊"];
+    qDebug()<<"fuck";
+    QTreeWidgetItem *group = groups["group"];
+    qDebug()<<"fuck";
     group->addChild(groupRecord);
+    qDebug()<<"fuck";
     group->sortChildren(0, Qt::AscendingOrder);
+    qDebug()<<"fuck";
 
 }
 void Ui::FriendList::addGroup(std::string name)

@@ -13,6 +13,8 @@
 #include "friendlist.h"
 #include <functional>
 #include <QImage>
+#include <UI/group.h>
+#include <set>
 #include "messagerecord.h"
 #include "socket/datasock.h"
 namespace Ui
@@ -53,7 +55,7 @@ private slots:
     void dealMessageTime(QString curMsgTime);
     void dealMessage(ChatMessageWidget *messageW, QListWidgetItem *item, QString text, QString time, ChatMessageWidget::User_Type type, QImage *image = NULL);
 
-    void startChatting(QVariant variant);
+    void startChatting(QVariant variant, int a);
     void deleteFriend(QVariant variant);
     void on_pushButton_image_clicked();
     void on_pushButton_send_image_clicked();
@@ -70,6 +72,8 @@ private slots:
     void on_bButton9_clicked();
     void on_pushButton_3_clicked();
 
+    void on_pushButton_addgroup_clicked();
+
 signals:
     all_finished();
 
@@ -79,6 +83,8 @@ private:
         std::vector<Ui::User> chatFriend;
         MessageRecord *record;
     };
+    bool isgroup;
+    int groupid;
 
     Ui::MainWindow *ui;
     DataSock &client;

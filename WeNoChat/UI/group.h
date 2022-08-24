@@ -21,7 +21,7 @@ class group : public QWidget
     Q_OBJECT
 
 public:
-    explicit group(Ui::FriendList *f,QWidget *parent = 0);
+    explicit group(Ui::FriendList *f,QString ud, QWidget *parent = 0);
     ~group();
 
 private slots:
@@ -31,6 +31,7 @@ private slots:
 private:
     Ui::group *ui;
     DataSock &client;
+    QString ud;
     QList<int> selectedItems;
     Ui::FriendList *friendlist;
 };

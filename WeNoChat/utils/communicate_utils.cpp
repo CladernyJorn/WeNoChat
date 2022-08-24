@@ -25,14 +25,15 @@ std::string Encoder_add_group_chat(std::string groupname, vector<string> user)
         jtmp["user"][i] = user[i];
     return Encoder("add_group_chat", jtmp);
 }
-int Decoder_add_group_chat(Json::Value packdata, std::vector<std::string> &username, int &groupid, bool &state)
+int Decoder_add_group_chat(Json::Value packdata, std::vector<std::string> &username, int &groupid, bool &state, std::string &groupname)
 {
     if (!packdata.isObject())
         return 0;
     groupid = packdata["groupid"].asInt();
     state = packdata["state"].asBool();
+    groupname = packdata["groupname"].asString();
 
-    for (auto user : packdata["username"])
+    for (auto user : packdata["userList"])
     {
         std::string user_info = user.asString();
         username.push_back(user_info);

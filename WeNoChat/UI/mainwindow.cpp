@@ -39,6 +39,8 @@ MainWindow::MainWindow(QString ud, QWidget *parent) : QWidget(parent),
     ui->setupUi(this);
     ui->biaoqingFrame->setVisible(false);
     ui->indowLabel->setText(ud);
+    friendList = new Ui::FriendList(ui->friendList);
+    initConnection();
     _initHandler();
     //    imag = new WNCimage(ud, client);
     //去窗口边框
@@ -59,6 +61,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::_initHandler()
 {
+
     client.addCallback("askfriendsList", [=](const Json::Value &jtmp)
                        {
         std::string username, info;
@@ -93,8 +96,8 @@ void MainWindow::_initHandler()
             userList.push_back(frd);
             msgRcd[QString::fromStdString(frdinfo.first)]=MessageRecord();
         }
-        friendList = new Ui::FriendList(ui->friendList, userList);
-        initConnection();
+
+        friendList->initFriendList(userList);
         for(pair<string, string> frdinfo: uinfolist){
 
             createRequireTask(QString::fromStdString(frdinfo.second), "./assets/"+QString::fromStdString(username)+"/friendheads",
@@ -103,7 +106,7 @@ void MainWindow::_initHandler()
                 if(fileInfo.absolutePath().length() != 0)
                     icon.load(fileInfo.absoluteFilePath());
                 changeIcon(QString::fromStdString(frdinfo.first), icon);
-            }, QString::fromStdString(username) + "head");
+            }, QString::fromStdString(frdinfo.first) + "head");
         }
     });
     client.addCallback("add_group_chat", [=](const Json::Value &jtmp)
@@ -111,7 +114,8 @@ void MainWindow::_initHandler()
         int groupid;
         std::vector<std::string> username;
         bool state;
-        if(Decoder_add_group_chat(jtmp, username,groupid,state) == 0)
+        string groupname;
+        if(Decoder_add_group_chat(jtmp, username,groupid,state, groupname) == 0)
         {
             qDebug("group_chat data back from server error/n");
             return;
@@ -129,20 +133,24 @@ void MainWindow::_initHandler()
             qDebug("chat data back from server error/n");
             return;
         }
-        pushMessageIntoChatWindow(false, QString::fromStdString(msg), QString::number(QDateTime::currentDateTime().toTime_t()), &chattingInfo.chatFriend.image);
+        pushMessageIntoChatWindow(false, QString::fromStdString(msg), QString::number(QDateTime::currentDateTime().toTime_t()), &chattingInfo.chatFriend[0].image);
         msgRcd[QString::fromStdString(sender_username)].push_back(MessageInfo(QString::fromStdString(sender_username), QString::fromStdString(msg), QString::fromStdString(time), MessageInfo::PLAIN_TXT));
         MoveFps(); });
-    /*client.addCallback("chat_group", [=](const Json::Value &jtmp)
+    client.addCallback("chat_group", [=](const Json::Value &jtmp)
                        {
         int groupid;
-        std::string username, msg;
-        if (Decoder_chat(jtmp, sender_username, msg, time) == 0)
+        std::string username, msg, time;
+        if (Decoder_chat(jtmp, username, msg, time) == 0)
         {
             qDebug("chat group data back from server error/n");
             return;
         }
-        pushMessageIntoChatWindow(false, QString::fromStdString(msg), QString::number(QDateTime::currentDateTime().toTime_t()),);
-        MoveFps(); });*/
+        Ui::User sender_;
+        for(Ui::User user: chattingInfo.chatFriend)
+            if(user.userName==username)
+                sender_ = user;
+        pushMessageIntoChatWindow(false, QString::fromStdString(msg), QString::fromStdString(time),&sender_.image);
+        MoveFps(); });
     client.addCallback("addfriends", [=](const Json::Value &jtmp)
                        {
         // mainwindow里处理加好友的返回信息
@@ -168,6 +176,7 @@ void MainWindow::_initHandler()
                 f.userName = friend_username;
                 f.image = friend_image;
                 friendList->insertToGroup("default", vector<Ui::User>{f});
+                msgRcd[QString::fromStdString(friend_username)]=MessageRecord();
                 QMessageBox::information(this, "提示", ("成功添加好友" + friend_username).c_str()); //
             }, QString::fromStdString(friend_username+"head"));
 
@@ -203,13 +212,13 @@ void MainWindow::_initHandler()
             {
                 QImage chat_image = QImage(filename);
                 //处理返回来的chat_image图片信息
-                pushImageIntoChatWindow(false, chat_image, QString::fromStdString(time), &chattingInfo.chatFriend.image);
+                pushImageIntoChatWindow(false, chat_image, QString::fromStdString(time), &chattingInfo.chatFriend[0].image);
                 msgRcd[QString::fromStdString(sender_username)].push_back(MessageInfo(QString::fromStdString(sender_username), chat_image, QString::fromStdString(time), MessageInfo::IMAGE));
                 MoveFps();
             }
             else
             {
-                pushFileIntoChatWindow(false, filename, QString::fromStdString(time), &chattingInfo.chatFriend.image);
+                pushFileIntoChatWindow(false, filename, QString::fromStdString(time), &chattingInfo.chatFriend[0].image);
                 msgRcd[QString::fromStdString(sender_username)].push_back(MessageInfo(QString::fromStdString(sender_username), filename, QString::fromStdString(time), MessageInfo::FILE));
                 MoveFps();
             }
@@ -223,7 +232,7 @@ void MainWindow::_initHandler()
         string time = jtmp["time"].asString();
         if(isy)
         {
-            msgRcd[QString::fromStdString(rcv)].push_back(MessageInfo(QString::fromStdString(sdr), QString::fromStdString(msg), QString::fromStdString(time), MessageInfo::PLAIN_TXT));
+            msgRcd[QString::fromStdString(rcv)].push_back(MessageInfo(QString::fromStdString(sdr), QString::fromStdString(msg), QString::fromStdString(time), MessageInfo::PLAIN_TXT));   
         }
         else
         {
@@ -257,19 +266,23 @@ void MainWindow::on_send_clicked()
     std::vector<std::string> usersList;
     for(auto v:chattingInfo.chatFriend)
         usersList.push_back(v.userName);
-    msgRcd[QString::fromStdString(chattingInfo.chatFriend.userName)].
-            push_back(MessageInfo(QString::fromStdString(chattingInfo.chatFriend.userName),msg,time,MessageInfo::PLAIN_TXT));
+    QString packData;
+    if(!isgroup)
+    {
+        msgRcd[QString::fromStdString(chattingInfo.chatFriend[0].userName)].
+            push_back(MessageInfo(QString::fromStdString(chattingInfo.chatFriend[0].userName),msg,time,MessageInfo::PLAIN_TXT));
     //发送数据协议
 
-    std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(), time.toStdString(), usersList);
-    QString packData = QString::fromStdString(data);
-    /*else
+        std::string data = Encoder_chat(udata.toStdString(), msg.toStdString(), time.toStdString(), usersList);
+        packData = QString::fromStdString(data);
+    }
+    else
     {
         std::string data = Encoder_chat_group(udata.toStdString(), groupid, msg.toStdString(), time.toStdString());
-        QString packData = QString::fromStdString(data);
+        packData = QString::fromStdString(data);
     }
     client.sendMessage(packData);
-    ui->textEdit->clear();*/
+    ui->textEdit->clear();
 }
 
 /*
@@ -326,10 +339,15 @@ void MainWindow::pushMessageIntoChatWindow(bool type, QString msg, QString time,
     }
     else
     {
+        qDebug()<<"hahahahaa";
         dealMessageTime(time);
+        qDebug()<<"hahahahaa";
         ChatMessageWidget *messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
+        qDebug()<<"hahahahaa";
         QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
+        qDebug()<<"hahahahaa";
         dealMessage(messageW, item, msg, time, ChatMessageWidget::User_She, image);
+        qDebug()<<"hahahahaa";
     }
     ui->listWidget->setCurrentRow(ui->listWidget->count() - 1);
 }
@@ -419,7 +437,7 @@ void MainWindow::on_pushButton_send_image_clicked()
     }
     std::vector<std::string> userslist; // userList需要从好友栏导入的，这里固定的占个位置
     for(auto v:chattingInfo.chatFriend)
-        userList.push_back(v.userName);
+        userslist.push_back(v.userName);
     sendChatImage(image_addr, userslist, [=]()
     {});
 }
@@ -433,47 +451,47 @@ void MainWindow::on_biaoqingButton_clicked()
 }
 void MainWindow::on_bButton1_clicked()
 {
-    sendChatImage(":/assets/微笑.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/微笑.jpg", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton2_clicked()
 {
-    sendChatImage(":/assets/好！.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/好！.jpg", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton3_clicked()
 {
-    sendChatImage(":/assets/大哭！.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/大哭！.jpg", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton4_clicked()
 {
-    sendChatImage(":/assets/冷笑！.jpg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/冷笑！.jpg", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton5_clicked()
 {
-    sendChatImage(":/assets/装傻.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/装傻.jpeg", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton6_clicked()
 {
-    sendChatImage(":/assets/点赞.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/点赞.jpeg", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton7_clicked()
 {
-    sendChatImage(":/assets/渴望.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/渴望.jpeg", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton8_clicked()
 {
-    sendChatImage(":/assets/求求你了.jpeg", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/求求你了.jpeg", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 void MainWindow::on_bButton9_clicked()
 {
-    sendChatImage(":/assets/aaa.png", vector<string>{chattingInfo.chatFriend.userName}, [=]()
+    sendChatImage(":/assets/aaa.png", vector<string>{chattingInfo.chatFriend[0].userName}, [=]()
                   { ui->biaoqingFrame->setVisible(false); });
 }
 
@@ -485,7 +503,10 @@ void MainWindow::initConnection()
 void MainWindow::startChatting(QVariant variant,int a)
 {
     ui->cover_label->setVisible(false);
+    qDebug()<<"jinlaile";
     clearAllMessage();
+    qDebug()<<a;
+    isgroup=a;
     if(!a)
     {
         Ui::User chatFriend = variant.value<Ui::User>();
@@ -500,7 +521,7 @@ void MainWindow::startChatting(QVariant variant,int a)
         for (MessageInfo rec : *chattingInfo.record)
         {
             bool isyou = (rec.Sender == udata);
-            QImage *img = isyou?&user_image:&chattingInfo.chatFriend.image;
+            QImage *img = isyou?&user_image:&chattingInfo.chatFriend[0].image;
             if(rec.type == MessageInfo::PLAIN_TXT)
             {
                 pushMessageIntoChatWindow(isyou, rec.msg, rec.time, img);
@@ -520,12 +541,18 @@ void MainWindow::startChatting(QVariant variant,int a)
         Ui::Group group = variant.value<Ui::Group>();
         qDebug() << "here";
         qDebug() << QString::number(group.groupid);
+        qDebug()<<"hahaha";
+        groupid = group.groupid;
         ui->chatName->setText("   " + QString::number(group.groupid));
+        chattingInfo.chatFriend.clear();
         for(std::string name:group.member)
         {
+            if(QString::fromStdString(name) == udata) continue;
+            qDebug()<<QString::fromStdString(name)+" hahaha";
             QTreeWidgetItem* item = friendList->friends[name];
+            qDebug()<<QString::fromStdString(name)+" hahaha";
             Ui::User chatFriend = item->data(0,friendList->UserInfo).value<Ui::User>();
-            chattingInfo.chatFriend.clear();
+
             chattingInfo.chatFriend.push_back(chatFriend);
         }
 
@@ -543,7 +570,7 @@ void MainWindow::deleteFriend(QVariant variant)
     std::string data = Encoder_deletefriends(udata.toStdString(), friendToDel.userName);
     QString packData = QString::fromStdString(data);
     client.sendMessage(packData);
-    if (chattingInfo.chatFriend.userName == friendToDel.userName)
+    if (chattingInfo.chatFriend[0].userName == friendToDel.userName)
     {
         ui->cover_label->setVisible(true);
     }
@@ -664,7 +691,7 @@ void MainWindow::sendChatImage(const QString &imgFile, std::vector<string> userL
         udata, imgFile, [=](FileSock *skt, const QFileInfo &fileName, const QString &serverFileName)
         {
 //        std::vector<std::string> userslist; // userList需要从好友栏导入的，这里固定的占个位置
-//        userslist.push_back(chattingInfo.chatFriend.userName);
+//        userslist.push_back(chattingInfo.chatFriend[0].userName);
 
         std::string data = Encoder_chatfile(serverFileName.toStdString(), udata.toStdString(), userList);
         QString packData = QString::fromStdString(data);
@@ -737,6 +764,12 @@ void MainWindow::on_pushButton_3_clicked()
         string packData = Encoder_chatfile(filename.toStdString(), udata.toStdString(),userList);
         client.sendMessage(QString::fromStdString(packData));
         pushFileIntoChatWindow(true, filename, QString::number(QDateTime::currentDateTime().toTime_t()), &user_image);
-        msgRcd[QString::fromStdString(chattingInfo.chatFriend.userName)].push_back(MessageInfo(udata, filename, QString::number(QDateTime::currentDateTime().toTime_t()), MessageInfo::FILE));
+        msgRcd[QString::fromStdString(chattingInfo.chatFriend[0].userName)].push_back(MessageInfo(udata, filename, QString::number(QDateTime::currentDateTime().toTime_t()), MessageInfo::FILE));
     });
+}
+
+void MainWindow::on_pushButton_addgroup_clicked()
+{
+    group *g = new group(friendList, udata);
+    g->show();
 }

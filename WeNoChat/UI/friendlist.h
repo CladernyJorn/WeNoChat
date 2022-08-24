@@ -33,6 +33,7 @@ namespace Ui
             isGroup = Qt::UserRole,
             UserInfo = Qt::UserRole + 1
         };
+        explicit FriendList(QTreeWidget *widget, QWidget *parent=0);
         explicit FriendList(QTreeWidget *widget, std::vector<Ui::User> userInfoList, QWidget *parent = 0);
         ~FriendList();
         void addFriendInfo(QTreeWidgetItem *group, std::vector<Ui::User> friendInfoList);
@@ -48,8 +49,9 @@ namespace Ui
         void changeIcon(QString username, QImage icon);
         std::map<std::string, QTreeWidgetItem *> groups;
         std::map<std::string, QTreeWidgetItem *> friends;
-    private:
         void initFriendList(std::vector<Ui::User> userInfoList);
+    private:
+
         void initConnection();
 
 

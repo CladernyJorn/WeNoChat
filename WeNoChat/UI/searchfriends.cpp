@@ -24,10 +24,16 @@ void searchFriends::on_pushButton_clicked()
 {
     //获取输入框内容
     QString friend_userName = ui->lineEdit->text();
+    if(udata == friend_userName)
+    {
+        QMessageBox::warning(this,"警告", "不能添加自己为好友", QMessageBox::Ok);
+        return;
+    }
     //向服务器发送新好友
     std::string data=Encoder_addfriends(udata.toStdString(),friend_userName.toStdString());
     QString packData = QString::fromStdString(data);
     client.sendMessage(packData);
+    this->close();
 }
 
 
