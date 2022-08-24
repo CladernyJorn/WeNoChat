@@ -168,7 +168,7 @@ vector<string> Sql::getGroupMembers(string groupid)
     return recs;
 }
 
-vector<string> Sql::getGroupCounts()
+int Sql::getGroupCounts()
 {
     string sql = "select * from GroupInfo";
 
@@ -181,7 +181,8 @@ vector<string> Sql::getGroupCounts()
 
     return nR;
 }
-int insertGroups(string username, string groupid){
+int insertGroups(string username, string groupid)
+{
     string sql = "insert into Group values('" + username + "', '" + groupid + "');";
     char *errmsg;
     int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);

@@ -26,8 +26,8 @@ public:
     int insertFriends(std::string user, std::string friend_user);
     int deleteFriends(std::string user, std::string friend_user);
     std::vector<std::string> getGroupMembers(std::string groupid);
-    std::vector<std::string> getGroupCounts();
-    int insertGroups(string username, string groupid)
+    int getGroupCounts();
+    int insertGroups(string username, string groupid);
 
 private:
     Sql() {}

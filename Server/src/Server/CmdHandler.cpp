@@ -36,23 +36,22 @@ CmdHandler::CmdHandler()
         Json::Value userList = cmd["userList"];
 
         int len = userList.size();
-        
-        int groupid=Sql::singleton().getGroupCounts()+1;
-        Sql::singleton().insertGroups(groupid,groupname);
+
+        int groupid = Sql::singleton().getGroupCounts() + 1;
+        Sql::singleton().insertGroups(to_string(groupid), groupname);
         for (int i = 0; i < len; i++)
         {
             Json::Value response;
-            respons["state"]=1;
+            response["state"] = 1;
             response["groupname"] = groupname;
             response["userList"] = userList;
-            response["groupid"]= groupid;
+            response["groupid"] = groupid;
             string userName = userList[i].asString();
-            Sql::singleton().insertGroups(groupid,groupid);
-            sendJson(client,makeCmd("add_group_chat",response));
+            Sql::singleton().insertGroups(to_string(groupid), to_string(groupid));
+            sendJson(client, makeCmd("add_group_chat", response));
         }
 
-        vector<string> targets = Sql::singleton().getGroupMembers(groupid);
-
+        vector<string> targets = Sql::singleton().getGroupMembers(to_string(groupid));
     };
     __callbacks["chat_group"] = [=](fd_t client, Json::Value cmd)
     {
@@ -70,9 +69,9 @@ CmdHandler::CmdHandler()
             response["groupid"] = groupid;
             //发送方
             response["sendername"] = username;
-            response["username"]=uname;
+            response["username"] = uname;
             response["info"] = info;
-            response["time"]= time;
+            response["time"] = time;
             sendJson(client, makeCmd("chat_group", response));
         }
     };
