@@ -690,7 +690,6 @@ p, li { white-space: pre-wrap; }
  </resources>
  <connections/>
 </ui>
-=======
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
