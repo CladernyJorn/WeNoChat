@@ -40,10 +40,10 @@ SOURCES += main.cpp \
     utils/communicate_utils.cpp \
     utils/tools.cpp \
     messagerecord.cpp \
-    mydelegate.cpp \
     constants.cpp \
     utils/jsoncpp.cpp \
-    UI/picturecut.cpp
+    UI/picturecut.cpp \
+    UI/mydelegate.cpp
 
 HEADERS  += \
     socket/basesock.h \
@@ -64,9 +64,9 @@ HEADERS  += \
     utils/json/json.h \
     utils/json/json-forwards.h \
     messagerecord.h \
-    mydelegate.h \
     constants.h \
-    UI/picturecut.h
+    UI/picturecut.h \
+    UI/mydelegate.h
 
 FORMS    += \
     UI/login.ui \

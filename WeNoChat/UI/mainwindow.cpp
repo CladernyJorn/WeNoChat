@@ -110,6 +110,7 @@ void MainWindow::_initHandler()
             return;
         }
         pushMessageIntoChatWindow(false, QString::fromStdString(msg), QString::number(QDateTime::currentDateTime().toTime_t()), &chattingInfo.chatFriend.image);
+        msgRcd[sender_username]
         MoveFps();});
     client.addCallback("addfriends", [=](const Json::Value &jtmp)
                        {
@@ -248,7 +249,7 @@ void MainWindow::pushMessageIntoChatWindow(bool type, QString msg, QString time,
 
     if (msg == "")
     {
-        //是不是要报个错？
+        QMessageBox::warning(this, "警告", "发送内容不能为空", QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
     qDebug() << "addMessage" << msg << time << ui->listWidget->count();
@@ -266,26 +267,11 @@ void MainWindow::pushMessageIntoChatWindow(bool type, QString msg, QString time,
         else
         {
             qDebug() << "notSendig";
-            bool isOver = true;
-            for (int i = ui->listWidget->count() - 1; i > 0; i--)
-            {
-                qDebug() << "llo";
-                ChatMessageWidget *messageW = (ChatMessageWidget *)ui->listWidget->itemWidget(ui->listWidget->item(i));
-                qDebug() << "lp";
-                if (messageW->text() == msg)
-                {
-                    isOver = false;
-                    messageW->setTextSuccess();
-                }
-            }
-            if (isOver)
-            {
-                dealMessageTime(time);
-                ChatMessageWidget *messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
-                QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
-                dealMessage(messageW, item, msg, time, ChatMessageWidget::User_Me, image);
-                messageW->setTextSuccess();
-            }
+            dealMessageTime(time);
+            ChatMessageWidget *messageW = new ChatMessageWidget(ui->listWidget->parentWidget());
+            QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
+            dealMessage(messageW, item, msg, time, ChatMessageWidget::User_Me, image);
+            messageW->setTextSuccess();
         }
     }
     else
@@ -462,6 +448,7 @@ void MainWindow::startChatting(QVariant variant)
 
     std::vector<std::string> messages;
     chattingInfo.record = &msgRcd[QString::fromStdString(chatFriend.userName)];
+    qDebug()<<msgRcd[QString::fromStdString(chatFriend.userName)].getAllMessageRecord().size();
     for (std::string rec : chattingInfo.record->getAllMessageRecord())
     {
         qDebug() << QString::fromStdString(rec);
