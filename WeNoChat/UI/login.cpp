@@ -4,6 +4,9 @@
 #include "constants.h"
 #include <QPainter>
 #include <QFileInfo>
+#include <string>
+#include "utils/tools.h"
+using namespace std;
 
 login::login(QWidget *parent) : QWidget(parent),
                                 ui(new Ui::login),
@@ -11,7 +14,20 @@ login::login(QWidget *parent) : QWidget(parent),
 {
     ui->setupUi(this);
 
-    qDebug()<<"path:"<<QFileInfo("./").absolutePath();
+//    QByteArray block;
+//    QDataStream qdt(&block, QIODevice::WriteOnly);
+//    char str[] = {'\0', '\0','\0','\x10', 'f','u','c','k',' ','y','o','u'};
+//    qdt.writeRawData(str, 12);
+//    qDebug()<<block;
+//    QDataStream sfd(block);
+//    uint lenn;
+//    char buf[1231];
+//    QByteArray fuck;
+//    sfd>>fuck;
+////    qDebug()<<(lenn = bytes2uInt(buf));
+//    qDebug()<<fuck.size();
+
+
     //去窗口边框
     setWindowFlags(Qt::FramelessWindowHint | windowFlags());
     //把窗口背景设置为透明;

@@ -80,7 +80,7 @@ void MainWindow::_initHandler()
                     frd.image = QImage(fileInfo.absoluteFilePath());
                 userList.push_back(frd);
             }, Net::addr, Net::filePort);
-            msgRcd[frdinfo.name]=MessageRecord();
+            msgRcd[QString::fromStdString(frdinfo.first)]=MessageRecord();
         }
         friendList = new Ui::FriendList(ui->friendList, userList);
         initConnection(); });
@@ -167,7 +167,11 @@ void MainWindow::_initHandler()
         string time = jtmp["time"].asString();
         if(isy)
         {
-            msgRcd["receiver"].appendMessage()
+            msgRcd[QString::fromStdString(rcv)].appendMessage(sdr+"/"+msg+"/"+time);
+        }
+        else
+        {
+            msgRcd[QString::fromStdString(sdr)].appendMessage(sdr+"/"+msg+"/"+time);
         }
     });
 }
@@ -377,13 +381,10 @@ void MainWindow::startChatting(QVariant variant)
     chattingInfo.chatFriend = chatFriend;
 
     std::vector<std::string> messages;
-    messages.push_back("user1/你好/1661088000");
-    messages.push_back("111/你好/1661088100");
-    messages.push_back("user1/很高兴认识你/1661088200");
-    messages.push_back("111/我也是/1661088290");
-    chattingInfo.record = new MessageRecord(messages);
+    chattingInfo.record = &msgRcd[QString::fromStdString(chatFriend.userName)];
     for (std::string rec : chattingInfo.record->getAllMessageRecord())
     {
+        qDebug()<<QString::fromStdString(rec);
         QStringList list = QString(rec.c_str()).split("/");
         if (list[0] == udata)
         {

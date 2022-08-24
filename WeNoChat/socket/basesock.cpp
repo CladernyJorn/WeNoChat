@@ -1,5 +1,5 @@
 #include "basesock.h"
-
+#include<queue>
 using namespace std;
 
 BaseSock::BaseSock(QObject *parent) : QObject(parent),onConnected([=](){})
@@ -42,35 +42,53 @@ void BaseSock::handConnected()
     connect(sock, SIGNAL(readyRead()), this, SLOT(handReadyRead()));
 }
 
+QByteArray getData()
+{
+
+}
+
 void BaseSock::handReadyRead()
 {
-    QByteArray buf = recvMsg(sock);
-    Json::Reader reader;
-    Json::Value json;
-
-    qDebug()<<"recv = "<<buf;
-
-    if (!reader.parse(buf.toStdString(), json))
+    QByteArray buf = sock->readAll();
+    buffer.append(buf);
+    uint msgLen;
+    uint tot = buffer.size();
+    while(tot)
     {
-        qDebug() << "服务器返回信息错误";
-        return;
-    }
-    if (!json.isObject())
-    {
-        qDebug() << "服务器返回信息错误";
-        return;
-    }
-    string type = json["type"].asString();
-    Json::Value cmd = json["info"];
-
-    auto callback = _callbacks.find(type);
-    if(callback!=_callbacks.end())
-    {
-        callback->second(cmd);
-    }
-    else
-    {
-        qDebug()<<"服务器返回信息错误";
+        QDataStream pack(buffer);
+        pack.setByteOrder(QDataStream::BigEndian);
+        QByteArray msg;
+        if(tot<4)
+        {
+            break;
+        }
+        pack>>msg;
+        if(msg.length()==0) break;
+        Json::Reader reader;
+        Json::Value json;
+        qDebug()<<"recv = "<<msg;
+        if (!reader.parse(msg.toStdString(), json))
+        {
+            qDebug() << "服务器返回信息错误";
+            return;
+        }
+        if (!json.isObject())
+        {
+            qDebug() << "服务器返回信息错误";
+            return;
+        }
+        string type = json["type"].asString();
+        Json::Value cmd = json["info"];
+        auto callback = _callbacks.find(type);
+        if(callback!=_callbacks.end())
+        {
+            callback->second(cmd);
+        }
+        else
+        {
+            qDebug()<<"服务器返回信息错误";
+        }
+        buf = buffer.right(tot-)
     }
 }
 

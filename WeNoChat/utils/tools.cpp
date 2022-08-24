@@ -23,7 +23,9 @@ QByteArray recvMsg(QTcpSocket *skt)
     char buf[10];
     skt->read(buf, 4);
     int nb = bytes2uInt(buf);
-    QByteArray bt = skt->read(nb);
+    QByteArray bt;
+    if(nb>=skt->bytesAvailable())
+         bt= skt->read(nb);
     return bt;
 }
 

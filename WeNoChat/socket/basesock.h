@@ -29,6 +29,7 @@ protected:
     QTcpSocket *sock;
     std::map<std::string, std::function<void(const Json::Value &cmd)>> _callbacks;
     std::function<void()> onConnected;
+    QByteArray buffer;
 };
 
 #endif // BASESOCK_H
