@@ -65,7 +65,6 @@ vector<UserRecord> Sql::findUserByPhone(string phone)
     for (int i = 1; i <= nR; i++)
     {
         UserRecord rec;
-<<<<<<< HEAD
         rec.username = string(result[i * nC + 0]);
         rec.password = string(result[i * nC + 1]);
         rec.phonenum = string(result[i * nC + 2]);
@@ -193,9 +192,6 @@ int Sql::insertGroups(string username, string groupid)
     }
     return sqlRet;
 }
-=======
-    }
->>>>>>> cf8c6320b559c6f893dfc443fc2ce5cde0e4c2f6
 
 int Sql::insertGroupInfo(string groupid, string groupname)
 {
