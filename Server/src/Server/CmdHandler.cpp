@@ -6,6 +6,8 @@
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 
 using namespace std;
@@ -145,6 +147,7 @@ void __Callbacks::_register(fd_t client, Json::Value cmd)
 
     Json::Value response;
     response["username"] = uName;
+    response["username"] = uName;
     if (users.size() != 0)
     {
         response["state"] = 0;
@@ -190,6 +193,7 @@ void __Callbacks::_chat(fd_t client, Json::Value cmd)
     cout << "msg from " << _from << " to " << encodeJson(_to) << ": " << _msg << endl;
 
     int len = _to.size();
+    cout << "len " << len << endl;
     for (int i = 0; i < len; i++)
     {
         Json::Value response;
@@ -247,6 +251,7 @@ void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
     Json::Value response;
     response["username"] = username;
     response["user_image"] = me[0].headfile;
+    response["user_image"] = me[0].headfile;
     for (int i = 0; i < (int)friends.size(); i++)
     {
         UserRecord frd = friends[i];
@@ -255,6 +260,7 @@ void __Callbacks::_getFriends(fd_t client, Json::Value cmd)
         item["friend_image"] = frd.headfile;
         response["user_info_List"][i] = item;
     }
+    cout << encodeJson(response) << endl;
     sendJson(client, makeCmd("askfriendsList", response));
     CmdHandler &handler = CmdHandler::singleton();
     auto recc = handler.msgRcds.find(username);
@@ -276,6 +282,7 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
 
     vector<UserRecord> user = Sql::singleton().findUserByName(friendUser);
     vector<UserRecord> me = Sql::singleton().findUserByName(username);
+    vector<UserRecord> me = Sql::singleton().findUserByName(username);
     Json::Value response;
 
     if (user.size() != 0)
@@ -284,12 +291,15 @@ void __Callbacks::_addFriends(fd_t client, Json::Value cmd)
         response["username"] = friendUser;
         response["user_image"] = user[0].headfile;
 
+        response["user_image"] = user[0].headfile;
+
         sendJson(client, makeCmd("addfriends", response));
         fd_t friend_fd = Server::singleton().getFdByName(friendUser);
         if (friend_fd != 0)
         {
             response["state"] = 1;
             response["username"] = username;
+            response["user_image"] = me[0].headfile;
             response["user_image"] = me[0].headfile;
             sendJson(friend_fd, makeCmd("addfriends", response));
         }
@@ -532,24 +542,35 @@ void __Callbacks::_chatFile(fd_t client, Json::Value cmd)
         sendJson(fd, makeCmd("chatfile", response));
     }
 }
-
-void __Callbacks::_submitImage(fd_t client, Json::Value cmd)
+void __Callbacks::_informSubmitImage(fd_t client, Json::Value cmd)
 {
+    string fileName = cmd["filename"].asString();
     string username = cmd["username"].asString();
-    string imagepath = cmd["image"].asString();
-    cout << "username = " << username << endl;
-    cout << "image" << imagepath << endl;
-    Sql::singleton().updateUser(username, "headfile", imagepath);
-    vector<UserRecord> recs = Sql::singleton().findFriends(username);
+    int size = cmd["size"].asInt();
+
+    int pos = fileName.find_last_of('.');
+    string ex = fileName.substr(pos);
+
     Json::Value response;
-    for (auto rec : recs)
+    response["state"] = 1;
+
+    void __Callbacks::_submitImage(fd_t client, Json::Value cmd)
     {
-        response["username"] = username;
-        response["image"] = imagepath;
-        fd_t tgtfd = Server::singleton().getFdByName(rec.username);
-        if (tgtfd != -1)
+        string username = cmd["username"].asString();
+        string imagepath = cmd["image"].asString();
+        cout << "username = " << username << endl;
+        cout << "image" << imagepath << endl;
+        Sql::singleton().updateUser(username, "headfile", imagepath);
+        vector<UserRecord> recs = Sql::singleton().findFriends(username);
+        Json::Value response;
+        for (auto rec : recs)
         {
-            sendJson(tgtfd, makeCmd("submit_image", response));
+            response["username"] = username;
+            response["image"] = imagepath;
+            fd_t tgtfd = Server::singleton().getFdByName(rec.username);
+            if (tgtfd != -1)
+            {
+                sendJson(tgtfd, makeCmd("submit_image", response));
+            }
         }
     }
-}

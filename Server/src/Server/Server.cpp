@@ -152,11 +152,10 @@ void Server::run()
                     int in_fd = ret_ev[i].data.fd;
                     if (client_fds.find(in_fd) != client_fds.end())
                     {
-                        int client = in_fd;
                         char buf[1024] = {0};
-                        int bytes = recv(client, buf, 4, 0);
-                        if (bytes == 0 || bytes == -1)
+                        if (recv(client, buf, sizeof(buf), 0) == 0)
                         {
+                            cout << "one client disconnected" << endl;
                             epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client, NULL);
                             client_fds.erase(client);
                             auto info = __clients.find(client);
