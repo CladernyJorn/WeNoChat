@@ -16,7 +16,7 @@
   <property name="styleSheet">
    <string notr="true">*{
 background:rgb(255, 255, 255);
-font-size:15px;
+font: 9pt &quot;微软雅黑&quot;;
 font-style:MingLiU-ExtB;
 }
 QFrame{
@@ -24,9 +24,10 @@ border:sold 10px rgba(0,0,0);
 background-image: url(:/assets/loginbackground.png);
 }
 QLineEdit{
-color:#8d98a1;
+;
+	color: rgb(255, 255, 255);
 background-color:rgba(64, 83, 97, 230);
-font-size:16px;
+font: 18pt &quot;微软雅黑&quot;;
 border-style:outset;
 border-radius:10px;
 font-style:MingLiU-ExtB;
@@ -34,10 +35,7 @@ font-style:MingLiU-ExtB;
 QLineEdit:hover{
 color:#8d98a1;
 background-color:rgba(64, 83, 97, 80);
-font-size:16px;
-border-style:outset;
-border-radius:10px;
-font-style:MingLiU-ExtB;
+
 }
 QLineEdit:focus{
 color:#8d98a1;

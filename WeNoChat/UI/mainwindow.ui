@@ -107,7 +107,7 @@ font-style:MingLiU-ExtB;
      <x>100</x>
      <y>0</y>
      <width>111</width>
-     <height>131</height>
+     <height>121</height>
     </rect>
    </property>
    <property name="mouseTracking">
@@ -615,17 +615,17 @@ p, li { white-space: pre-wrap; }
    </widget>
    <zorder>background</zorder>
    <zorder>frame_2</zorder>
-   <zorder>biaoqingFrame</zorder>
    <zorder>listWidget</zorder>
+   <zorder>biaoqingFrame</zorder>
    <zorder>cover_label</zorder>
   </widget>
   <widget class="QPushButton" name="pushButton_addfriend">
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>50</y>
+     <y>40</y>
      <width>71</width>
-     <height>28</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -644,9 +644,9 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>130</y>
+     <y>120</y>
      <width>211</width>
-     <height>561</height>
+     <height>571</height>
     </rect>
    </property>
    <property name="headerHidden">
@@ -702,7 +702,9 @@ p, li { white-space: pre-wrap; }
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+    <string notr="true">QPushButton#pushButton_image{
+background-color: rgba(255, 255, 255, 0);
+}</string>
    </property>
    <property name="text">
     <string/>
@@ -728,7 +730,9 @@ p, li { white-space: pre-wrap; }
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+    <string notr="true">QPushButton#setting{
+background-color: rgba(255, 255, 255, 0);
+}</string>
    </property>
    <property name="text">
     <string/>
@@ -738,13 +742,13 @@ p, li { white-space: pre-wrap; }
      <normaloff>:/assets/settings.jpg</normaloff>:/assets/settings.jpg</iconset>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_addgroup">
+  <widget class="QPushButton" name="pushButton_addfriend_2">
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>90</y>
+     <y>80</y>
      <width>71</width>
-     <height>28</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -752,16 +756,8 @@ p, li { white-space: pre-wrap; }
      <pointsize>-1</pointsize>
     </font>
    </property>
-   <property name="whatsThis">
-    <string>加群</string>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton#pushButton_addgroup{}
-background-color: rgb(0, 255, 0);
-</string>
-   </property>
    <property name="text">
-    <string>添加群聊</string>
+    <string>创建群聊</string>
    </property>
   </widget>
   <zorder>chatName</zorder>
@@ -775,7 +771,7 @@ background-color: rgb(0, 255, 0);
   <zorder>pushButton_image</zorder>
   <zorder>frame</zorder>
   <zorder>setting</zorder>
-  <zorder>pushButton_addgroup</zorder>
+  <zorder>pushButton_addfriend_2</zorder>
  </widget>
  <resources>
   <include location="../uires.qrc"/>

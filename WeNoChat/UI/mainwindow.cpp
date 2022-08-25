@@ -78,15 +78,6 @@ void MainWindow::_initHandler()
                 user_image = QImage(fileName.absoluteFilePath());
             changeMyIcon(&user_image);
         }, "head");
-        /*使用userList生成好友列表*/
-//        user_image = QString2Qimage(QString::fromStdString(userimage));
-        /*Todo:把带好友头像信息的userList导进去，显示头像
-         *
-         *
-         *
-         */
-        //first: name,second:imagefile
-        //获取好友头像
         std::vector<Ui::User> userList;
         for(pair<string, string> frdinfo: uinfolist)
         {
@@ -164,10 +155,7 @@ void MainWindow::_initHandler()
         }
         if (state == 1)
         {
-            /*Todo:在列表里添加这个新的好友
-             *
-             *
-             */
+            /*Todo:在列表里添加这个新的好友*/
             createRequireTask(QString::fromStdString(friendimage), "./assets/"+udata+"/friendheads",[=](FileSock *fsk, const QFileInfo &fileName){
                 QImage friend_image;
                 if(fileName.absolutePath().length()!=0)
