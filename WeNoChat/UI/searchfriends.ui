@@ -21,25 +21,25 @@ font-style:MingLiU-ExtB;
 }
 
 QLineEdit{
-color:#8d98a1;
+color:rgb(255, 255, 255);
 background-color:rgba(64, 83, 97, 230);
-font-size:16px;
+font-size:18px;
 border-style:outset;
 border-radius:10px;
 font-style:MingLiU-ExtB;
 }
 QLineEdit:hover{
-color:#8d98a1;
+color:rgb(255, 255, 255);
 background-color:rgba(64, 83, 97, 80);
-font-size:16px;
+font-size:18px;
 border-style:outset;
 border-radius:10px;
 font-style:MingLiU-ExtB;
 }
 QLineEdit:focus{
-color:#8d98a1;
+color:rgb(255, 255, 255);
 background-color:rgba(64, 83, 97, 180);
-font-size:16px;
+font-size:18px;
 border-style:outset;
 border-radius:10px;
 font-style:MingLiU-ExtB;

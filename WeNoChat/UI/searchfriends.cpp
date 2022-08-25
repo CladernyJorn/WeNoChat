@@ -28,6 +28,7 @@ void searchFriends::on_pushButton_clicked()
     std::string data=Encoder_addfriends(udata.toStdString(),friend_userName.toStdString());
     QString packData = QString::fromStdString(data);
     client.sendMessage(packData);
+    close();
 }
 
 
