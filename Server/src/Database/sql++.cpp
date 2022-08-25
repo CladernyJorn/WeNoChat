@@ -192,3 +192,15 @@ int Sql::insertGroups(string username, string groupid)
     }
     return sqlRet;
 }
+
+int Sql::insertGroupInfo(string groupid, string groupname)
+{
+    string sql = "insert into GroupInfo values('" + groupid + "', '" + groupname + "');";
+    char *errmsg;
+    int sqlRet = sqlite3_exec(mySqlite, sql.c_str(), NULL, NULL, &errmsg);
+    if (sqlRet != 0)
+    {
+        cout << "sqlite3_error err: " << errmsg << endl;
+    }
+    return sqlRet;
+}

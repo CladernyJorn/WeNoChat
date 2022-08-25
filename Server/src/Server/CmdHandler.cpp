@@ -34,12 +34,12 @@ CmdHandler::CmdHandler()
     __callbacks["add_group_chat"] = [=](fd_t client, Json::Value cmd)
     {
         string groupname = cmd["groupname"].asString();
-        Json::Value userList = cmd["userList"];
+        Json::Value userList = cmd["user"];
 
         int len = userList.size();
-
+        cout << len << endl;
         int groupid = Sql::singleton().getGroupCounts() + 1;
-        Sql::singleton().insertGroups(to_string(groupid), groupname);
+        Sql::singleton().insertGroupInfo(to_string(groupid), groupname);
         for (int i = 0; i < len; i++)
         {
             Json::Value response;
@@ -48,10 +48,10 @@ CmdHandler::CmdHandler()
             response["userList"] = userList;
             response["groupid"] = groupid;
             string userName = userList[i].asString();
-            Sql::singleton().insertGroups(to_string(groupid), to_string(groupid));
-            sendJson(client, makeCmd("add_group_chat", response));
+            Sql::singleton().insertGroups(userName, to_string(groupid));
+            fd_t target = Server::singleton().getFdByName(userName);
+            sendJson(target, makeCmd("add_group_chat", response));
         }
-
         vector<string> targets = Sql::singleton().getGroupMembers(to_string(groupid));
     };
     __callbacks["chat_group"] = [=](fd_t client, Json::Value cmd)
@@ -73,7 +73,9 @@ CmdHandler::CmdHandler()
             response["username"] = uname;
             response["info"] = info;
             response["time"] = time;
-            sendJson(client, makeCmd("chat_group", response));
+            int targetfd = Server::singleton().getFdByName(uname);
+            if (targetfd != -1)
+                sendJson(targetfd, makeCmd("chat_group", response));
         }
     };
 }

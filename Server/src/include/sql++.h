@@ -28,6 +28,7 @@ public:
     std::vector<std::string> getGroupMembers(std::string groupid);
     int getGroupCounts();
     int insertGroups(std::string username, std::string groupid);
+    int insertGroupInfo(std::string groupid, std::string groupname);
 
 private:
     Sql() {}
