@@ -23,48 +23,64 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += main.cpp\
-        login.cpp \
-    mainwindow.cpp \
-    regist.cpp \
-    jsoncpp.cpp \
-    user.cpp \
-    question.cpp \
-    password.cpp \
-    chatmessagewidget.cpp \
-    communicate_utils.cpp \
-    searchfriends.cpp \
-    friendlist.cpp \
+SOURCES += main.cpp \
+    socket/basesock.cpp \
+    socket/datasock.cpp \
+    socket/filesock.cpp \
+    UI/chatmessagewidget.cpp \
+    UI/friendlist.cpp \
+    UI/login.cpp \
+    UI/mainwindow.cpp \
+    UI/password.cpp \
+    UI/question.cpp \
+    UI/regist.cpp \
+    UI/searchfriends.cpp \
+    UI/user.cpp \
+    UI/viewfullmessage.cpp \
+    utils/communicate_utils.cpp \
+    utils/tools.cpp \
     messagerecord.cpp \
-    viewfullmessage.cpp \
-    wncimage.cpp \
-    mydelegate.cpp
+    constants.cpp \
+    utils/jsoncpp.cpp \
+    UI/picturecut.cpp \
+    UI/mydelegate.cpp \
+    UI/group.cpp
 
-HEADERS  += login.h \
-    mainwindow.h \
-    regist.h \
-    json/json.h \
-    json/json-forwards.h \
-    user.h \
-    question.h \
-    password.h \
-    chatmessagewidget.h \
-    communicate_utils.h \
-    searchfriends.h \
-    friendlist.h \
+HEADERS  += \
+    socket/basesock.h \
+    socket/datasock.h \
+    socket/filesock.h \
+    UI/chatmessagewidget.h \
+    UI/friendlist.h \
+    UI/login.h \
+    UI/mainwindow.h \
+    UI/password.h \
+    UI/question.h \
+    UI/regist.h \
+    UI/searchfriends.h \
+    UI/user.h \
+    UI/viewfullmessage.h \
+    utils/communicate_utils.h \
+    utils/tools.h \
+    utils/json/json.h \
+    utils/json/json-forwards.h \
     messagerecord.h \
-    viewfullmessage.h \
-    wncimage.h \
-    mydelegate.h
+    constants.h \
+    UI/picturecut.h \
+    UI/mydelegate.h \
+    UI/group.h
 
-FORMS    += login.ui \
-    mainwindow.ui \
-    regist.ui \
-    user.ui \
-    question.ui \
-    password.ui \
-    searchfriends.ui \
-    viewfullmessage.ui
+FORMS    += \
+    UI/login.ui \
+    UI/mainwindow.ui \
+    UI/password.ui \
+    UI/question.ui \
+    UI/regist.ui \
+    UI/searchfriends.ui \
+    UI/user.ui \
+    UI/viewfullmessage.ui \
+    UI/picturecut.ui \
+    UI/group.ui
 
 RESOURCES += \
-    uires.qrc
+    uires.qrc \
