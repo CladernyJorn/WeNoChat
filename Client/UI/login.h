@@ -5,27 +5,23 @@
 #include <QTcpSocket>
 #include <QMessageBox>
 #include <QDebug>
-#include "mainwindow.h"
+#include "basewidget.h"
 #include "user.h"
 #include "regist.h"
 #include "utils/communicate_utils.h"
 #include "socket/datasock.h"
-namespace Ui {
-class login;
+namespace Ui
+{
+    class Login;
 }
 
-class login : public QWidget
+class Login : public BaseWidget
 {
     Q_OBJECT
 
 public:
-    explicit login(QWidget *parent = 0);
-    ~login();
-
-protected:
-    void mouseMoveEvent(QMouseEvent *e);//鼠标移动
-    void mousePressEvent(QMouseEvent *e);//鼠标按下移动
-    void mouseReleaseEvent(QMouseEvent *event);
+    explicit Login(QWidget *parent = 0);
+    ~Login();
 
 private slots:
     void on_closeButton_clicked();
@@ -38,15 +34,16 @@ private slots:
 
     void on_forgetButton_clicked();
 
+    void on_netSetButton_clicked();
+
 private:
-    Ui::login *ui;
-    QPoint p;
+    Ui::Login *ui;
     DataSock &client;
     void showMainWindow(QString udata);
     void showRegistWindow();
     void showForgotPwdWindow();
-    MainWindow * mw;
-    Regist * rw;
+    MainWindow *mw;
+    Regist *rw;
     user *u;
 };
 
